@@ -48,6 +48,7 @@ public class MyApplication extends Application {
    		Scene scene =  new Scene(root);
    		stage.setScene(scene);
    		stage.setTitle("Lovelive Superstar Liella : Data Explorer on COVID-19");
+
    		stage.show();
 	}
 
