@@ -1,16 +1,16 @@
 # Team16
 
-email id: csngae
-github id: wilsonng-234
-branch id: wilsonng-feature-A
-task assignment : Task A
+## Ng Chak Sang
+Email ID: csngae  <br> 
+Github ID: wilsonng-234   |   Branch ID: wilsonng-feature-A <br>
+Task Assignment: Task A  <br>
 
-email id: lhyuenad 
-github id: ShibuyaKanonUST
-branch id: branch id: lhyuen-feature-B
-task assignment : Task B
+## Yuen Long Ho
+Email ID: lhyuenad  <br>
+Github ID: ShibuyaKanonUST   |   Branch ID: branch id: lhyuen-feature-B  <br>
+Task Assignment: Task B  <br>
 
-email id: cschiu
-github id: terryychiuu
-branch id: terry-feature-C
-task assignment : Task C
+## Chiu Chi Shing
+Email ID: cschiu  <br>
+Github ID: terryychiuu   |   Branch ID: terry-feature-C  <br>
+Task Assignment: Task C  <br>
