@@ -7,7 +7,7 @@ Task Assignment: Task A  <br>
 
 ## Yuen Long Ho
 Email ID: lhyuenad  <br>
-Github ID: ShibuyaKanonUST   |   Branch ID: branch id: lhyuen-feature-B  <br>
+Github ID: ShibuyaKanonUST   |   Branch ID: lhyuen-feature-B  <br>
 Task Assignment: Task B  <br>
 
 ## Chiu Chi Shing
