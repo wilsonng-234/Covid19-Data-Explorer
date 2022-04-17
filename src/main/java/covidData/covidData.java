@@ -2,6 +2,9 @@ package covidData;
 
 public abstract class covidData {
     protected Date date;
+    protected Date startDate;
+    protected Date endDate;
+
     protected String[] countriesIsoCode;
     protected String dataset;
 

@@ -1,9 +1,7 @@
 package comp3111.covid;
 
-import covidData.confirmedCases;
 import org.apache.commons.csv.*;
 import edu.duke.*;
-import covidData.Date;
 
 /**
  * 
