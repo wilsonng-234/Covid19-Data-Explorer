@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static comp3111.covid.DataAnalysis.getFileParser;
+import static covidData.ConfirmedCasesTable.NOT_FOUND;
 
 public class ConfirmedCasesController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
@@ -139,10 +140,6 @@ public class ConfirmedCasesController implements Initializable {
         // update covidCasesTable
         covidCasesTable.getItems().removeAll(covidCasesTable.getItems());
 
-        NumberFormat intFormat = NumberFormat.getInstance();
-        intFormat.setGroupingUsed(true);
-        System.out.println(intFormat.format(132456123));
-
         ConfirmedCases confirmedCases = new ConfirmedCases(date,selectedCountries,"COVID_Dataset_v1.0.csv");
         HashMap<String, ConfirmedCasesTable> confirmedCasesHashMap = confirmedCases.getconfirmedCasesTable();
 
@@ -151,8 +148,17 @@ public class ConfirmedCasesController implements Initializable {
             sortedSelectedCountriesList.add(countryName);
         Collections.sort(sortedSelectedCountriesList);
 
-        for (String countryName : sortedSelectedCountriesList)
-            covidCasesTable.getItems().add(confirmedCasesHashMap.get(countryName));
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        for (String countryName : sortedSelectedCountriesList) {
+            ConfirmedCasesTable confirmedCasesTable = confirmedCasesHashMap.get(countryName);
+            if (!confirmedCasesTable.getTotalCases().equals(NOT_FOUND))
+                confirmedCasesTable.setTotalCases(numberFormat.format(Integer.parseInt(confirmedCasesTable.getTotalCases())));
+            if (!confirmedCasesTable.getTotalCasesPerMillion().equals(NOT_FOUND))
+                confirmedCasesTable.setTotalCasesPerMillion(numberFormat.format(Double.parseDouble(confirmedCasesTable.getTotalCasesPerMillion())));
+            covidCasesTable.getItems().add(confirmedCasesTable);
+        }
+
+        System.out.println(numberFormat.format(123456.123456));
     }
 
     @FXML

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static comp3111.covid.DataAnalysis.getFileParser;
+import static covidData.ConfirmedCasesTable.NOT_FOUND;
 
 public class ConfirmedCases extends CovidData {
     private HashMap<String, ConfirmedCasesTable> confirmedCasesTable;   // key: country location name  value: ConfirmedCasesTable
@@ -17,8 +18,6 @@ public class ConfirmedCases extends CovidData {
     }
 
     public HashMap<String, ConfirmedCasesTable> getconfirmedCasesTable() {
-        final String NOT_FOUND = "NOT FOUND";
-
         for (String countryName : countries)
             confirmedCasesTable.put(countryName,new ConfirmedCasesTable(countryName,NOT_FOUND,NOT_FOUND));
 

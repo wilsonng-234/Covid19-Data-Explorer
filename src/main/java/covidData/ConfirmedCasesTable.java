@@ -1,8 +1,8 @@
 package covidData;
 
 public class ConfirmedCasesTable {
+    final public static String NOT_FOUND = "NOT FOUND";
     String country;
-
     String totalCases;
     String totalCasesPerMillion;
 
