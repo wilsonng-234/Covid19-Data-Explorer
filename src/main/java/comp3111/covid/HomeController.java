@@ -36,7 +36,11 @@ public class HomeController {
     private ImageView VaccinationIcon;
 
     @FXML
-    void switchToRateOfVaccinationScene(MouseEvent event) {
-
+    void switchToRateOfVaccinationScene(MouseEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/vaccinationRate.fxml"));
+        Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }
