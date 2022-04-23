@@ -155,7 +155,7 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     @FXML
-    private ImageView home;
+    private ImageView tableHomeImage;
 
     @FXML
     void switchToHomeScene(MouseEvent event) throws IOException {

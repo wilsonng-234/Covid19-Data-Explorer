@@ -7,8 +7,6 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -27,7 +25,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
                      <children>
-                        <ImageView fx:id="home" fitHeight="71.0" fitWidth="62.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="471.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                        <ImageView fx:id="tableHomeImage" fitHeight="71.0" fitWidth="62.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="471.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                            <image>
                               <Image url="@../images/home.png" />
                            </image>
@@ -64,31 +62,43 @@
           </Tab>
           <Tab text="Chart">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
                      <children>
-                        <Text layoutX="81.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date:" wrappingWidth="29.5078125" AnchorPane.topAnchor="36.8125" />
-                        <Text layoutX="54.0" layoutY="84.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Countries:" />
-                        <DatePicker layoutX="138.0" layoutY="33.0" />
-                        <DatePicker layoutX="382.0" layoutY="33.0" />
-                        <Text layoutX="343.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To" />
-                        <MenuButton layoutX="138.0" layoutY="68.0" mnemonicParsing="false" text="---">
-                          <items>
-                            <MenuItem disable="true" mnemonicParsing="false" text="---" />
-                          </items>
-                        </MenuButton>
-                        <LineChart layoutX="56.0" layoutY="155.0" prefHeight="363.0" prefWidth="688.0">
-                          <xAxis>
-                            <CategoryAxis side="BOTTOM" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis side="LEFT" upperBound="90000.0" />
-                          </yAxis>
-                        </LineChart>
-                        <Text layoutY="132.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cummulative confirmed COVID-19 Cases (per 1M)" textAlignment="CENTER" wrappingWidth="800.0">
+                        <ImageView fx:id="tableHomeImage1" fitHeight="71.0" fitWidth="62.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="471.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                           <image>
+                              <Image url="@../images/home.png" />
+                           </image>
+                        </ImageView>
+                        <DatePicker fx:id="datePicker1" layoutX="308.0" layoutY="29.0" AnchorPane.leftAnchor="360.0" />
+                        <Text layoutX="321.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From:" wrappingWidth="44.21484375" AnchorPane.leftAnchor="321.0" />
+                        <Text fx:id="Title1" layoutX="238.0" layoutY="99.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Covid Cases as of Date" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="504.14892578125" AnchorPane.leftAnchor="288.0" AnchorPane.topAnchor="74.85107421875">
                            <font>
                               <Font size="23.0" />
                            </font>
                         </Text>
+                        <Label layoutX="47.0" layoutY="29.0" text="Select Countries" AnchorPane.leftAnchor="47.0">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="countrySelectionTable1" layoutX="14.0" layoutY="72.0" prefHeight="493.0" prefWidth="270.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="72.0">
+                           <columns>
+                              <TableColumn fx:id="countrySelectionColumn1" prefWidth="209.0" text="Country" />
+                              <TableColumn fx:id="checkBoxSelectionColumn1" prefWidth="49.0" text="Select" />
+                           </columns>
+                        </TableView>
+                        <Button fx:id="generateTableButton1" layoutX="172.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateTableButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate Table" AnchorPane.bottomAnchor="14.0" />
+                        <CheckBox fx:id="selectAll1" layoutX="207.0" layoutY="32.0" mnemonicParsing="false" onAction="#selectAllCheckBoxClicked" text="Select All" AnchorPane.leftAnchor="207.0" />
+                        <LineChart layoutX="288.0" layoutY="104.0" prefHeight="473.0" prefWidth="641.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </LineChart>
+                        <Text layoutX="586.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" />
+                        <DatePicker fx:id="datePicker11" layoutX="609.0" layoutY="29.0" />
                      </children>
                   </AnchorPane>
             </content>
