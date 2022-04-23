@@ -32,7 +32,7 @@
                         </ImageView>
                         <DatePicker fx:id="datePicker" layoutX="308.0" layoutY="29.0" AnchorPane.leftAnchor="360.0" />
                         <Text layoutX="265.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date:" AnchorPane.leftAnchor="320.0" />
-                        <Text fx:id="Title" layoutX="238.0" layoutY="99.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Covid Cases as of Date" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="504.14892578125" AnchorPane.leftAnchor="288.0" AnchorPane.topAnchor="74.85107421875">
+                        <Text fx:id="Title" layoutX="314.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Covid Cases as of Date" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="505.0" AnchorPane.leftAnchor="314.0" AnchorPane.topAnchor="72.0">
                            <font>
                               <Font size="23.0" />
                            </font>
@@ -71,7 +71,7 @@
                         </ImageView>
                         <DatePicker fx:id="datePicker1" layoutX="308.0" layoutY="29.0" AnchorPane.leftAnchor="360.0" />
                         <Text layoutX="321.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From:" wrappingWidth="44.21484375" AnchorPane.leftAnchor="321.0" />
-                        <Text fx:id="Title1" layoutX="238.0" layoutY="99.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Covid Cases as of Date" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="504.14892578125" AnchorPane.leftAnchor="288.0" AnchorPane.topAnchor="74.85107421875">
+                        <Text fx:id="Title1" layoutX="321.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Covid Cases as of Date" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="505.0" AnchorPane.leftAnchor="321.0" AnchorPane.topAnchor="72.0">
                            <font>
                               <Font size="23.0" />
                            </font>

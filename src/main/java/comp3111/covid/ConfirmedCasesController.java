@@ -66,7 +66,8 @@ public class ConfirmedCasesController implements Initializable {
         datePicker.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     date = newValue;
-                    System.out.println(oldValue + "\t" + newValue);
+
+                    Title.setText("Number of Covid Cases as of " + newValue);
                 }
         );
 
