@@ -1,17 +1,21 @@
 package comp3111.covid;
 
 import covidData.ConfirmedCases;
-import covidData.ConfirmedCasesTable;
+import covidData.ConfirmedCasesRecord;
 import covidData.CountrySelection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
@@ -28,51 +32,96 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static comp3111.covid.DataAnalysis.getFileParser;
-import static covidData.ConfirmedCasesTable.NOT_FOUND;
+import static covidData.ConfirmedCasesRecord.NOT_FOUND;
 
 public class ConfirmedCasesController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
+
+    @FXML
+    private Tab tableTab;
+    @FXML
+    private Tab chartTab;
+
     // datePicker
     @FXML
-    private DatePicker datePicker;
-    private LocalDate date = null;
+    private DatePicker datePickerForTable;
+    private LocalDate dateForTable = null;
+
+    @FXML
+    private DatePicker startDatePicker;
+    private LocalDate startDate = null;
+
+    @FXML
+    private DatePicker endDatePicker;
+    private LocalDate endDate = null;
 
     // countrySelectionTable
     @FXML
-    private TableView<CountrySelection> countrySelectionTable;
+    private TableView<CountrySelection> countrySelectionTableForTable;
     @FXML
     private TableColumn<CountrySelection,CheckBox> countrySelectionColumn;
     @FXML
     private TableColumn<CountrySelection,CheckBox> checkBoxSelectionColumn;
+
+    @FXML
+    private TableView<CountrySelection> countrySelectionTableForChart;
+    @FXML
+    private TableColumn<CountrySelection,CheckBox> countrySelectionColumnForChart;
+    @FXML
+    private TableColumn<CountrySelection,CheckBox> checkBoxSelectionColumnForChart;
     // -----------
 
     // covidCasesTable
     @FXML
-    private Text Title;
+    private Text tableTitle;
     @FXML
-    private TableView<ConfirmedCasesTable> covidCasesTable;
+    private TableView<ConfirmedCasesRecord> covidCasesTable;
     @FXML
-    private TableColumn<ConfirmedCasesTable,String> countryColumn;
+    private TableColumn<ConfirmedCasesRecord,String> countryColumn;
     @FXML
-    private TableColumn<ConfirmedCasesTable,String> totalCasesColumn;
+    private TableColumn<ConfirmedCasesRecord,String> totalCasesColumn;
     @FXML
-    private TableColumn<ConfirmedCasesTable,String> totalCasesPerMillionColumn;
+    private TableColumn<ConfirmedCasesRecord,String> totalCasesPerMillionColumn;
     // -----------
 
-    HashSet<String> selectedCountries = new HashSet<>();
+    // covidCasesLineChart
+    @FXML
+    private LineChart<String,Number> confirmedCasesLineChart;
+    // -----------
+
+    HashSet<String> selectedCountriesForTable = new HashSet<>();
+    HashSet<String> selectedCountriesForChart = new HashSet<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // datePicker get date
-        datePicker.valueProperty().addListener(
+        datePickerForTable.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    date = newValue;
+                    dateForTable = newValue;
 
-                    Title.setText("Number of Covid Cases as of " + newValue);
+                    tableTitle.setText("Number of Covid Cases as of " + newValue);
                 }
         );
 
-        // initialize countrySelectionTable
+        startDatePicker.valueProperty().addListener(
+                new ChangeListener<LocalDate>() {
+                    @Override
+                    public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                        startDate = newValue;
+                    }
+                }
+        );
+
+        endDatePicker.valueProperty().addListener(
+                new ChangeListener<LocalDate>() {
+                    @Override
+                    public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                        endDate = newValue;
+                    }
+                }
+        );
+
+        // initialize countrySelectionTableForTable
         countrySelectionColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         checkBoxSelectionColumn.setCellValueFactory(new PropertyValueFactory<>("select"));
 
@@ -92,38 +141,114 @@ public class ConfirmedCasesController implements Initializable {
                                 System.out.println("oldValue == newValue");
 
                             if (newValue){
-                                assert (!selectedCountries.contains(row.getName()));
+                                assert (!selectedCountriesForTable.contains(row.getName()));
 
-                                selectedCountries.add(row.getName());
+                                selectedCountriesForTable.add(row.getName());
                             }
                             else{
-                                assert (selectedCountries.contains(row.getName()));
+                                assert (selectedCountriesForTable.contains(row.getName()));
 
-                                selectedCountries.remove(row.getName());
+                                selectedCountriesForTable.remove(row.getName());
                             }
 
                             System.out.println("from " + oldValue + " to " + newValue);
-                            for (String str : selectedCountries)
+                            for (String str : selectedCountriesForTable)
                                 System.out.print(str + "\t");
                             System.out.println();
                         }
                     }
             );
 
-            countrySelectionTable.getItems().add(row);
+            countrySelectionTableForTable.getItems().add(row);
         }
 
+        //countrySelectionTableForChart
+        countrySelectionColumnForChart.setCellValueFactory(new PropertyValueFactory<>("name"));
+        checkBoxSelectionColumnForChart.setCellValueFactory(new PropertyValueFactory<>("select"));
+
+        Map<String, CountrySelection> countrySelectionRows1 = getCountrySelectionRows("COVID_Dataset_v1.0.csv");
+        List<CountrySelection> countrySelectionList1 = new ArrayList<>(countrySelectionRows1.size());
+        countrySelectionList1.addAll(countrySelectionRows1.values());
+        Collections.sort(countrySelectionList1);
+
+        for (CountrySelection row : countrySelectionList1) {
+            CheckBox checkBox = row.getSelect();
+
+            checkBox.selectedProperty().addListener(
+                    new ChangeListener<Boolean>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                            if (oldValue == newValue)
+                                System.out.println("oldValue == newValue");
+
+                            if (newValue){
+                                assert (!selectedCountriesForChart.contains(row.getName()));
+
+                                selectedCountriesForChart.add(row.getName());
+                            }
+                            else{
+                                assert (selectedCountriesForChart.contains(row.getName()));
+
+                                selectedCountriesForChart.remove(row.getName());
+                            }
+
+                            System.out.println("from " + oldValue + " to " + newValue);
+                            for (String str : selectedCountriesForChart)
+                                System.out.print(str + "\t");
+                            System.out.println();
+                        }
+                    }
+            );
+
+            countrySelectionTableForChart.getItems().add(row);
+        }
         // initialize covidCasesTable
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
         totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("totalCases"));
         totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory<>("totalCasesPerMillion"));
+
+        // initialize confirmedCaseesLineChart
+        XYChart.Series<String,Number> series = new XYChart.Series<>();
+
+        series.setName("Hong Kong");
+        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,15).toString(),100));
+        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,16).toString(),105));
+        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,17).toString(),109));
+        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,18).toString(),1005));
+        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,19).toString(),1005));
+        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,20).toString(),1006));
+
+        confirmedCasesLineChart.getXAxis().setLabel("Date");
+        confirmedCasesLineChart.getYAxis().setLabel("Number of Cases");
+        confirmedCasesLineChart.setTitle("Title");
+
+        confirmedCasesLineChart.setCreateSymbols(false);
+        confirmedCasesLineChart.getData().add(series);
+
+        // tableTab onclick
+        tableTab.setOnSelectionChanged(
+                new EventHandler<Event>() {
+                    @Override
+                    public void handle(Event event) {
+
+                    }
+                }
+        );
+        chartTab.setOnSelectionChanged(
+                new EventHandler<Event>() {
+                    @Override
+                    public void handle(Event event) {
+
+                    }
+                }
+        );
     }
 
     @FXML
     private Button generateTableButton;
     @FXML
     void generateTableButtonClicked(ActionEvent event) {
-        if (date == null) {
+        if (dateForTable == null) {
             Alert dateNotChosenAlert = new Alert(Alert.AlertType.WARNING);
             dateNotChosenAlert.setTitle("DATE NOT CHOSEN");
             dateNotChosenAlert.setContentText("Please choose the date first");
@@ -140,25 +265,98 @@ public class ConfirmedCasesController implements Initializable {
         // update covidCasesTable
         covidCasesTable.getItems().removeAll(covidCasesTable.getItems());
 
-        ConfirmedCases confirmedCases = new ConfirmedCases(date,selectedCountries,"COVID_Dataset_v1.0.csv");
-        HashMap<String, ConfirmedCasesTable> confirmedCasesHashMap = confirmedCases.getconfirmedCasesTable();
+        ConfirmedCases confirmedCases = new ConfirmedCases(dateForTable, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
+        HashMap<String, ConfirmedCasesRecord> confirmedCasesHashMap = confirmedCases.getconfirmedCasesTable();
 
-        List<String> sortedSelectedCountriesList = new ArrayList<>(selectedCountries.size());
-        for (String countryName : selectedCountries)
+        List<String> sortedSelectedCountriesList = new ArrayList<>(selectedCountriesForTable.size());
+        for (String countryName : selectedCountriesForTable)
             sortedSelectedCountriesList.add(countryName);
         Collections.sort(sortedSelectedCountriesList);
 
         NumberFormat numberFormat = NumberFormat.getInstance();
         for (String countryName : sortedSelectedCountriesList) {
-            ConfirmedCasesTable confirmedCasesTable = confirmedCasesHashMap.get(countryName);
-            if (!confirmedCasesTable.getTotalCases().equals(NOT_FOUND))
-                confirmedCasesTable.setTotalCases(numberFormat.format(Integer.parseInt(confirmedCasesTable.getTotalCases())));
-            if (!confirmedCasesTable.getTotalCasesPerMillion().equals(NOT_FOUND))
-                confirmedCasesTable.setTotalCasesPerMillion(numberFormat.format(Double.parseDouble(confirmedCasesTable.getTotalCasesPerMillion())));
-            covidCasesTable.getItems().add(confirmedCasesTable);
+            ConfirmedCasesRecord confirmedCasesRecord = confirmedCasesHashMap.get(countryName);
+            if (!confirmedCasesRecord.getTotalCases().equals(NOT_FOUND))
+                confirmedCasesRecord.setTotalCases(numberFormat.format(Integer.parseInt(confirmedCasesRecord.getTotalCases())));
+            if (!confirmedCasesRecord.getTotalCasesPerMillion().equals(NOT_FOUND))
+                confirmedCasesRecord.setTotalCasesPerMillion(numberFormat.format(Double.parseDouble(confirmedCasesRecord.getTotalCasesPerMillion())));
+            covidCasesTable.getItems().add(confirmedCasesRecord);
         }
 
         System.out.println(numberFormat.format(123456.123456));
+    }
+
+    @FXML
+    private Button generateChartButton;
+
+    @FXML
+    void generateChartButtonClicked(ActionEvent event) {
+        Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);
+
+        if (startDate == null && endDate == null){
+            invalidDateAlert.setTitle("BOTH DATE NOT CHOSEN");
+            invalidDateAlert.setContentText("Please choose the start date and end date first");
+
+            invalidDateAlert.showAndWait().ifPresent(
+                    new Consumer<ButtonType>() {
+                        @Override
+                        public void accept(ButtonType buttonType) {
+                        }
+                    }
+            );
+            return;
+        }
+        if (startDate == null){
+            invalidDateAlert.setTitle("START DATE NOT CHOSEN");
+            invalidDateAlert.setContentText("Please choose the start date first");
+
+            invalidDateAlert.showAndWait().ifPresent(
+                    new Consumer<ButtonType>() {
+                        @Override
+                        public void accept(ButtonType buttonType) {
+                        }
+                    }
+            );
+            return;
+        }
+        if (endDate == null){
+            invalidDateAlert.setTitle("END DATE NOT CHOSEN");
+            invalidDateAlert.setContentText("Please choose the end date first");
+
+            invalidDateAlert.showAndWait().ifPresent(
+                    new Consumer<ButtonType>() {
+                        @Override
+                        public void accept(ButtonType buttonType) {
+                        }
+                    }
+            );
+            return;
+        }
+        if (startDate.isAfter(endDate)){
+            invalidDateAlert.setTitle("INVALID DATE INPUT");
+            invalidDateAlert.setContentText("start date cannot be after end date!!");
+
+            invalidDateAlert.showAndWait().ifPresent(
+                    new Consumer<ButtonType>() {
+                        @Override
+                        public void accept(ButtonType buttonType) {
+                        }
+                    }
+            );
+            return;
+        }
+
+        // update covidCasesChart
+
+        confirmedCasesLineChart.getData().removeAll(confirmedCasesLineChart.getData());
+
+        ConfirmedCases confirmedCases = new ConfirmedCases(startDate,endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
+
+        HashMap<String,XYChart.Series<String,Number>> confirmedCasesHashMap = confirmedCases.getConfirmedCasesChart();
+
+        for (String countryName : selectedCountriesForChart){
+            confirmedCasesLineChart.getData().add(confirmedCasesHashMap.get(countryName));
+        }
     }
 
     @FXML
@@ -190,13 +388,24 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     @FXML
-    private CheckBox selectAll;
+    private CheckBox selectAllForTable;
 
     @FXML
-    void selectAllCheckBoxClicked(ActionEvent event) {
-        boolean tick = selectAll.selectedProperty().get();
+    void selectAllForTableClicked(ActionEvent event) {
+        boolean tick = selectAllForTable.selectedProperty().get();
 
-        for (CountrySelection row : countrySelectionTable.getItems())
+        for (CountrySelection row : countrySelectionTableForTable.getItems())
+            row.getSelect().setSelected(tick);
+    }
+
+    @FXML
+    private CheckBox selectAllForChart;
+
+    @FXML
+    void selectAllForChartClicked(ActionEvent event) {
+        boolean tick = selectAllForChart.selectedProperty().get();
+
+        for (CountrySelection row : countrySelectionTableForChart.getItems())
             row.getSelect().setSelected(tick);
     }
 }
