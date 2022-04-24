@@ -4,10 +4,9 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -22,72 +21,79 @@
     <children>
         <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
-                <Tab text="Table">
+                <Tab fx:id="tableTab" text="Table">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
                             <children>
-                                <ImageView fx:id="home" fitHeight="71.0" fitWidth="62.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="471.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                <ImageView fx:id="tableHomeImage" fitHeight="71.0" fitWidth="62.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="471.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                                     <image>
                                         <Image url="@../images/home.png" />
                                     </image>
                                 </ImageView>
-                                <DatePicker fx:id="datePicker" layoutX="308.0" layoutY="29.0" AnchorPane.leftAnchor="360.0" />
+                                <DatePicker fx:id="datePickerForTable" layoutX="308.0" layoutY="29.0" AnchorPane.leftAnchor="360.0" />
                                 <Text layoutX="265.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date:" AnchorPane.leftAnchor="320.0" />
-                                <Text fx:id="Title" layoutX="238.0" layoutY="99.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Covid Cases as of Date" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="504.14892578125" AnchorPane.leftAnchor="288.0" AnchorPane.topAnchor="74.85107421875">
-                                    <font>
-                                        <Font size="23.0" />
-                                    </font>
-                                </Text>
                                 <TableView fx:id="covidCasesTable" layoutX="288.0" layoutY="110.0" prefHeight="489.0" prefWidth="650.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="288.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="110.0">
                                     <columns>
                                         <TableColumn fx:id="countryColumn" prefWidth="267.0" text="Country" />
-                                        <TableColumn fx:id="fullyVaccinatedColumn" prefWidth="190.0" text="Total Cases" />
-                                        <TableColumn fx:id="rateOfVaccinationColumn" prefWidth="202.0" text="Total Cases (Per 1M)" />
+                                        <TableColumn fx:id="totalCasesColumn" prefWidth="190.0" text="Total Cases" />
+                                        <TableColumn fx:id="totalCasesPerMillionColumn" prefWidth="202.0" text="Total Cases (Per 1M)" />
                                     </columns>
                                 </TableView>
-                                <Label layoutX="55.0" layoutY="28.0" text="Select Countries" AnchorPane.leftAnchor="80.0">
+                                <Label layoutX="47.0" layoutY="29.0" text="Select Countries" AnchorPane.leftAnchor="47.0">
                                     <font>
                                         <Font size="18.0" />
                                     </font>
                                 </Label>
-                                <TableView fx:id="countrySelectionTable" layoutX="14.0" layoutY="72.0" prefHeight="493.0" prefWidth="270.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="72.0">
+                                <TableView fx:id="countrySelectionTableForTable" layoutX="14.0" layoutY="72.0" prefHeight="493.0" prefWidth="270.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="72.0">
                                     <columns>
-                                        <TableColumn fx:id="countrySelectionColumn" prefWidth="209.0" text="Country" />
-                                        <TableColumn fx:id="checkBoxSelectionColumn" prefWidth="49.0" text="Select" />
+                                        <TableColumn fx:id="countrySelectionColumnForTable" prefWidth="209.0" text="Country" />
+                                        <TableColumn fx:id="checkBoxSelectionColumnForTable" prefWidth="49.0" text="Select" />
                                     </columns></TableView>
                                 <Button fx:id="generateTableButton" layoutX="172.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateTableButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate Table" AnchorPane.bottomAnchor="14.0" />
-                        <Button fx:id="generateVaccinationTableButton" layoutX="658.0" layoutY="27.0" mnemonicParsing="false" onMouseClicked="#generateVaccinationTable" text="Generate" />
-                            </children>
-                        </AnchorPane>
-                    </content>
-                </Tab>
-                <Tab text="Chart">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                            <children>
-                                <Text layoutX="81.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date:" wrappingWidth="29.5078125" AnchorPane.topAnchor="36.8125" />
-                                <Text layoutX="54.0" layoutY="84.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Countries:" />
-                                <DatePicker layoutX="138.0" layoutY="33.0" />
-                                <DatePicker layoutX="382.0" layoutY="33.0" />
-                                <Text layoutX="343.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To" />
-                                <MenuButton layoutX="138.0" layoutY="68.0" mnemonicParsing="false" text="---">
-                                    <items>
-                                        <MenuItem disable="true" mnemonicParsing="false" text="---" />
-                                    </items>
-                                </MenuButton>
-                                <LineChart layoutX="56.0" layoutY="155.0" prefHeight="363.0" prefWidth="688.0">
-                                    <xAxis>
-                                        <CategoryAxis side="BOTTOM" />
-                                    </xAxis>
-                                    <yAxis>
-                                        <NumberAxis side="LEFT" upperBound="90000.0" />
-                                    </yAxis>
-                                </LineChart>
-                                <Text layoutY="132.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cummulative confirmed COVID-19 Cases (per 1M)" textAlignment="CENTER" wrappingWidth="800.0">
+                                <CheckBox fx:id="selectAllForTable" layoutX="207.0" layoutY="32.0" mnemonicParsing="false" onAction="#selectAllForTableClicked" text="Select All" AnchorPane.leftAnchor="207.0" />
+                                <Text fx:id="tableTitle" layoutX="314.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Covid Cases as of Date" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="505.0" AnchorPane.leftAnchor="314.0" AnchorPane.topAnchor="72.0">
                                     <font>
                                         <Font size="23.0" />
                                     </font>
                                 </Text>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="chartTab" text="Chart">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
+                            <children>
+                                <ImageView fx:id="chartHomeImage" fitHeight="71.0" fitWidth="62.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="471.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                    <image>
+                                        <Image url="@../images/home.png" />
+                                    </image>
+                                </ImageView>
+                                <DatePicker fx:id="startDatePicker" layoutX="308.0" layoutY="29.0" AnchorPane.leftAnchor="360.0" />
+                                <Text layoutX="321.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From:" wrappingWidth="44.21484375" AnchorPane.leftAnchor="321.0" />
+                                <Label layoutX="47.0" layoutY="29.0" text="Select Countries" AnchorPane.leftAnchor="47.0">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+                                <TableView fx:id="countrySelectionTableForChart" layoutX="14.0" layoutY="72.0" prefHeight="493.0" prefWidth="270.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="72.0">
+                                    <columns>
+                                        <TableColumn fx:id="countrySelectionColumnForChart" prefWidth="209.0" text="Country" />
+                                        <TableColumn fx:id="checkBoxSelectionColumnForChart" prefWidth="49.0" text="Select" />
+                                    </columns>
+                                </TableView>
+                                <Button fx:id="generateChartButton" layoutX="172.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateChartButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate Chart" AnchorPane.bottomAnchor="14.0" />
+                                <CheckBox fx:id="selectAllForChart" layoutX="207.0" layoutY="32.0" mnemonicParsing="false" onAction="#selectAllForChartClicked" text="Select All" AnchorPane.leftAnchor="207.0" />
+                                <LineChart fx:id="vaccinationRateLineChart" layoutX="288.0" layoutY="83.0" prefHeight="494.0" prefWidth="641.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="288.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="83.0">
+                                    <xAxis>
+                                        <CategoryAxis side="BOTTOM" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis side="LEFT" />
+                                    </yAxis>
+                                </LineChart>
+                                <Text layoutX="586.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" />
+                                <DatePicker fx:id="endDatePicker" layoutX="609.0" layoutY="29.0" />
                             </children>
                         </AnchorPane>
                     </content>
