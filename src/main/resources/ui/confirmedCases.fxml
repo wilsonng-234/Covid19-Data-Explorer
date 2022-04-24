@@ -46,8 +46,8 @@
                         </Label>
                         <TableView fx:id="countrySelectionTableForTable" layoutX="14.0" layoutY="72.0" prefHeight="493.0" prefWidth="270.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="72.0">
                            <columns>
-                              <TableColumn fx:id="countrySelectionColumn" prefWidth="209.0" text="Country" />
-                              <TableColumn fx:id="checkBoxSelectionColumn" prefWidth="49.0" text="Select" />
+                              <TableColumn fx:id="countrySelectionColumnForTable" prefWidth="209.0" text="Country" />
+                              <TableColumn fx:id="checkBoxSelectionColumnForTable" prefWidth="49.0" text="Select" />
                            </columns></TableView>
                         <Button fx:id="generateTableButton" layoutX="172.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateTableButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate Table" AnchorPane.bottomAnchor="14.0" />
                         <CheckBox fx:id="selectAllForTable" layoutX="207.0" layoutY="32.0" mnemonicParsing="false" onAction="#selectAllForTableClicked" text="Select All" AnchorPane.leftAnchor="207.0" />

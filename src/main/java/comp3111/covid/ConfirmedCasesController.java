@@ -59,9 +59,9 @@ public class ConfirmedCasesController implements Initializable {
     @FXML
     private TableView<CountrySelection> countrySelectionTableForTable;
     @FXML
-    private TableColumn<CountrySelection,CheckBox> countrySelectionColumn;
+    private TableColumn<CountrySelection,CheckBox> countrySelectionColumnForTable;
     @FXML
-    private TableColumn<CountrySelection,CheckBox> checkBoxSelectionColumn;
+    private TableColumn<CountrySelection,CheckBox> checkBoxSelectionColumnForTable;
 
     @FXML
     private TableView<CountrySelection> countrySelectionTableForChart;
@@ -122,8 +122,8 @@ public class ConfirmedCasesController implements Initializable {
         );
 
         // initialize countrySelectionTableForTable
-        countrySelectionColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        checkBoxSelectionColumn.setCellValueFactory(new PropertyValueFactory<>("select"));
+        countrySelectionColumnForTable.setCellValueFactory(new PropertyValueFactory<>("name"));
+        checkBoxSelectionColumnForTable.setCellValueFactory(new PropertyValueFactory<>("select"));
 
         Map<String, CountrySelection> countrySelectionRows = getCountrySelectionRows("COVID_Dataset_v1.0.csv");
         List<CountrySelection> countrySelectionList = new ArrayList<>(countrySelectionRows.size());

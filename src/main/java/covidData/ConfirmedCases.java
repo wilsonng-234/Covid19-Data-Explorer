@@ -85,19 +85,25 @@ public class ConfirmedCases extends CovidData {
             String dateRecord = csvRecord.get("date");
             if (dateRecord.equals("")) {
                 System.out.println("empty dateRecord??");
-                continue;
+                throw new IllegalArgumentException();
+                //continue;
             }
 
             String[] dateRecordInfo = dateRecord.trim().split("/");
             LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),
-                    Integer.parseInt(dateRecordInfo[0]),
-                    Integer.parseInt(dateRecordInfo[1]));
+                                                Integer.parseInt(dateRecordInfo[0]),
+                                                Integer.parseInt(dateRecordInfo[1]));
 
             String totalCasesPerMillion = csvRecord.get("total_cases_per_million");
             if (recordDate.isEqual(startDate) || (recordDate.isAfter(startDate) && recordDate.isBefore(endDate)) || recordDate.isEqual(endDate)) {
-                confirmedCasesChart.get(countryName).getData().add(
-                        new XYChart.Data<String, Number>(recordDate.toString(),Double.parseDouble(totalCasesPerMillion))
-                );
+                if (!totalCasesPerMillion.equals("")) {
+                    confirmedCasesChart.get(countryName).getData().add(
+                            new XYChart.Data<String, Number>(recordDate.toString(), Double.parseDouble(totalCasesPerMillion))
+                    );
+                }
+                else{
+
+                }
             }
         }
 
