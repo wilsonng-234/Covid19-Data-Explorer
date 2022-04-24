@@ -1,12 +1,22 @@
-//package CovidData;
-//
-//import org.junit.Test;
-//
-//import static comp3111.covid.DataAnalysis.getConfirmedCases;
-//import static org.junit.Assert.*;
-//import org.junit.Before;
-//
-//public class covidCasesTester {
+package covidData;
+
+import org.junit.Test;
+
+import static comp3111.covid.DataAnalysis.getConfirmedCases;
+import static org.junit.Assert.*;
+import org.junit.Before;
+
+public class covidCasesTester {
+    @Before
+    public void setup(){
+
+    }
+
+    @Test
+    public void test(){
+        System.out.println(Integer.parseInt("01"));
+        assert(true);
+    }
 //	Date date;
 //	int[] targetTotalCases;
 //	double[] targetCasesPerMillion;
@@ -85,6 +95,6 @@
 //		assertTrue(new Date(2022,5,7).isAfter(date));
 //		assertTrue(new Date(2023,4,7).isAfter(date));
 //	}
-//}
-//
-//
+}
+
+

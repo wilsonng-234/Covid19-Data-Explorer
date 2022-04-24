@@ -13,6 +13,8 @@ public class ConfirmedCases extends CovidData {
     private HashMap<String, ConfirmedCasesRecord> confirmedCasesTable;   // key: country location name  value: ConfirmedCasesRecord
     private HashMap<String,XYChart.Series<String,Number>> confirmedCasesChart;   // key: country location name  value : data point <Date,value>
 
+    //private HashMap<String,XYChart.Series<LocalDate,String>> confirmedCasesChart;   // key: country location name  value : data point <LocalDate,String>
+
     public ConfirmedCases(LocalDate date, HashSet<String> countries, String dataset){
         super(date,countries,dataset);
         confirmedCasesTable = new HashMap<>();
@@ -91,8 +93,8 @@ public class ConfirmedCases extends CovidData {
 
             String[] dateRecordInfo = dateRecord.trim().split("/");
             LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),
-                                                Integer.parseInt(dateRecordInfo[0]),
-                                                Integer.parseInt(dateRecordInfo[1]));
+                    Integer.parseInt(dateRecordInfo[0]),
+                    Integer.parseInt(dateRecordInfo[1]));
 
             String totalCasesPerMillion = csvRecord.get("total_cases_per_million");
             if (recordDate.isEqual(startDate) || (recordDate.isAfter(startDate) && recordDate.isBefore(endDate)) || recordDate.isEqual(endDate)) {
@@ -109,4 +111,49 @@ public class ConfirmedCases extends CovidData {
 
         return confirmedCasesChart;
     }
+
+//    public HashMap<String,XYChart.Series<LocalDate, String>> getConfirmedCasesChart() {
+//        assert(startDate.isBefore(endDate) || startDate.equals(endDate));
+//
+//        for (String countryName : countries) {
+//            XYChart.Series<LocalDate, String> series = new XYChart.Series<>();
+//            series.setName(countryName);
+//            confirmedCasesChart.put(countryName, series);
+//        }
+//
+//        for (CSVRecord csvRecord : getFileParser(dataset)) {
+//            String countryName = csvRecord.get("location");
+//            if (!countries.contains(countryName))
+//                continue;
+//
+//            String dateRecord = csvRecord.get("date");
+//            if (dateRecord.equals("")) {
+//                System.out.println("empty dateRecord??");
+//                throw new IllegalArgumentException();
+//                //continue;
+//            }
+//
+//            String[] dateRecordInfo = dateRecord.trim().split("/");
+//            LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),
+//                                                Integer.parseInt(dateRecordInfo[0]),
+//                                                Integer.parseInt(dateRecordInfo[1]));
+//
+//            String totalCasesPerMillion = csvRecord.get("total_cases_per_million");
+//
+//            if (recordDate.isEqual(startDate) || (recordDate.isAfter(startDate) && recordDate.isBefore(endDate)) || recordDate.isEqual(endDate)) {
+//                if (!totalCasesPerMillion.equals("")) {
+//                    confirmedCasesChart.get(countryName).getData().add(
+//                            new XYChart.Data<LocalDate, String>(recordDate, totalCasesPerMillion)
+//                    );
+//                }
+//                else{
+//                    confirmedCasesChart.get(countryName).getData().add(
+//                            new XYChart.Data<LocalDate, String>(recordDate, NOT_FOUND)
+//                    );
+//                }
+//            }
+//        }
+//
+//        return confirmedCasesChart;
+//    }
 }

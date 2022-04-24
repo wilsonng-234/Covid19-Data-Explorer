@@ -1,17 +1,7 @@
 package comp3111.covid;
 
-import covidData.CountrySelection;
 //import covidData.VaccinationRate;
-import covidData.VaccinationRateTable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 //import javafx.scene.control.*;
 //import javafx.scene.control.cell.PropertyValueFactory;
 //import javafx.scene.image.ImageView;

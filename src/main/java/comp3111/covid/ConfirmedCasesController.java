@@ -3,6 +3,7 @@ package comp3111.covid;
 import covidData.ConfirmedCases;
 import covidData.ConfirmedCasesRecord;
 import covidData.CountrySelection;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -94,6 +95,10 @@ public class ConfirmedCasesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tableTitle.wrappingWidthProperty().bind(
+                covidCasesTable.widthProperty()
+        );
+
         // datePicker get date
         datePickerForTable.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
@@ -206,24 +211,22 @@ public class ConfirmedCasesController implements Initializable {
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
         totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("totalCases"));
         totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory<>("totalCasesPerMillion"));
+        countryColumn.prefWidthProperty().bind(
+                covidCasesTable.widthProperty().divide(3.0)
+        );
+        totalCasesColumn.prefWidthProperty().bind(
+                covidCasesTable.widthProperty().divide(3.0)
+        );
+        totalCasesPerMillionColumn.prefWidthProperty().bind(
+                covidCasesTable.widthProperty().divide(3.0)
+        );
 
         // initialize confirmedCaseesLineChart
-        XYChart.Series<String,Number> series = new XYChart.Series<>();
-
-        series.setName("Hong Kong");
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,15).toString(),100));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,16).toString(),105));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,17).toString(),109));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,18).toString(),1005));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,19).toString(),1005));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,20).toString(),1006));
 
         confirmedCasesLineChart.getXAxis().setLabel("Date");
         confirmedCasesLineChart.getYAxis().setLabel("Number of Cases");
         confirmedCasesLineChart.setTitle("Title");
-
         confirmedCasesLineChart.setCreateSymbols(false);
-        confirmedCasesLineChart.getData().add(series);
 
         // tableTab onclick
         tableTab.setOnSelectionChanged(
@@ -283,7 +286,7 @@ public class ConfirmedCasesController implements Initializable {
             covidCasesTable.getItems().add(confirmedCasesRecord);
         }
 
-        System.out.println(numberFormat.format(123456.123456));
+        System.out.println(tableTitle.wrappingWidthProperty());
     }
 
     @FXML
@@ -358,6 +361,87 @@ public class ConfirmedCasesController implements Initializable {
             confirmedCasesLineChart.getData().add(confirmedCasesHashMap.get(countryName));
         }
     }
+
+//    @FXML
+//    void generateChartButtonClicked(ActionEvent event) {
+//        Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);
+//
+//        if (startDate == null && endDate == null){
+//            invalidDateAlert.setTitle("BOTH DATE NOT CHOSEN");
+//            invalidDateAlert.setContentText("Please choose the start date and end date first");
+//
+//            invalidDateAlert.showAndWait().ifPresent(
+//                    new Consumer<ButtonType>() {
+//                        @Override
+//                        public void accept(ButtonType buttonType) {
+//                        }
+//                    }
+//            );
+//            return;
+//        }
+//        if (startDate == null){
+//            invalidDateAlert.setTitle("START DATE NOT CHOSEN");
+//            invalidDateAlert.setContentText("Please choose the start date first");
+//
+//            invalidDateAlert.showAndWait().ifPresent(
+//                    new Consumer<ButtonType>() {
+//                        @Override
+//                        public void accept(ButtonType buttonType) {
+//                        }
+//                    }
+//            );
+//            return;
+//        }
+//        if (endDate == null){
+//            invalidDateAlert.setTitle("END DATE NOT CHOSEN");
+//            invalidDateAlert.setContentText("Please choose the end date first");
+//
+//            invalidDateAlert.showAndWait().ifPresent(
+//                    new Consumer<ButtonType>() {
+//                        @Override
+//                        public void accept(ButtonType buttonType) {
+//                        }
+//                    }
+//            );
+//            return;
+//        }
+//        if (startDate.isAfter(endDate)){
+//            invalidDateAlert.setTitle("INVALID DATE INPUT");
+//            invalidDateAlert.setContentText("start date cannot be after end date!!");
+//
+//            invalidDateAlert.showAndWait().ifPresent(
+//                    new Consumer<ButtonType>() {
+//                        @Override
+//                        public void accept(ButtonType buttonType) {
+//                        }
+//                    }
+//            );
+//            return;
+//        }
+//
+//        // update covidCasesChart
+//        Map<String,LocalDate> countriesNotFound = new HashMap<>();
+//
+//        confirmedCasesLineChart.getData().removeAll(confirmedCasesLineChart.getData());
+//
+//        ConfirmedCases confirmedCases = new ConfirmedCases(startDate,endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
+//
+//        HashMap<String,XYChart.Series<LocalDate,String>> confirmedCasesHashMap = confirmedCases.getConfirmedCasesChart();
+//
+//        for (String countryName : selectedCountriesForChart){
+//            XYChart.Series<LocalDate, String> series = confirmedCasesHashMap.get(countryName);
+//
+//            String value = series.getData().get(0).getYValue();
+//
+//            if (value.equals(NOT_FOUND)) {
+//                confirmedCasesLineChart.getData().add(series);
+//            }
+//            else{
+//                //if (!countriesNotFound.containsKey(countryName))
+//                    //countriesNotFound.put(countryName,LocalDate.)
+//            }
+//        }
+//    }
 
     @FXML
     private ImageView tableHomeImage;
