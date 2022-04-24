@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -14,26 +15,38 @@
             <Image url="@../images/home.png" />
          </image>
       </ImageView>
-      <HBox layoutX="125.0" layoutY="282.0" prefHeight="153.0" prefWidth="550.0" AnchorPane.bottomAnchor="165.0" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="125.0" AnchorPane.topAnchor="300.0">
+      <HBox layoutX="125.0" layoutY="282.0" prefHeight="153.0" prefWidth="550.0" AnchorPane.bottomAnchor="165.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="125.0" AnchorPane.topAnchor="300.0">
          <children>
-            <ImageView fx:id="ConfirmedCasesIcon" fitHeight="119.0" fitWidth="200.0" onMouseClicked="#switchToConfirmedCasesScene" pickOnBounds="true" preserveRatio="true" scaleY="1.4" translateY="30.0">
+            <ImageView fx:id="ConfirmedCasesIcon" fitHeight="171.0" fitWidth="150.0" onMouseClicked="#switchToConfirmedCasesScene" pickOnBounds="true" preserveRatio="true" scaleX="0.7" scaleY="0.7">
                <image>
-                  <Image url="@../images/virus_icon.jpg" />
+                  <Image url="@../images/virus_icon.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="DeathCasesIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToDeathCasesScene" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="DeathCasesIcon" fitHeight="143.0" fitWidth="150.0" onMouseClicked="#switchToDeathCasesScene" pickOnBounds="true" preserveRatio="true" scaleX="1.1" scaleY="1.1">
                <image>
                   <Image url="@../images/death_icon.jpg" />
                </image>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
             </ImageView>
-            <ImageView fx:id="VaccinationIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToRateOfVaccinationScene" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="VaccinationIcon" fitHeight="137.0" fitWidth="185.0" onMouseClicked="#switchToRateOfVaccinationScene" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../images/vaccination_icon.png" />
                </image>
+               <HBox.margin>
+                  <Insets left="-10.0" />
+               </HBox.margin>
             </ImageView>
          </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets left="25.0" />
+         </padding>
       </HBox>
-      <HBox layoutX="168.0" layoutY="435.0" prefHeight="38.0" prefWidth="468.0" spacing="70.0" AnchorPane.bottomAnchor="127.0" AnchorPane.leftAnchor="168.0" AnchorPane.rightAnchor="164.0" AnchorPane.topAnchor="440.0">
+      <HBox layoutX="168.0" layoutY="435.0" prefHeight="38.0" prefWidth="468.0" spacing="45.0" AnchorPane.bottomAnchor="127.0" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="164.0" AnchorPane.topAnchor="440.0">
          <children>
             <Label text="Confirmed Cases">
                <font>
@@ -44,11 +57,20 @@
                <font>
                   <Font size="14.0" />
                </font>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
             </Label>
             <Label text="Vaccination" translateX="33.0">
                <font>
                   <Font size="14.0" />
                </font>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
             </Label>
          </children>
       </HBox>
