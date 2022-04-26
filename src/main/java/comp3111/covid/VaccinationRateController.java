@@ -238,10 +238,10 @@ public class VaccinationRateController implements Initializable {
             public String toString(final Number object) {
                 long longValue = object.longValue();
                 LocalDate date = LocalDate.ofEpochDay(longValue);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM uuuu");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
                 return date.format(formatter);
             }
-        };);
+        });
         chartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYAxis, null, "%"));
 //        vaccinationRateLineChart.getData().add(series);
 
