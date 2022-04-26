@@ -14,8 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
@@ -28,6 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -41,6 +41,8 @@ public class VaccinationRateController implements Initializable {
     private Tab tableTab;
     @FXML
     private Tab chartTab;
+    @FXML
+    public Tab relationTab;
 
     // datePicker
     @FXML
@@ -86,7 +88,11 @@ public class VaccinationRateController implements Initializable {
 
     // covidCasesLineChart
     @FXML
-    private LineChart<String,Number> vaccinationRateLineChart;
+    private LineChart<Number,Number> vaccinationRateLineChart;
+    @FXML
+    public NumberAxis chartXAxis;
+    @FXML
+    public NumberAxis chartYAxis;
     // -----------
 
     HashSet<String> selectedCountriesForTable = new HashSet<>();
@@ -207,23 +213,38 @@ public class VaccinationRateController implements Initializable {
         totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("fullyVaccinated"));
         totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory<>("rateOfVaccination"));
 
-        // initialize confirmedCaseesLineChart
-        XYChart.Series<String,Number> series = new XYChart.Series<>();
-
-        series.setName("Hong Kong");
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,15).toString(),100));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,16).toString(),105));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,17).toString(),109));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,18).toString(),1005));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,19).toString(),1005));
-        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,20).toString(),1006));
-
-        vaccinationRateLineChart.getXAxis().setLabel("Date");
-        vaccinationRateLineChart.getYAxis().setLabel("Number of Cases");
-        vaccinationRateLineChart.setTitle("Title");
+        // initialize Chart
+//        XYChart.Series<String,Number> series = new XYChart.Series<>();
+//
+//        series.setName("Hong Kong");
+//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,15).toString(),100));
+//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,16).toString(),105));
+//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,17).toString(),109));
+//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,18).toString(),1005));
+//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,19).toString(),1005));
+//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,20).toString(),1006));
+//
+//        vaccinationRateLineChart.getXAxis().setLabel("Date");
+//        vaccinationRateLineChart.getYAxis().setLabel("Number of Cases");
+//        vaccinationRateLineChart.setTitle("Title");
+        LocalDate sd = LocalDate.of(2020, 12, 27);
+        LocalDate ed = LocalDate.of(2021, 7, 20);
+        startDatePicker.setValue(sd);
+        endDatePicker.setValue(ed);
 
         vaccinationRateLineChart.setCreateSymbols(false);
-        vaccinationRateLineChart.getData().add(series);
+        chartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXAxis) {
+            @Override
+            public String toString(final Number object) {
+                long longValue = object.longValue();
+                LocalDate date = LocalDate.ofEpochDay(longValue);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM uuuu");
+                return date.format(formatter);
+            }
+        };);
+        chartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYAxis, null, "%"));
+//        vaccinationRateLineChart.getData().add(series);
+
 
         // tableTab onclick
         tableTab.setOnSelectionChanged(
@@ -347,13 +368,15 @@ public class VaccinationRateController implements Initializable {
         }
 
         // update covidCasesChart
+//        chartXAxis.setLowerBound(iStartDate.toEpochDay());
+//        chartXAxis.setUpperBound(iEndDate.toEpochDay());
 
-        vaccinationRateLineChart.getData().removeAll(vaccinationRateLineChart.getData());
-
-        VaccinationRate confirmedCases = new VaccinationRate(startDate,endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
-
-        HashMap<String,XYChart.Series<String,Number>> vaccinationRateHashMap = confirmedCases.getVaccinationRateChart();
-
+        vaccinationRateLineChart.getData().clear();
+        chartXAxis.setAutoRanging(false);
+        chartXAxis.setLowerBound(startDate.toEpochDay());
+        chartXAxis.setUpperBound(endDate.toEpochDay());
+        VaccinationRate confirmedCases = new VaccinationRate(startDate, endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
+        HashMap<String,XYChart.Series<Number,Number>> vaccinationRateHashMap = confirmedCases.getVaccinationRateChart();
         for (String countryName : selectedCountriesForChart){
             vaccinationRateLineChart.getData().add(vaccinationRateHashMap.get(countryName));
         }

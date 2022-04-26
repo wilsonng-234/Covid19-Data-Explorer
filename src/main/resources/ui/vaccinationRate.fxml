@@ -3,6 +3,8 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.chart.StackedAreaChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -19,7 +21,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="664.0" minWidth="950.0" prefHeight="664.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.VaccinationRateController">
     <children>
-        <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
                 <Tab fx:id="tableTab" text="Table">
                     <content>
@@ -84,12 +86,12 @@
                                 </TableView>
                                 <Button fx:id="generateChartButton" layoutX="172.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateChartButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate Chart" AnchorPane.bottomAnchor="14.0" />
                                 <CheckBox fx:id="selectAllForChart" layoutX="207.0" layoutY="32.0" mnemonicParsing="false" onAction="#selectAllForChartClicked" text="Select All" AnchorPane.leftAnchor="207.0" />
-                                <LineChart fx:id="vaccinationRateLineChart" layoutX="288.0" layoutY="83.0" prefHeight="494.0" prefWidth="641.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="288.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="83.0">
+                                <LineChart fx:id="vaccinationRateLineChart" animated="false" layoutX="288.0" layoutY="83.0" prefHeight="494.0" prefWidth="641.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="288.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="83.0">
                                     <xAxis>
-                                        <CategoryAxis side="BOTTOM" />
+                                        <NumberAxis fx:id="chartXAxis" side="BOTTOM" />
                                     </xAxis>
                                     <yAxis>
-                                        <NumberAxis side="LEFT" />
+                                        <NumberAxis fx:id="chartYAxis" side="LEFT" />
                                     </yAxis>
                                 </LineChart>
                                 <Text layoutX="586.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" />
@@ -98,6 +100,30 @@
                         </AnchorPane>
                     </content>
                 </Tab>
+            <Tab fx:id="relationTab" text="Relation">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <StackedAreaChart fx:id="lr" layoutX="492.0" layoutY="110.0" prefHeight="213.0" prefWidth="290.0">
+                          <xAxis>
+                            <NumberAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </StackedAreaChart>
+                        <ScatterChart fx:id="lrsc" layoutY="46.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </ScatterChart>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
             </tabs>
         </TabPane>
     </children>

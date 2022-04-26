@@ -11,7 +11,7 @@ import static comp3111.covid.DataAnalysis.getFileParser;
 
 public class VaccinationRate extends CovidData {
 	private HashMap<String, VaccinationRateRecord> vaccinationRateTable;
-    private HashMap<String, XYChart.Series<String, Number>>  vaccinationRateChart;
+    private HashMap<String, XYChart.Series<Number, Number>>  vaccinationRateChart;
 
 	public VaccinationRate(LocalDate date, HashSet<String> countries, String dataset) {
 		super(date, countries, dataset);
@@ -24,7 +24,7 @@ public class VaccinationRate extends CovidData {
     }
 
 
-
+    // table
 	public HashMap<String, VaccinationRateRecord> getVaccinationRateTable() {
         final String NOT_FOUND = "NOT FOUND";
 
@@ -70,12 +70,12 @@ public class VaccinationRate extends CovidData {
 		return vaccinationRateTable;
 	}
 
-
-    public HashMap<String, XYChart.Series<String, Number>> getVaccinationRateChart() {
+    // chart
+    public HashMap<String, XYChart.Series<Number, Number>> getVaccinationRateChart() {
         assert (startDate.isBefore(endDate) || startDate.equals(endDate));
 
         for (String country : countries) {
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
             series.setName(country);
             vaccinationRateChart.put(country, series);
         }
@@ -87,25 +87,13 @@ public class VaccinationRate extends CovidData {
 
             //String countryISO = csvRecord.get("iso_code");
             String dateRecord = csvRecord.get("date");
-            if (dateRecord.equals("")) {
-                System.out.println("empty dateRecord??");
-                throw new IllegalArgumentException();
-                //continue;
-            }
-
-            LocalDate recordDate = LocalDate.of(
-                    Integer.parseInt(dateRecord.trim().split("/")[2]),
-                    Integer.parseInt(dateRecord.trim().split("/")[0]),
-                    Integer.parseInt(dateRecord.trim().split("/")[1]));
-
+            if (dateRecord.equals("")) continue;
+            LocalDate recordDate = LocalDate.parse(csvRecord.get("date"), datasetFormatter);
             String rateOfVaccination = csvRecord.get("people_fully_vaccinated_per_hundred");
-
-
-            if ((recordDate.isAfter(startDate) || recordDate.equals(startDate)) &&
-                    (recordDate.isBefore(endDate) || recordDate.equals(endDate))) {
+            if (!recordDate.isBefore(startDate) && !recordDate.isAfter(endDate)) {
                 if (!rateOfVaccination.equals("")) {
                     vaccinationRateChart.get(countryName).getData().add(
-                            new XYChart.Data<>(recordDate.toString(), Float.parseFloat(rateOfVaccination))
+                            new XYChart.Data<>(recordDate.toEpochDay(), Float.parseFloat(rateOfVaccination))
                     );
                 } else {
 
