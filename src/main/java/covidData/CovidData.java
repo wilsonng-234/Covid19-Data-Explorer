@@ -1,14 +1,7 @@
 package covidData;
 
-import org.apache.commons.csv.CSVRecord;
-
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-
-import static comp3111.covid.DataAnalysis.getFileParser;
 
 public abstract class CovidData {
     protected LocalDate startDate;
