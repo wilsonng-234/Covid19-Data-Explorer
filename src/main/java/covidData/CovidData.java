@@ -1,14 +1,8 @@
 package covidData;
 
-import org.apache.commons.csv.CSVRecord;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-
-import static comp3111.covid.DataAnalysis.getFileParser;
 
 public abstract class CovidData {
     protected LocalDate startDate;
@@ -16,7 +10,7 @@ public abstract class CovidData {
     protected String dataset;
     protected HashSet<String> countries;
 
-//    static final DateTimeFormatter datasetFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    static final DateTimeFormatter datasetFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     protected CovidData(LocalDate date, HashSet<String> countries, String dataset){
         this.startDate = this.endDate = date;
