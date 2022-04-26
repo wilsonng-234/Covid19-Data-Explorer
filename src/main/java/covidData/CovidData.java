@@ -1,6 +1,7 @@
 package covidData;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 
 public abstract class CovidData {
@@ -9,7 +10,7 @@ public abstract class CovidData {
     protected String dataset;
     protected HashSet<String> countries;
 
-//    static final DateTimeFormatter datasetFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    static final DateTimeFormatter datasetFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     protected CovidData(LocalDate date, HashSet<String> countries, String dataset){
         this.startDate = this.endDate = date;
