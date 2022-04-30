@@ -46,6 +46,7 @@ public class MyApplication extends Application {
     	loader.setLocation(getClass().getResource(UI_FILE));
    		AnchorPane root = (AnchorPane) loader.load();
    		Scene scene =  new Scene(root);
+		stage.setMinWidth(960); stage.setMinHeight(664);
    		stage.setScene(scene);
    		stage.setTitle("Lovelive Superstar Liella : Data Explorer on COVID-19");
 
