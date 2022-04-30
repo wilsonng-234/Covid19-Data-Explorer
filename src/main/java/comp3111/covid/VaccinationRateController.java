@@ -421,6 +421,12 @@ public class VaccinationRateController implements Initializable {
             for (XYChart.Data<Number,Number> data : series.getData()) {
 
 //                data.getNode().setVisible(false);
+                data.getNode().setStyle("""
+                        -fx-background-color: transparent, transparent;
+                        -fx-background-insets: 0, 2;
+                        -fx-background-radius: 5px;
+                        -fx-padding: 5px;""");
+
                 data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, event1 -> {
                     updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MMMM-yyyy");
