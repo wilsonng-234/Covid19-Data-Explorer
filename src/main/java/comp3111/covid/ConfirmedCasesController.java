@@ -1,8 +1,9 @@
 package comp3111.covid;
 
-import covidData.VaccinationRate;
+import covidData.ConfirmedCases;
+import covidData.ConfirmedCasesRecord;
 import covidData.CountrySelection;
-import covidData.VaccinationRateRecord;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -14,15 +15,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.*;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.csv.CSVRecord;
@@ -31,22 +29,19 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 
 import static comp3111.covid.DataAnalysis.getFileParser;
-import static covidData.VaccinationRateRecord.NOT_FOUND;
+import static covidData.ConfirmedCasesRecord.NOT_FOUND;
 
-public class VaccinationRateController implements Initializable {
+public class ConfirmedCasesController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
 
     @FXML
     private Tab tableTab;
     @FXML
     private Tab chartTab;
-    @FXML
-    public Tab relationTab;
 
     // datePicker
     @FXML
@@ -81,22 +76,18 @@ public class VaccinationRateController implements Initializable {
     @FXML
     private Text tableTitle;
     @FXML
-    private TableView<VaccinationRateRecord> covidCasesTable;
+    private TableView<ConfirmedCasesRecord> covidCasesTable;
     @FXML
-    private TableColumn<VaccinationRateRecord,String> countryColumn;
+    private TableColumn<ConfirmedCasesRecord,String> countryColumn;
     @FXML
-    private TableColumn<VaccinationRateRecord,String> totalCasesColumn;
+    private TableColumn<ConfirmedCasesRecord,String> totalCasesColumn;
     @FXML
-    private TableColumn<VaccinationRateRecord,String> totalCasesPerMillionColumn;
+    private TableColumn<ConfirmedCasesRecord,String> totalCasesPerMillionColumn;
     // -----------
 
     // covidCasesLineChart
     @FXML
-    private LineChart<Number,Number> vaccinationRateLineChart;
-    @FXML
-    public NumberAxis chartXAxis;
-    @FXML
-    public NumberAxis chartYAxis;
+    private LineChart<String,Number> confirmedCasesLineChart;
     // -----------
 
     HashSet<String> selectedCountriesForTable = new HashSet<>();
@@ -107,6 +98,7 @@ public class VaccinationRateController implements Initializable {
         tableTitle.wrappingWidthProperty().bind(
                 covidCasesTable.widthProperty()
         );
+
         // datePicker get date
         datePickerForTable.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
@@ -217,9 +209,8 @@ public class VaccinationRateController implements Initializable {
         }
         // initialize covidCasesTable
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
-        totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("fullyVaccinated"));
-        totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory<>("rateOfVaccination"));
-
+        totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("totalCases"));
+        totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory<>("totalCasesPerMillion"));
         countryColumn.prefWidthProperty().bind(
                 covidCasesTable.widthProperty().divide(3.0)
         );
@@ -230,38 +221,12 @@ public class VaccinationRateController implements Initializable {
                 covidCasesTable.widthProperty().divide(3.0)
         );
 
-        // initialize Chart
-//        XYChart.Series<String,Number> series = new XYChart.Series<>();
-//
-//        series.setName("Hong Kong");
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,15).toString(),100));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,16).toString(),105));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,17).toString(),109));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,18).toString(),1005));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,19).toString(),1005));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,20).toString(),1006));
-//
-//        vaccinationRateLineChart.getXAxis().setLabel("Date");
-//        vaccinationRateLineChart.getYAxis().setLabel("Number of Cases");
-//        vaccinationRateLineChart.setTitle("Title");
-        LocalDate sd = LocalDate.of(2020, 12, 27);
-        LocalDate ed = LocalDate.of(2021, 7, 20);
-        startDatePicker.setValue(sd);
-        endDatePicker.setValue(ed);
+        // initialize confirmedCaseesLineChart
 
-
-        chartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXAxis) {
-            @Override
-            public String toString(final Number object) {
-                long longValue = object.longValue();
-                LocalDate date = LocalDate.ofEpochDay(longValue);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MMMM-yyyy");
-                return date.format(formatter);
-            }
-        });
-        chartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYAxis, null, "%"));
-//        vaccinationRateLineChart.getData().add(series);
-
+        confirmedCasesLineChart.getXAxis().setLabel("Date");
+        confirmedCasesLineChart.getYAxis().setLabel("Number of Cases");
+        confirmedCasesLineChart.setTitle("Title");
+        confirmedCasesLineChart.setCreateSymbols(false);
 
         // tableTab onclick
         tableTab.setOnSelectionChanged(
@@ -303,8 +268,8 @@ public class VaccinationRateController implements Initializable {
         // update covidCasesTable
         covidCasesTable.getItems().removeAll(covidCasesTable.getItems());
 
-        VaccinationRate vaccinationRate = new VaccinationRate(dateForTable, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
-        HashMap<String, VaccinationRateRecord> vaccinationRateHashMap = vaccinationRate.getVaccinationRateTable();
+        ConfirmedCases confirmedCases = new ConfirmedCases(dateForTable, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
+        HashMap<String, ConfirmedCasesRecord> confirmedCasesHashMap = confirmedCases.getconfirmedCasesTable();
 
         List<String> sortedSelectedCountriesList = new ArrayList<>(selectedCountriesForTable.size());
         for (String countryName : selectedCountriesForTable)
@@ -313,21 +278,19 @@ public class VaccinationRateController implements Initializable {
 
         NumberFormat numberFormat = NumberFormat.getInstance();
         for (String countryName : sortedSelectedCountriesList) {
-            VaccinationRateRecord vaccinationRateRecord = vaccinationRateHashMap.get(countryName);
-            if (!vaccinationRateRecord.getFullyVaccinated().equals(NOT_FOUND))
-                vaccinationRateRecord.setFullyVaccinated(numberFormat.format(Integer.parseInt(vaccinationRateRecord.getFullyVaccinated())));
-            if (!vaccinationRateRecord.getFullyVaccinated().equals(NOT_FOUND))
-                vaccinationRateRecord.setRateOfVaccination(numberFormat.format(Double.parseDouble(vaccinationRateRecord.getRateOfVaccination())));
-            covidCasesTable.getItems().add(vaccinationRateRecord);
+            ConfirmedCasesRecord confirmedCasesRecord = confirmedCasesHashMap.get(countryName);
+            if (!confirmedCasesRecord.getTotalCases().equals(NOT_FOUND))
+                confirmedCasesRecord.setTotalCases(numberFormat.format(Integer.parseInt(confirmedCasesRecord.getTotalCases())));
+            if (!confirmedCasesRecord.getTotalCasesPerMillion().equals(NOT_FOUND))
+                confirmedCasesRecord.setTotalCasesPerMillion(numberFormat.format(Double.parseDouble(confirmedCasesRecord.getTotalCasesPerMillion())));
+            covidCasesTable.getItems().add(confirmedCasesRecord);
         }
 
-        System.out.println(numberFormat.format(123456.123456));
+        System.out.println(tableTitle.wrappingWidthProperty());
     }
 
     @FXML
     private Button generateChartButton;
-    @FXML
-    private Label lbl;
 
     @FXML
     void generateChartButtonClicked(ActionEvent event) {
@@ -387,59 +350,98 @@ public class VaccinationRateController implements Initializable {
         }
 
         // update covidCasesChart
-//        chartXAxis.setLowerBound(iStartDate.toEpochDay());
-//        chartXAxis.setUpperBound(iEndDate.toEpochDay());
 
-        vaccinationRateLineChart.getData().clear();
-        chartXAxis.setAutoRanging(false);
-        chartXAxis.setLowerBound(startDate.toEpochDay());
-        chartXAxis.setUpperBound(endDate.toEpochDay());
-        VaccinationRate confirmedCases = new VaccinationRate(startDate, endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
-        HashMap<String,XYChart.Series<Number,Number>> vaccinationRateHashMap = confirmedCases.getVaccinationRateChart();
+        confirmedCasesLineChart.getData().removeAll(confirmedCasesLineChart.getData());
+
+        ConfirmedCases confirmedCases = new ConfirmedCases(startDate,endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
+
+        HashMap<String,XYChart.Series<String,Number>> confirmedCasesHashMap = confirmedCases.getConfirmedCasesChart();
+
         for (String countryName : selectedCountriesForChart){
-            vaccinationRateLineChart.getData().add(vaccinationRateHashMap.get(countryName));
-        }
-
-        Collection<XYChart.Series<Number,Number>> seriesList = vaccinationRateHashMap.values();
-        List<XYChart.Series<Number,Number>> vaccinationRateList = new ArrayList<>(seriesList);
-
-        // add event handler to every node in lines
-        for(XYChart.Series<Number,Number> series : seriesList){
-            //Setup for hovering on series (cleaner)
-            Path seriesPath = (Path) series.getNode();
-            double initialStrokeWidth = seriesPath.getStrokeWidth();
-
-            seriesPath.setOnMouseEntered(e -> {
-                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
-                lbl.setText(series.getName() + "\n " + "\n ");
-            });
-            seriesPath.setOnMouseExited(e -> {
-                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
-                lbl.setText("");
-            });
-
-            for (XYChart.Data<Number,Number> data : series.getData()) {
-
-//                data.getNode().setVisible(false);
-                data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, event1 -> {
-                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MMMM-yyyy");
-                    lbl.setText(series.getName()+ "\n" + "Date : " + LocalDate.ofEpochDay((Long) data.getXValue()).format(formatter) + "\nRate : " + data.getYValue() + "%");
-                });
-                data.getNode().addEventHandler(MouseEvent.MOUSE_EXITED, event2 -> {
-                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
-                    lbl.setText("");
-                });
-            }
+            confirmedCasesLineChart.getData().add(confirmedCasesHashMap.get(countryName));
         }
     }
 
-    private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
-        seriesPath.setStroke(strokeColor);
-        seriesPath.setStrokeWidth(strokeWidth);
-        if(!toFront){ return; }
-        seriesPath.toFront();
-    }
+//    @FXML
+//    void generateChartButtonClicked(ActionEvent event) {
+//        Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);
+//
+//        if (startDate == null && endDate == null){
+//            invalidDateAlert.setTitle("BOTH DATE NOT CHOSEN");
+//            invalidDateAlert.setContentText("Please choose the start date and end date first");
+//
+//            invalidDateAlert.showAndWait().ifPresent(
+//                    new Consumer<ButtonType>() {
+//                        @Override
+//                        public void accept(ButtonType buttonType) {
+//                        }
+//                    }
+//            );
+//            return;
+//        }
+//        if (startDate == null){
+//            invalidDateAlert.setTitle("START DATE NOT CHOSEN");
+//            invalidDateAlert.setContentText("Please choose the start date first");
+//
+//            invalidDateAlert.showAndWait().ifPresent(
+//                    new Consumer<ButtonType>() {
+//                        @Override
+//                        public void accept(ButtonType buttonType) {
+//                        }
+//                    }
+//            );
+//            return;
+//        }
+//        if (endDate == null){
+//            invalidDateAlert.setTitle("END DATE NOT CHOSEN");
+//            invalidDateAlert.setContentText("Please choose the end date first");
+//
+//            invalidDateAlert.showAndWait().ifPresent(
+//                    new Consumer<ButtonType>() {
+//                        @Override
+//                        public void accept(ButtonType buttonType) {
+//                        }
+//                    }
+//            );
+//            return;
+//        }
+//        if (startDate.isAfter(endDate)){
+//            invalidDateAlert.setTitle("INVALID DATE INPUT");
+//            invalidDateAlert.setContentText("start date cannot be after end date!!");
+//
+//            invalidDateAlert.showAndWait().ifPresent(
+//                    new Consumer<ButtonType>() {
+//                        @Override
+//                        public void accept(ButtonType buttonType) {
+//                        }
+//                    }
+//            );
+//            return;
+//        }
+//
+//        // update covidCasesChart
+//        Map<String,LocalDate> countriesNotFound = new HashMap<>();
+//
+//        confirmedCasesLineChart.getData().removeAll(confirmedCasesLineChart.getData());
+//
+//        ConfirmedCases confirmedCases = new ConfirmedCases(startDate,endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
+//
+//        HashMap<String,XYChart.Series<LocalDate,String>> confirmedCasesHashMap = confirmedCases.getConfirmedCasesChart();
+//
+//        for (String countryName : selectedCountriesForChart){
+//            XYChart.Series<LocalDate, String> series = confirmedCasesHashMap.get(countryName);
+//
+//            String value = series.getData().get(0).getYValue();
+//
+//            if (value.equals(NOT_FOUND)) {
+//                confirmedCasesLineChart.getData().add(series);
+//            }
+//            else{
+//                //if (!countriesNotFound.containsKey(countryName))
+//                    //countriesNotFound.put(countryName,LocalDate.)
+//            }
+//        }
+//    }
 
     @FXML
     private ImageView tableHomeImage;
