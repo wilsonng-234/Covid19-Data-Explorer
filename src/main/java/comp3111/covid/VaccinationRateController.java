@@ -19,6 +19,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.csv.CSVRecord;
@@ -100,6 +104,9 @@ public class VaccinationRateController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tableTitle.wrappingWidthProperty().bind(
+                covidCasesTable.widthProperty()
+        );
         // datePicker get date
         datePickerForTable.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
@@ -213,6 +220,16 @@ public class VaccinationRateController implements Initializable {
         totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("fullyVaccinated"));
         totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory<>("rateOfVaccination"));
 
+        countryColumn.prefWidthProperty().bind(
+                covidCasesTable.widthProperty().divide(3.0)
+        );
+        totalCasesColumn.prefWidthProperty().bind(
+                covidCasesTable.widthProperty().divide(3.0)
+        );
+        totalCasesPerMillionColumn.prefWidthProperty().bind(
+                covidCasesTable.widthProperty().divide(3.0)
+        );
+
         // initialize Chart
 //        XYChart.Series<String,Number> series = new XYChart.Series<>();
 //
@@ -232,13 +249,13 @@ public class VaccinationRateController implements Initializable {
         startDatePicker.setValue(sd);
         endDatePicker.setValue(ed);
 
-        vaccinationRateLineChart.setCreateSymbols(false);
+
         chartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXAxis) {
             @Override
             public String toString(final Number object) {
                 long longValue = object.longValue();
                 LocalDate date = LocalDate.ofEpochDay(longValue);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MMMM-yyyy");
                 return date.format(formatter);
             }
         });
@@ -309,6 +326,8 @@ public class VaccinationRateController implements Initializable {
 
     @FXML
     private Button generateChartButton;
+    @FXML
+    private Label lbl;
 
     @FXML
     void generateChartButtonClicked(ActionEvent event) {
@@ -380,6 +399,46 @@ public class VaccinationRateController implements Initializable {
         for (String countryName : selectedCountriesForChart){
             vaccinationRateLineChart.getData().add(vaccinationRateHashMap.get(countryName));
         }
+
+        Collection<XYChart.Series<Number,Number>> seriesList = vaccinationRateHashMap.values();
+        List<XYChart.Series<Number,Number>> vaccinationRateList = new ArrayList<>(seriesList);
+
+        // add event handler to every node in lines
+        for(XYChart.Series<Number,Number> series : seriesList){
+            //Setup for hovering on series (cleaner)
+            Path seriesPath = (Path) series.getNode();
+            double initialStrokeWidth = seriesPath.getStrokeWidth();
+
+            seriesPath.setOnMouseEntered(e -> {
+                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
+                lbl.setText(series.getName() + "\n " + "\n ");
+            });
+            seriesPath.setOnMouseExited(e -> {
+                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
+                lbl.setText("");
+            });
+
+            for (XYChart.Data<Number,Number> data : series.getData()) {
+
+//                data.getNode().setVisible(false);
+                data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, event1 -> {
+                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-MMMM-yyyy");
+                    lbl.setText(series.getName()+ "\n" + "Date : " + LocalDate.ofEpochDay((Long) data.getXValue()).format(formatter) + "\nRate : " + data.getYValue() + "%");
+                });
+                data.getNode().addEventHandler(MouseEvent.MOUSE_EXITED, event2 -> {
+                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
+                    lbl.setText("");
+                });
+            }
+        }
+    }
+
+    private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
+        seriesPath.setStroke(strokeColor);
+        seriesPath.setStrokeWidth(strokeWidth);
+        if(!toFront){ return; }
+        seriesPath.toFront();
     }
 
     @FXML
