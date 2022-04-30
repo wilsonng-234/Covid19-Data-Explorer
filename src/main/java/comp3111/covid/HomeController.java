@@ -29,14 +29,22 @@ public class HomeController {
 
     @FXML
     void switchToDeathCasesScene(MouseEvent event) {
-
+    	Parent root = FXMLLoader.load(getClass().getResource("/ui/confirmedDeath.fxml"));
+        Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML
     private ImageView VaccinationIcon;
 
     @FXML
-    void switchToRateOfVaccinationScene(MouseEvent event) {
-
+    void switchToRateOfVaccinationScene(MouseEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/vaccinationRate.fxml"));
+        Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }
