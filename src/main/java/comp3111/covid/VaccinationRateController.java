@@ -40,6 +40,8 @@ import static covidData.VaccinationRateRecord.NOT_FOUND;
 
 public class VaccinationRateController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
+    private final List<String> defaultCountries = Arrays.asList("Hong Kong", "India", "Israel", "Japan", "Macao", "Singapore", "United Kingdom", "United States", "World");
+
 
     @FXML
     private Tab tableTab;
@@ -168,6 +170,8 @@ public class VaccinationRateController implements Initializable {
                             for (String str : selectedCountriesForTable)
                                 System.out.print(str + "\t");
                             System.out.println();
+
+                            sortCountrySelectionColumn(countrySelectionTableForTable);
                         }
                     }
             );
@@ -209,13 +213,19 @@ public class VaccinationRateController implements Initializable {
                             for (String str : selectedCountriesForChart)
                                 System.out.print(str + "\t");
                             System.out.println();
+
+                            sortCountrySelectionColumn(countrySelectionTableForChart);
                         }
                     }
             );
 
             countrySelectionTableForChart.getItems().add(row);
         }
-        // initialize covidCasesTable
+
+        initCountrySelectionCheckBox(countrySelectionList);
+        initCountrySelectionCheckBox(countrySelectionList1);
+
+        // initialize table
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
         totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("fullyVaccinated"));
         totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory<>("rateOfVaccination"));
@@ -231,24 +241,10 @@ public class VaccinationRateController implements Initializable {
         );
 
         // initialize Chart
-//        XYChart.Series<String,Number> series = new XYChart.Series<>();
-//
-//        series.setName("Hong Kong");
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,15).toString(),100));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,16).toString(),105));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,17).toString(),109));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,18).toString(),1005));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,19).toString(),1005));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,20).toString(),1006));
-//
-//        vaccinationRateLineChart.getXAxis().setLabel("Date");
-//        vaccinationRateLineChart.getYAxis().setLabel("Number of Cases");
-//        vaccinationRateLineChart.setTitle("Title");
         LocalDate sd = LocalDate.of(2020, 12, 27);
         LocalDate ed = LocalDate.of(2021, 7, 20);
         startDatePicker.setValue(sd);
         endDatePicker.setValue(ed);
-
 
         chartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXAxis) {
             @Override
@@ -260,7 +256,6 @@ public class VaccinationRateController implements Initializable {
             }
         });
         chartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYAxis, null, "%"));
-//        vaccinationRateLineChart.getData().add(series);
 
 
         // tableTab onclick
@@ -280,6 +275,29 @@ public class VaccinationRateController implements Initializable {
                     }
                 }
         );
+    }
+
+    void sortCountrySelectionColumn(TableView<CountrySelection> countrySelection) {
+        // once chosen, will move up to the top
+        countrySelection.getItems().sort((o1,o2) -> {
+            if (o1.getSelect().isSelected() && !o2.getSelect().isSelected())
+                return -1;
+            else if (!o1.getSelect().isSelected() && o2.getSelect().isSelected())
+                return 1;
+            else {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        countrySelection.sort();
+
+    }
+
+    void initCountrySelectionCheckBox(List<CountrySelection> countrySelections) {
+        for (CountrySelection row : countrySelections) {
+            if (defaultCountries.contains(row.getName())){
+                row.getSelect().setSelected(true);
+            }
+        }
     }
 
     @FXML
