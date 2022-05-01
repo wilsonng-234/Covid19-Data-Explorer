@@ -364,6 +364,7 @@ public class LinearRegressionController implements Initializable {
             else{
                 chartYaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYaxis, null, ""));
             }
+
             chartYaxis.setTickUnit((chartYaxis.getUpperBound()-chartYaxis.getLowerBound())/5);
 
             lineChart.getData().add(regressionSeries);
