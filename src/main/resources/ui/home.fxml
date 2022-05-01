@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -22,43 +23,83 @@
                   </ImageView>
                   <HBox alignment="CENTER" prefHeight="153.0" prefWidth="550.0">
                      <children>
-                        <ImageView fx:id="ConfirmedCasesIcon" fitHeight="119.0" fitWidth="200.0" onMouseClicked="#switchToConfirmedCasesScene" pickOnBounds="true" preserveRatio="true" scaleY="1.4" translateY="30.0">
+                        <ImageView fx:id="ConfirmedCasesIcon" fitHeight="113.0" fitWidth="119.0" onMouseClicked="#switchToConfirmedCasesScene" pickOnBounds="true" preserveRatio="true" translateY="30.0">
                            <image>
-                              <Image url="@../images/virus_icon.jpg" />
+                              <Image url="@../images/virus_icon.png" />
                            </image>
+                           <HBox.margin>
+                              <Insets bottom="50.0" />
+                           </HBox.margin>
                         </ImageView>
-                        <ImageView fx:id="DeathCasesIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToDeathCasesScene" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="DeathCasesIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToDeathCasesScene" pickOnBounds="true" preserveRatio="true" scaleX="1.1" scaleY="1.1">
                            <image>
                               <Image url="@../images/death_icon.jpg" />
                            </image>
+                           <HBox.margin>
+                              <Insets left="50.0" top="10.0" />
+                           </HBox.margin>
                         </ImageView>
                         <ImageView fx:id="VaccinationIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToRateOfVaccinationScene" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/vaccination_icon.png" />
                            </image>
                         </ImageView>
+                        <ImageView fx:id="LinearRegressionIcon" fitHeight="198.0" fitWidth="150.0" onMouseClicked="#switchToLinearRegressionScene" pickOnBounds="true" preserveRatio="true" scaleX="1.2" scaleY="1.5">
+                           <image>
+                              <Image url="@../images/linear_regression_icon.jpg" />
+                           </image>
+                           <HBox.margin>
+                              <Insets top="20.0" />
+                           </HBox.margin>
+                        </ImageView>
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" prefHeight="38.0" prefWidth="468.0" spacing="70.0">
+                  <HBox alignment="CENTER" prefHeight="38.0" prefWidth="468.0" spacing="20.0">
                      <children>
-                        <Label text="Confirmed Cases">
+                        <Label prefHeight="19.0" prefWidth="303.0" text="Confirmed Cases">
                            <font>
                               <Font size="14.0" />
                            </font>
+                           <HBox.margin>
+                              <Insets left="-50.0" />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="180.0" />
+                           </padding>
                         </Label>
-                        <Label text="Death Cases" translateX="11.0">
+                        <Label prefHeight="19.0" prefWidth="167.0" text="Death Cases" translateX="11.0">
                            <font>
                               <Font size="14.0" />
                            </font>
+                           <HBox.margin>
+                              <Insets left="-10.0" />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="53.0" />
+                           </padding>
                         </Label>
-                        <Label text="Vaccination" translateX="33.0">
+                        <Label prefHeight="19.0" prefWidth="197.0" text="Vaccination" translateX="33.0">
                            <font>
                               <Font size="14.0" />
                            </font>
+                           <padding>
+                              <Insets left="30.0" />
+                           </padding>
+                        </Label>
+                        <Label prefHeight="19.0" prefWidth="246.0" text="Linear Regression">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets left="-15.0" />
+                           </padding>
                         </Label>
                      </children>
                   </HBox>
                </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
             </VBox>
          </center>
       </BorderPane>
