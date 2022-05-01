@@ -269,7 +269,7 @@ public class ConfirmedDeathController implements Initializable {
         covidDeathTable.getItems().removeAll(covidDeathTable.getItems());
 
         confirmedDeath confirmedDeath = new confirmedDeath(dateForTable, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
-        HashMap<String, confirmedDeathRecord> confirmedDeathHashMap = confirmedDeath.getconfirmedDeathTable();
+        HashMap<String, confirmedDeathRecord> confirmedDeathHashMap = confirmedDeath.getDeathTable();
 
         List<String> sortedSelectedCountriesList = new ArrayList<>(selectedCountriesForTable.size());
         for (String countryName : selectedCountriesForTable)
