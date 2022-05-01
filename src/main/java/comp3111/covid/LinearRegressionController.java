@@ -142,7 +142,7 @@ public class LinearRegressionController implements Initializable {
                         if (!countries.contains(country1)){
                             Alert countryNotFound = new Alert(Alert.AlertType.WARNING);
                             countryNotFound.setTitle("COUNTRIES NOT FOUND");
-                            countryNotFound.setContentText("Countries are not found");
+                            countryNotFound.setContentText("Country is not found");
 
                             countryNotFound.showAndWait().ifPresent(
                                     new Consumer<ButtonType>() {
@@ -335,7 +335,7 @@ public class LinearRegressionController implements Initializable {
 
             chartXaxis.setTickUnit((chartXaxis.getUpperBound()-chartXaxis.getLowerBound())/5);
 
-            Double yLowerBound = Math.min(yList.get(0),linearRegression.predict(yList.get(0))) - 1;
+            Double yLowerBound = Math.min(yList.get(0),linearRegression.predict(xList.get(0))) - 1;
             Double yUpperBound = Math.max(yList.get(yList.size()-1),linearRegression.predict(xList.get(xList.size()-1))) + 1;
 
             chartYaxis.setLowerBound(yLowerBound);
