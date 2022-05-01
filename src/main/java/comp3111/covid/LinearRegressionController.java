@@ -142,7 +142,7 @@ public class LinearRegressionController implements Initializable {
                         if (!countries.contains(country1)){
                             Alert countryNotFound = new Alert(Alert.AlertType.WARNING);
                             countryNotFound.setTitle("COUNTRIES NOT FOUND");
-                            countryNotFound.setContentText("Countries are not found");
+                            countryNotFound.setContentText("Country is not found");
 
                             countryNotFound.showAndWait().ifPresent(
                                     new Consumer<ButtonType>() {
@@ -329,17 +329,41 @@ public class LinearRegressionController implements Initializable {
                 countrySeries.getData().add(data);
             }
 
-
+            System.out.println(linearRegression.slope() + "\t intercept: " + linearRegression.intercept());
             chartXaxis.setLowerBound(xList.get(0) - 1);
             chartXaxis.setUpperBound(xList.get(xList.size() - 1) + 1);
 
+            if (xParameter.equals("total_vaccinations_per_hundred") || xParameter.equals("people_fully_vaccinated_per_hundred")){
+                chartXaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXaxis, null, "%"));
+            }
+            else{
+                chartXaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXaxis, null, ""));
+            }
             chartXaxis.setTickUnit((chartXaxis.getUpperBound()-chartXaxis.getLowerBound())/5);
 
-            Double yLowerBound = Math.min(yList.get(0),linearRegression.predict(yList.get(0))) - 1;
+            Double yLowerBound = Math.min(yList.get(0),linearRegression.predict(xList.get(0))) - 1;
             Double yUpperBound = Math.max(yList.get(yList.size()-1),linearRegression.predict(xList.get(xList.size()-1))) + 1;
 
-            chartYaxis.setLowerBound(yLowerBound);
-            chartYaxis.setUpperBound(yUpperBound);
+            if (Double.isInfinite(yLowerBound) || Double.isNaN(yLowerBound)){
+                chartYaxis.setLowerBound(yList.get(0) - 1);
+            }
+            else {
+                chartYaxis.setLowerBound(yLowerBound);
+            }
+
+            if (Double.isInfinite(yUpperBound) || Double.isNaN(yUpperBound)){
+                chartYaxis.setUpperBound(yList.get(yList.size() - 1) + 1);
+            }
+            else {
+                chartYaxis.setUpperBound(yUpperBound);
+            }
+
+            if (yParameter.equals("total_vaccinations_per_hundred") || yParameter.equals("people_fully_vaccinated_per_hundred")){
+                chartYaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYaxis, null, "%"));
+            }
+            else{
+                chartYaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYaxis, null, ""));
+            }
 
             chartYaxis.setTickUnit((chartYaxis.getUpperBound()-chartYaxis.getLowerBound())/5);
 
