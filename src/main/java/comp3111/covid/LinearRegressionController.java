@@ -333,6 +333,12 @@ public class LinearRegressionController implements Initializable {
             chartXaxis.setLowerBound(xList.get(0) - 1);
             chartXaxis.setUpperBound(xList.get(xList.size() - 1) + 1);
 
+            if (xParameter.equals("total_vaccinations_per_hundred") || xParameter.equals("people_fully_vaccinated_per_hundred")){
+                chartXaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXaxis, null, "%"));
+            }
+            else{
+                chartXaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXaxis, null, ""));
+            }
             chartXaxis.setTickUnit((chartXaxis.getUpperBound()-chartXaxis.getLowerBound())/5);
 
             Double yLowerBound = Math.min(yList.get(0),linearRegression.predict(xList.get(0))) - 1;
@@ -352,6 +358,12 @@ public class LinearRegressionController implements Initializable {
                 chartYaxis.setUpperBound(yUpperBound);
             }
 
+            if (yParameter.equals("total_vaccinations_per_hundred") || yParameter.equals("people_fully_vaccinated_per_hundred")){
+                chartYaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYaxis, null, "%"));
+            }
+            else{
+                chartYaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYaxis, null, ""));
+            }
             chartYaxis.setTickUnit((chartYaxis.getUpperBound()-chartYaxis.getLowerBound())/5);
 
             lineChart.getData().add(regressionSeries);
