@@ -41,7 +41,7 @@ import static covidData.ConfirmedCasesRecord.NOT_FOUND;
 
 public class ConfirmedCasesController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
-    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMMM d,yyyy");
+    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMMM d,yyyy",Locale.ENGLISH);
 
     @FXML
     private AnchorPane rootPane;
@@ -215,16 +215,13 @@ public class ConfirmedCasesController implements Initializable {
             public String toString(final Number object) {
                 long epochDay = object.longValue();
                 LocalDate date = LocalDate.ofEpochDay(epochDay);
-                String[] dateStringArray = date.toString().split("-");
-                String dateString = dateStringArray[0] + "-" + dateStringArray[1] + "-" + dateStringArray[2];
 
-                return dateString;
+                return date.format(displayDateFormatter);
             }
         });
         chartXAxis.setAutoRanging(false);
         chartXAxis.setLowerBound(LocalDate.of(2020,3,1).toEpochDay());
         chartXAxis.setUpperBound(LocalDate.of(2021,7,20).toEpochDay());
-        chartXAxis.setTickUnit((LocalDate.of(2021,7,20).toEpochDay()-LocalDate.of(2020,3,1).toEpochDay())/4.0);
     }
 
     @Override
