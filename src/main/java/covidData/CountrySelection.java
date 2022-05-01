@@ -17,7 +17,8 @@ public class CountrySelection implements Comparable<CountrySelection>{
         return name;
     }
 
-    public CheckBox getSelect() {
+    public CheckBox
+    getSelect() {
         return select;
     }
 

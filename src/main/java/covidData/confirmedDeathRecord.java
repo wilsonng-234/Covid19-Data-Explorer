@@ -34,3 +34,4 @@ public class confirmedDeathRecord {
         this.totalDeathPerMillion = totalDeathPerMillion;
     }
 }
+

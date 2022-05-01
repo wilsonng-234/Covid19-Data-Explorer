@@ -18,6 +18,9 @@ task debug(type:JavaExec) {
 } 
 
 dependencies {
+    implementation 'org.testng:testng:7.1.0'
+	implementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+
 	// https://mvnrepository.com/artifact/net.sourceforge.htmlunit/htmlunit
 	compile group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.31'
 
@@ -31,16 +34,16 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
+jacoco{
+	toolVersion = "0.8.7"
+}
+
 jacocoTestReport {
 	reports {
 		xml.enabled false
 		csv.enabled false
 		html.destination file("${buildDir}/jacocoHTML")
 	}
-}
-
-jacoco{
-	toolVersion = "0.8.7"
 }
 
 javafx {

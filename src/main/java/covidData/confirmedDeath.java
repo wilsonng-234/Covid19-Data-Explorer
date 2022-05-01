@@ -43,8 +43,8 @@ public class confirmedDeath extends CovidData {
 
             String[] dateRecordInfo = dateRecord.trim().split("/");
             LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),
-                                                Integer.parseInt(dateRecordInfo[0]),
-                                                Integer.parseInt(dateRecordInfo[1]));
+                    Integer.parseInt(dateRecordInfo[0]),
+                    Integer.parseInt(dateRecordInfo[1]));
 
             if (recordDate.isEqual(startDate))
             {
@@ -157,3 +157,4 @@ public class confirmedDeath extends CovidData {
 //        return confirmedCasesChart;
 //    }
 }
+

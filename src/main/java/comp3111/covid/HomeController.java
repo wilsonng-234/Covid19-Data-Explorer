@@ -28,8 +28,8 @@ public class HomeController {
     private ImageView DeathCasesIcon;
 
     @FXML
-    void switchToDeathCasesScene(MouseEvent event) throws IOException {
-    	Parent root = FXMLLoader.load(getClass().getResource("/ui/confirmedDeath.fxml"));
+    void switchToDeathCasesScene(MouseEvent event) throws IOException{
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/confirmedDeath.fxml"));
         Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -42,6 +42,18 @@ public class HomeController {
     @FXML
     void switchToRateOfVaccinationScene(MouseEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/ui/vaccinationRate.fxml"));
+        Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private ImageView LinearRegressionIcon;
+
+    @FXML
+    void switchToLinearRegressionScene(MouseEvent event) throws IOException{
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/LinearRegression.fxml"));
         Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);

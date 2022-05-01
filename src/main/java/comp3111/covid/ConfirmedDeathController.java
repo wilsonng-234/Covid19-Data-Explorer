@@ -493,3 +493,4 @@ public class ConfirmedDeathController implements Initializable {
             row.getSelect().setSelected(tick);
     }
 }
+

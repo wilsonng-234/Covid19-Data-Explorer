@@ -1,10 +1,9 @@
 package comp3111.covid;
 
 import javafx.application.Application;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.Scene;
 
 
@@ -34,24 +33,25 @@ import javafx.scene.Scene;
  */
 public class MyApplication extends Application {
 
-	private static final String UI_FILE = "/src/main/resources/home.fxml";  //file in the folder of src/main/resources/
+    private static final String UI_FILE = "/ui/home.fxml";  //file in the folder of src/main/resources/
+	
+	/** 
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 * 
+	 * This function will be called by the framework shortly after the program started. You are not required to change any line of code below.
+	 */
+	@Override
+	public void start(Stage stage) throws Exception {
+    	FXMLLoader loader = new FXMLLoader();
+    	loader.setLocation(getClass().getResource(UI_FILE));
+   		AnchorPane root = (AnchorPane) loader.load();
+   		Scene scene =  new Scene(root);
+		stage.setMinWidth(960); stage.setMinHeight(690);
+   		stage.setScene(scene);
+   		stage.setTitle("Lovelive Superstar Liella : Data Explorer on COVID-19");
 
-    /** 
-     * @see javafx.application.Application#start(javafx.stage.Stage)
-     * 
-     * This function will be called by the framework shortly after the program started. You are not required to change any line of code below.
-     */
-    @Override
-    public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource(UI_FILE));
-           AnchorPane root = (AnchorPane) loader.load();
-           Scene scene =  new Scene(root);
-           stage.setScene(scene);
-           stage.setTitle("Lovelive Superstar Liella : Data Explorer on COVID-19");
-
-           stage.show();
-    }
+   		stage.show();
+	}
 
 	/**
 	 * Entry point of the program. No argument should be supplied
