@@ -329,7 +329,7 @@ public class LinearRegressionController implements Initializable {
                 countrySeries.getData().add(data);
             }
 
-
+            System.out.println(linearRegression.slope() + "\t intercept: " + linearRegression.intercept());
             chartXaxis.setLowerBound(xList.get(0) - 1);
             chartXaxis.setUpperBound(xList.get(xList.size() - 1) + 1);
 
@@ -338,8 +338,19 @@ public class LinearRegressionController implements Initializable {
             Double yLowerBound = Math.min(yList.get(0),linearRegression.predict(xList.get(0))) - 1;
             Double yUpperBound = Math.max(yList.get(yList.size()-1),linearRegression.predict(xList.get(xList.size()-1))) + 1;
 
-            chartYaxis.setLowerBound(yLowerBound);
-            chartYaxis.setUpperBound(yUpperBound);
+            if (Double.isInfinite(yLowerBound) || Double.isNaN(yLowerBound)){
+                chartYaxis.setLowerBound(yList.get(0) - 1);
+            }
+            else {
+                chartYaxis.setLowerBound(yLowerBound);
+            }
+
+            if (Double.isInfinite(yUpperBound) || Double.isNaN(yUpperBound)){
+                chartYaxis.setUpperBound(yList.get(yList.size() - 1) + 1);
+            }
+            else {
+                chartYaxis.setUpperBound(yUpperBound);
+            }
 
             chartYaxis.setTickUnit((chartYaxis.getUpperBound()-chartYaxis.getLowerBound())/5);
 
