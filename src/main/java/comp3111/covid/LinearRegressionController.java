@@ -314,7 +314,7 @@ public class LinearRegressionController implements Initializable {
             double intercept = linearRegression.intercept();
 
             XYChart.Series<Number, Number> regressionSeries = new XYChart.Series<>();
-            regressionSeries.setName("regression line of " + country);
+            regressionSeries.setName("Regression Line - " + country);
 
             for (Double xDatum : xList) {
                 XYChart.Data<Number, Number> data = new XYChart.Data<Number, Number>(xDatum, linearRegression.predict(xDatum));
