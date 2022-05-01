@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -16,12 +15,12 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="627.0" prefWidth="974.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.LinearRegressionController">
    <children>
-      <ImageView fx:id="HomeImage" fitHeight="71.0" fitWidth="62.0" layoutX="822.0" layoutY="36.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="HomeImage" fitHeight="71.0" fitWidth="62.0" layoutX="848.0" layoutY="19.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="546.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="19.0">
          <image>
             <Image url="@../images/home.png" />
          </image>
       </ImageView>
-      <LineChart fx:id="lineChart" layoutX="259.0" layoutY="110.0" prefHeight="494.0" prefWidth="641.0">
+      <LineChart fx:id="lineChart" layoutX="259.0" layoutY="99.0" prefHeight="486.0" prefWidth="651.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="259.0" AnchorPane.rightAnchor="64.0" AnchorPane.topAnchor="99.0">
          <xAxis>
             <NumberAxis fx:id="chartXaxis" side="BOTTOM" />
          </xAxis>
@@ -29,28 +28,28 @@
             <NumberAxis fx:id="chartYaxis" side="LEFT" />
          </yAxis>
       </LineChart>
-      <DatePicker fx:id="startDatePicker" layoutX="340.0" layoutY="56.0" />
-      <Text layoutX="289.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From:" wrappingWidth="44.21484375" />
-      <DatePicker fx:id="endDatePicker" layoutX="571.0" layoutY="56.0" />
-      <Text layoutX="549.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" />
-      <Text layoutX="29.0" layoutY="72.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Country:" wrappingWidth="70.0" />
-      <ListView layoutX="29.0" layoutY="128.0" prefHeight="200.0" prefWidth="200.0" fx:id="xParameterList" />
-      <Text layoutX="105.0" layoutY="124.0" strokeType="OUTSIDE" strokeWidth="0.0" text="X axis" wrappingWidth="91.0">
+      <DatePicker fx:id="startDatePicker" layoutX="344.0" layoutY="38.0" AnchorPane.leftAnchor="344.0" />
+      <Text layoutX="299.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From:" wrappingWidth="44.21484375" AnchorPane.leftAnchor="299.0" />
+      <DatePicker fx:id="endDatePicker" layoutX="584.0" layoutY="37.0" AnchorPane.leftAnchor="584.0" />
+      <Text layoutX="557.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" AnchorPane.leftAnchor="557.0" />
+      <Text layoutX="29.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Country:" wrappingWidth="70.0" AnchorPane.leftAnchor="29.0" />
+      <ListView layoutX="29.0" layoutY="102.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="102.0" fx:id="xParameterList" />
+      <Text layoutX="99.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="X axis" wrappingWidth="91.0" AnchorPane.leftAnchor="99.0" AnchorPane.topAnchor="79.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <ListView fx:id="yParameterList" layoutX="23.0" layoutY="357.0" prefHeight="200.0" prefWidth="200.0" />
-      <Text layoutX="105.0" layoutY="352.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Y axis" wrappingWidth="91.0">
+      <ListView fx:id="yParameterList" layoutX="29.0" layoutY="333.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="333.0" />
+      <Text layoutX="99.0" layoutY="329.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Y axis" wrappingWidth="91.0" AnchorPane.leftAnchor="99.0" AnchorPane.topAnchor="310.0">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <TextField fx:id="countryTextField" layoutX="86.0" layoutY="56.0">
+      <TextField fx:id="countryTextField" layoutX="87.0" layoutY="38.0" AnchorPane.leftAnchor="87.0">
          <contextMenu>
             <ContextMenu fx:id="countryContextMenu" />
          </contextMenu>
       </TextField>
-      <Button fx:id="generateButton" layoutX="151.0" layoutY="571.0" mnemonicParsing="false" text="Generate" />
+      <Button fx:id="generateButton" layoutX="167.0" layoutY="554.0" mnemonicParsing="false" text="Generate" AnchorPane.leftAnchor="167.0" AnchorPane.topAnchor="554.0" />
    </children>
 </AnchorPane>
