@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -17,7 +16,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="664.0" minWidth="950.0" prefHeight="664.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.ConfirmedCasesController">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="664.0" minWidth="950.0" prefHeight="664.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.ConfirmedCasesController">
    <children>
       <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -86,10 +85,10 @@
                         <CheckBox fx:id="selectAllForChart" layoutX="207.0" layoutY="32.0" mnemonicParsing="false" onAction="#selectAllForChartClicked" text="Select All" AnchorPane.leftAnchor="207.0" />
                         <LineChart fx:id="confirmedCasesLineChart" layoutX="288.0" layoutY="83.0" prefHeight="494.0" prefWidth="641.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="288.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="83.0">
                           <xAxis>
-                            <CategoryAxis side="BOTTOM" />
+                            <NumberAxis fx:id="chartXAxis" side="BOTTOM" />
                           </xAxis>
                           <yAxis>
-                            <NumberAxis side="LEFT" />
+                            <NumberAxis fx:id="chartYAxis" side="LEFT" />
                           </yAxis>
                         </LineChart>
                         <Text layoutX="586.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" />
