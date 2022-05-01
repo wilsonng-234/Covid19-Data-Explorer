@@ -1,78 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.HomeController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="664.0" minWidth="960.0" prefHeight="664.0" prefWidth="960.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.HomeController">
    <children>
-      <ImageView fitHeight="172.0" fitWidth="184.0" layoutX="316.0" layoutY="71.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="357.0" AnchorPane.leftAnchor="316.0" AnchorPane.rightAnchor="312.0" AnchorPane.topAnchor="100.0">
-         <image>
-            <Image url="@../images/home.png" />
-         </image>
-      </ImageView>
-      <HBox layoutX="125.0" layoutY="282.0" prefHeight="153.0" prefWidth="550.0" AnchorPane.bottomAnchor="165.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="125.0" AnchorPane.topAnchor="300.0">
-         <children>
-            <ImageView fx:id="ConfirmedCasesIcon" fitHeight="171.0" fitWidth="150.0" onMouseClicked="#switchToConfirmedCasesScene" pickOnBounds="true" preserveRatio="true" scaleX="0.7" scaleY="0.7">
-               <image>
-                  <Image url="@../images/virus_icon.png" />
-               </image>
-            </ImageView>
-            <ImageView fx:id="DeathCasesIcon" fitHeight="143.0" fitWidth="150.0" onMouseClicked="#switchToDeathCasesScene" pickOnBounds="true" preserveRatio="true" scaleX="1.1" scaleY="1.1">
-               <image>
-                  <Image url="@../images/death_icon.jpg" />
-               </image>
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </ImageView>
-            <ImageView fx:id="VaccinationIcon" fitHeight="137.0" fitWidth="185.0" onMouseClicked="#switchToRateOfVaccinationScene" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/vaccination_icon.png" />
-               </image>
-               <HBox.margin>
-                  <Insets left="-10.0" />
-               </HBox.margin>
-            </ImageView>
-         </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <padding>
-            <Insets left="25.0" />
-         </padding>
-      </HBox>
-      <HBox layoutX="168.0" layoutY="435.0" prefHeight="38.0" prefWidth="468.0" spacing="45.0" AnchorPane.bottomAnchor="127.0" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="164.0" AnchorPane.topAnchor="440.0">
-         <children>
-            <Label text="Confirmed Cases">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <Label text="Death Cases" translateX="11.0">
-               <font>
-                  <Font size="14.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Label>
-            <Label text="Vaccination" translateX="33.0">
-               <font>
-                  <Font size="14.0" />
-               </font>
-               <padding>
-                  <Insets left="10.0" />
-               </padding>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </Label>
-         </children>
-      </HBox>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <center>
+            <VBox alignment="CENTER" prefHeight="327.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="172.0" fitWidth="184.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/home.png" />
+                     </image>
+                  </ImageView>
+                  <HBox alignment="CENTER" prefHeight="153.0" prefWidth="550.0">
+                     <children>
+                        <ImageView fx:id="ConfirmedCasesIcon" fitHeight="119.0" fitWidth="200.0" onMouseClicked="#switchToConfirmedCasesScene" pickOnBounds="true" preserveRatio="true" scaleY="1.4" translateY="30.0">
+                           <image>
+                              <Image url="@../images/virus_icon.jpg" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="DeathCasesIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToDeathCasesScene" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/death_icon.jpg" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="VaccinationIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToRateOfVaccinationScene" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/vaccination_icon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="38.0" prefWidth="468.0" spacing="70.0">
+                     <children>
+                        <Label text="Confirmed Cases">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <Label text="Death Cases" translateX="11.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <Label text="Vaccination" translateX="33.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
    </children>
 </AnchorPane>

@@ -19,6 +19,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Path;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.commons.csv.CSVRecord;
@@ -36,18 +38,27 @@ import static covidData.VaccinationRateRecord.NOT_FOUND;
 
 public class VaccinationRateController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
+    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMMM d,yyyy");
+    private final List<String> defaultCountries = Arrays.asList("Hong Kong", "India", "Israel", "Japan", "Singapore", "United Kingdom", "United States", "World");
+    String tableTitle = "Rate of Vaccination against COVID-19 as of ";
+    String tableColumn1 = "Fully Vaccinated";
+    String tableColumn2 = "Rate of Vaccination";
+    String chartTitle = "Cumulative Rate of Vaccination against COVID-19";
+    String chartAxisLabel1 = "Fully Vaccinated Number";
+    String chartAxisLabel2 = "Fully Vaccinated per Hundred People(%)";
 
+    // tab
     @FXML
     private Tab tableTab;
     @FXML
     private Tab chartTab;
     @FXML
-    public Tab relationTab;
+    private Tab relationTab;
 
     // datePicker
     @FXML
-    private DatePicker datePickerForTable;
-    private LocalDate dateForTable = null;
+    private DatePicker tableDatePicker;
+    private LocalDate tableDate = null;
 
     @FXML
     private DatePicker startDatePicker;
@@ -57,7 +68,7 @@ public class VaccinationRateController implements Initializable {
     private DatePicker endDatePicker;
     private LocalDate endDate = null;
 
-    // countrySelectionTable
+    // country selection table
     @FXML
     private TableView<CountrySelection> countrySelectionTableForTable;
     @FXML
@@ -73,26 +84,47 @@ public class VaccinationRateController implements Initializable {
     private TableColumn<CountrySelection,CheckBox> checkBoxSelectionColumnForChart;
     // -----------
 
-    // covidCasesTable
+    // table tab
     @FXML
-    private Text tableTitle;
+    private Text tableTitleText;
     @FXML
-    private TableView<VaccinationRateRecord> covidCasesTable;
+    private TableView<VaccinationRateRecord> vaccinationRateTable;
     @FXML
     private TableColumn<VaccinationRateRecord,String> countryColumn;
     @FXML
-    private TableColumn<VaccinationRateRecord,String> totalCasesColumn;
+    private TableColumn<VaccinationRateRecord,String> fullyColumn;
     @FXML
-    private TableColumn<VaccinationRateRecord,String> totalCasesPerMillionColumn;
+    private TableColumn<VaccinationRateRecord,String> rateColumn;
+
+    @FXML
+    private BarChart<Number, String> fullyBarChart;
+    @FXML
+    private CategoryAxis fullyBarChartXAxis;
+    @FXML
+    private NumberAxis fullyBarChartYAxis;
+    @FXML
+    private BarChart<Number, String> rateBarChart;
+    @FXML
+    private CategoryAxis rateBarChartXAxis;
+    @FXML
+    private NumberAxis rateBarChartYAxis;
+    @FXML
+    private RadioButton tableRadioButton;
+    @FXML
+    private RadioButton fullBarChartRadioButton;
+    @FXML
+    private RadioButton rateBarChartRadioButton;
+    @FXML
+    private ToggleGroup tableOrChart;
     // -----------
 
-    // covidCasesLineChart
+    // line chart tab
     @FXML
     private LineChart<Number,Number> vaccinationRateLineChart;
     @FXML
-    public NumberAxis chartXAxis;
+    private NumberAxis lineChartXAxis;
     @FXML
-    public NumberAxis chartYAxis;
+    private NumberAxis lineChartYAxis;
     // -----------
 
     HashSet<String> selectedCountriesForTable = new HashSet<>();
@@ -100,34 +132,29 @@ public class VaccinationRateController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tableTitleText.wrappingWidthProperty().bind(
+                vaccinationRateTable.widthProperty()
+        );
         // datePicker get date
-        datePickerForTable.valueProperty().addListener(
+        tableDatePicker.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    dateForTable = newValue;
-
-                    tableTitle.setText("Number of Covid Cases as of " + newValue);
+                    tableDate = newValue;
+                    tableTitleText.setText(tableTitle + newValue.format(displayDateFormatter));
                 }
         );
-
         startDatePicker.valueProperty().addListener(
-                new ChangeListener<LocalDate>() {
-                    @Override
-                    public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                        startDate = newValue;
-                    }
-                }
+                (observable, oldValue, newValue) -> startDate = newValue
         );
-
         endDatePicker.valueProperty().addListener(
-                new ChangeListener<LocalDate>() {
-                    @Override
-                    public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                        endDate = newValue;
-                    }
-                }
+                (observable, oldValue, newValue) -> endDate = newValue
         );
 
-        // initialize countrySelectionTableForTable
+        //init radio button
+        tableRadioButton.setSelected(true);
+        fullyBarChart.setVisible(false);
+        rateBarChart.setVisible(false);
+
+        // init countrySelection for table
         countrySelectionColumnForTable.setCellValueFactory(new PropertyValueFactory<>("name"));
         checkBoxSelectionColumnForTable.setCellValueFactory(new PropertyValueFactory<>("select"));
 
@@ -161,14 +188,14 @@ public class VaccinationRateController implements Initializable {
                             for (String str : selectedCountriesForTable)
                                 System.out.print(str + "\t");
                             System.out.println();
+
+                            sortCountrySelectionColumn(countrySelectionTableForTable);
                         }
                     }
             );
-
             countrySelectionTableForTable.getItems().add(row);
         }
-
-        //countrySelectionTableForChart
+        // init countrySelection for chart
         countrySelectionColumnForChart.setCellValueFactory(new PropertyValueFactory<>("name"));
         checkBoxSelectionColumnForChart.setCellValueFactory(new PropertyValueFactory<>("select"));
 
@@ -202,74 +229,120 @@ public class VaccinationRateController implements Initializable {
                             for (String str : selectedCountriesForChart)
                                 System.out.print(str + "\t");
                             System.out.println();
+
+                            sortCountrySelectionColumn(countrySelectionTableForChart);
                         }
                     }
             );
-
             countrySelectionTableForChart.getItems().add(row);
         }
-        // initialize covidCasesTable
-        countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
-        totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("fullyVaccinated"));
-        totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory<>("rateOfVaccination"));
+        initCountrySelectionCheckBox(countrySelectionList);
+        initCountrySelectionCheckBox(countrySelectionList1);
 
-        // initialize Chart
-//        XYChart.Series<String,Number> series = new XYChart.Series<>();
-//
-//        series.setName("Hong Kong");
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,15).toString(),100));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,16).toString(),105));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,17).toString(),109));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,18).toString(),1005));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,19).toString(),1005));
-//        series.getData().add(new XYChart.Data<>(LocalDate.of(2020,7,20).toString(),1006));
-//
-//        vaccinationRateLineChart.getXAxis().setLabel("Date");
-//        vaccinationRateLineChart.getYAxis().setLabel("Number of Cases");
-//        vaccinationRateLineChart.setTitle("Title");
+        // init table
+        LocalDate date = LocalDate.of(2021, 7, 20);
+        tableDatePicker.setValue(date);
+
+        fullyColumn.setText(tableColumn1);
+        rateColumn.setText(tableColumn2);
+
+        countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
+        fullyColumn.setCellValueFactory(new PropertyValueFactory<>("fullyVaccinated"));
+        rateColumn.setCellValueFactory(new PropertyValueFactory<>("rateOfVaccination"));
+
+        countryColumn.prefWidthProperty().bind(
+                vaccinationRateTable.widthProperty().divide(3.0)
+        );
+        fullyColumn.prefWidthProperty().bind(
+                vaccinationRateTable.widthProperty().divide(3.0)
+        );
+        rateColumn.prefWidthProperty().bind(
+                vaccinationRateTable.widthProperty().divide(3.0)
+        );
+
+        fullyColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        rateColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+
+        // init bar chart
+        fullyBarChartXAxis.setLabel("Country");
+        fullyBarChartYAxis.setLabel(chartAxisLabel1);
+
+        rateBarChartXAxis.setLabel("Country");
+        rateBarChartYAxis.setLabel(chartAxisLabel2);
+        rateBarChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartYAxis, null, "%"));
+
+        // init line chart
         LocalDate sd = LocalDate.of(2020, 12, 27);
         LocalDate ed = LocalDate.of(2021, 7, 20);
         startDatePicker.setValue(sd);
         endDatePicker.setValue(ed);
 
-        vaccinationRateLineChart.setCreateSymbols(false);
-        chartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXAxis) {
+        vaccinationRateLineChart.setTitle(chartTitle);
+
+        lineChartXAxis.setLabel("Date");
+        lineChartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartXAxis) {
             @Override
             public String toString(final Number object) {
                 long longValue = object.longValue();
                 LocalDate date = LocalDate.ofEpochDay(longValue);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
-                return date.format(formatter);
+                return date.format(displayDateFormatter);
             }
         });
-        chartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYAxis, null, "%"));
-//        vaccinationRateLineChart.getData().add(series);
+        lineChartYAxis.setLabel(chartAxisLabel2);
+        lineChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartYAxis, null, "%"));
+
 
 
         // tableTab onclick
         tableTab.setOnSelectionChanged(
-                new EventHandler<Event>() {
-                    @Override
-                    public void handle(Event event) {
+            new EventHandler<Event>() {
+                @Override
+                public void handle(Event event) {
 
-                    }
                 }
+            }
         );
         chartTab.setOnSelectionChanged(
-                new EventHandler<Event>() {
-                    @Override
-                    public void handle(Event event) {
+            new EventHandler<Event>() {
+                @Override
+                public void handle(Event event) {
 
-                    }
                 }
+            }
         );
+    }
+
+    // -----------end init
+
+    void sortCountrySelectionColumn(TableView<CountrySelection> countrySelection) {
+        // once chosen, will move up to the top
+        countrySelection.getItems().sort((o1,o2) -> {
+            if (o1.getSelect().isSelected() && !o2.getSelect().isSelected())
+                return -1;
+            else if (!o1.getSelect().isSelected() && o2.getSelect().isSelected())
+                return 1;
+            else {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        countrySelection.sort();
+
+    }
+
+    void initCountrySelectionCheckBox(List<CountrySelection> countrySelections) {
+        for (CountrySelection row : countrySelections) {
+            if (defaultCountries.contains(row.getName())){
+                row.getSelect().setSelected(true);
+            }
+        }
     }
 
     @FXML
     private Button generateTableButton;
     @FXML
     void generateTableButtonClicked(ActionEvent event) {
-        if (dateForTable == null) {
+        //check validity
+        if (tableDate == null) {
             Alert dateNotChosenAlert = new Alert(Alert.AlertType.WARNING);
             dateNotChosenAlert.setTitle("DATE NOT CHOSEN");
             dateNotChosenAlert.setContentText("Please choose the date first");
@@ -283,35 +356,55 @@ public class VaccinationRateController implements Initializable {
             );
             return;
         }
-        // update covidCasesTable
-        covidCasesTable.getItems().removeAll(covidCasesTable.getItems());
-
-        VaccinationRate vaccinationRate = new VaccinationRate(dateForTable, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
-        HashMap<String, VaccinationRateRecord> vaccinationRateHashMap = vaccinationRate.getVaccinationRateTable();
 
         List<String> sortedSelectedCountriesList = new ArrayList<>(selectedCountriesForTable.size());
         for (String countryName : selectedCountriesForTable)
             sortedSelectedCountriesList.add(countryName);
         Collections.sort(sortedSelectedCountriesList);
 
+        // generate table and bar char
+        vaccinationRateTable.getItems().removeAll(vaccinationRateTable.getItems());
+        VaccinationRate vaccinationRate = new VaccinationRate(tableDate, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
+        HashMap<String, VaccinationRateRecord> vaccinationRateHashMap = vaccinationRate.getVaccinationRateTable();
+
+        fullyBarChart.getData().clear();
+        rateBarChart.getData().clear();
+        XYChart.Series<Number, String> fullySeries = new XYChart.Series<>();
+        fullySeries.setName("fully vaccinated");
+        XYChart.Series<Number, String> rateSeries = new XYChart.Series<>();
+        rateSeries.setName("rate of vaccination");
+
         NumberFormat numberFormat = NumberFormat.getInstance();
         for (String countryName : sortedSelectedCountriesList) {
-            VaccinationRateRecord vaccinationRateRecord = vaccinationRateHashMap.get(countryName);
-            if (!vaccinationRateRecord.getFullyVaccinated().equals(NOT_FOUND))
-                vaccinationRateRecord.setFullyVaccinated(numberFormat.format(Integer.parseInt(vaccinationRateRecord.getFullyVaccinated())));
-            if (!vaccinationRateRecord.getFullyVaccinated().equals(NOT_FOUND))
-                vaccinationRateRecord.setRateOfVaccination(numberFormat.format(Double.parseDouble(vaccinationRateRecord.getRateOfVaccination())));
-            covidCasesTable.getItems().add(vaccinationRateRecord);
+            VaccinationRateRecord record = vaccinationRateHashMap.get(countryName);
+            if (!record.getFullyVaccinated().equals(NOT_FOUND)){
+                fullySeries.getData().add(new XYChart.Data<>(Integer.parseInt(record.getFullyVaccinated()), countryName));
+                record.setFullyVaccinated(numberFormat.format(Integer.parseInt(record.getFullyVaccinated())));
+            }
+            else {
+                fullySeries.getData().add(new XYChart.Data<>(0, countryName));
+            }
+            if (!record.getFullyVaccinated().equals(NOT_FOUND)){
+                rateSeries.getData().add(new XYChart.Data<>(Double.parseDouble(record.getRateOfVaccination()), countryName));
+                record.setRateOfVaccination(String.format("%.2f%%", Double.parseDouble(record.getRateOfVaccination())));
+            }
+            else{
+                rateSeries.getData().add(new XYChart.Data<>(0, countryName));
+            }
+            vaccinationRateTable.getItems().add(record);
         }
-
-        System.out.println(numberFormat.format(123456.123456));
+        fullyBarChart.getData().add(fullySeries);
+        rateBarChart.getData().add(rateSeries);
     }
 
     @FXML
     private Button generateChartButton;
+    @FXML
+    private Label lbl;
 
     @FXML
     void generateChartButtonClicked(ActionEvent event) {
+        //check validity
         Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);
 
         if (startDate == null && endDate == null){
@@ -367,19 +460,57 @@ public class VaccinationRateController implements Initializable {
             return;
         }
 
-        // update covidCasesChart
-//        chartXAxis.setLowerBound(iStartDate.toEpochDay());
-//        chartXAxis.setUpperBound(iEndDate.toEpochDay());
-
+        // generate line chart
         vaccinationRateLineChart.getData().clear();
-        chartXAxis.setAutoRanging(false);
-        chartXAxis.setLowerBound(startDate.toEpochDay());
-        chartXAxis.setUpperBound(endDate.toEpochDay());
-        VaccinationRate confirmedCases = new VaccinationRate(startDate, endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
-        HashMap<String,XYChart.Series<Number,Number>> vaccinationRateHashMap = confirmedCases.getVaccinationRateChart();
+        lineChartXAxis.setAutoRanging(false);
+        lineChartXAxis.setLowerBound(startDate.toEpochDay());
+        lineChartXAxis.setUpperBound(endDate.toEpochDay());
+        VaccinationRate vaccinationRate = new VaccinationRate(startDate, endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
+        HashMap<String,XYChart.Series<Number,Number>> vaccinationRateHashMap = vaccinationRate.getVaccinationRateChart();
         for (String countryName : selectedCountriesForChart){
             vaccinationRateLineChart.getData().add(vaccinationRateHashMap.get(countryName));
         }
+
+        // add event handler to every node in lines
+        Collection<XYChart.Series<Number,Number>> seriesList = vaccinationRateHashMap.values();
+        for(XYChart.Series<Number,Number> series : seriesList){
+            //Setup for hovering on series (cleaner)
+            Path seriesPath = (Path) series.getNode();
+            double initialStrokeWidth = seriesPath.getStrokeWidth();
+
+            seriesPath.setOnMouseEntered(e -> {
+                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
+                lbl.setText(series.getName() + "\n " + "\n ");
+            });
+            seriesPath.setOnMouseExited(e -> {
+                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
+                lbl.setText("");
+            });
+
+            for (XYChart.Data<Number,Number> data : series.getData()) {
+//                data.getNode().setVisible(false);
+                data.getNode().setStyle("""
+                        -fx-background-color: transparent, transparent;
+                        -fx-background-insets: 0, 2;
+                        -fx-background-radius: 5px;
+                        -fx-padding: 5px;""");
+
+                data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, event1 -> {
+                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
+                    lbl.setText(series.getName()+ "\n" + "Date : " + LocalDate.ofEpochDay((Long) data.getXValue()).format(displayDateFormatter) + "\nRate : " + data.getYValue() + "%");
+                });
+                data.getNode().addEventHandler(MouseEvent.MOUSE_EXITED, event2 -> {
+                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
+                    lbl.setText("");
+                });
+            }
+        }
+    }
+    private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
+        seriesPath.setStroke(strokeColor);
+        seriesPath.setStrokeWidth(strokeWidth);
+        if(!toFront){ return; }
+        seriesPath.toFront();
     }
 
     @FXML
@@ -415,10 +546,7 @@ public class VaccinationRateController implements Initializable {
 
     @FXML
     void selectAllForTableClicked(ActionEvent event) {
-        boolean tick = selectAllForTable.selectedProperty().get();
-
-        for (CountrySelection row : countrySelectionTableForTable.getItems())
-            row.getSelect().setSelected(tick);
+        clickAllOrNone(selectAllForTable, countrySelectionTableForTable);
     }
 
     @FXML
@@ -426,9 +554,38 @@ public class VaccinationRateController implements Initializable {
 
     @FXML
     void selectAllForChartClicked(ActionEvent event) {
-        boolean tick = selectAllForChart.selectedProperty().get();
+        clickAllOrNone(selectAllForChart, countrySelectionTableForChart);
+    }
 
-        for (CountrySelection row : countrySelectionTableForChart.getItems())
-            row.getSelect().setSelected(tick);
+    void clickAllOrNone(CheckBox selectAll, TableView<CountrySelection> countrySelection) {
+        boolean tick = selectAll.selectedProperty().get();
+        if (tick)
+            for (int i=0; i<countrySelection.getItems().size(); i++){
+                CountrySelection row = countrySelection.getItems().get(i);
+                row.getSelect().setSelected(true);
+            }
+        else
+            for (int i=0; i<countrySelection.getItems().size(); i++){
+                CountrySelection row = countrySelection.getItems().get(0);
+                row.getSelect().setSelected(false);
+            }
+    }
+
+    public void getGraph(ActionEvent actionEvent) {
+        if (tableRadioButton.isSelected()) {
+            vaccinationRateTable.setVisible(true);
+            fullyBarChart.setVisible(false);
+            rateBarChart.setVisible(false);
+        }
+        else if (fullBarChartRadioButton.isSelected()) {
+            vaccinationRateTable.setVisible(false);
+            fullyBarChart.setVisible(true);
+            rateBarChart.setVisible(false);
+        } else {
+            vaccinationRateTable.setVisible(false);
+            fullyBarChart.setVisible(false);
+            rateBarChart.setVisible(true);
+        }
+
     }
 }
