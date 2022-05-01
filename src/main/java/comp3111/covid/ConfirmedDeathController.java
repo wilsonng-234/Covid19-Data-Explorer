@@ -355,7 +355,7 @@ public class ConfirmedDeathController implements Initializable {
 
         confirmedDeath confirmedDeath = new confirmedDeath(startDate,endDate, selectedCountriesForChart,"COVID_Dataset_v1.0.csv");
 
-        HashMap<String,XYChart.Series<String,Number>> confirmedDeathHashMap = confirmedDeath.getconfirmedDeathChart();
+        HashMap<String,XYChart.Series<String,Number>> confirmedDeathHashMap = confirmedDeath.getConfirmedDeathChart();
 
         for (String countryName : selectedCountriesForChart){
             confirmedDeathLineChart.getData().add(confirmedDeathHashMap.get(countryName));

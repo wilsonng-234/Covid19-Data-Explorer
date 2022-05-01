@@ -26,7 +26,7 @@ public class confirmedDeath extends CovidData {
         confirmedDeathChart = new HashMap<>();
     }
 
-    public HashMap<String, confirmedDeathRecord> getconfirmedDeathTable() {
+    public HashMap<String, confirmedDeathRecord> getDeathTable() {
         for (String countryName : countries)
             confirmedDeathTable.put(countryName,new confirmedDeathRecord(countryName,NOT_FOUND,NOT_FOUND));
 
