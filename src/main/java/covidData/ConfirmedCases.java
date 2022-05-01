@@ -3,6 +3,7 @@ package covidData;
 import javafx.scene.chart.XYChart;
 import org.apache.commons.csv.CSVRecord;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -11,7 +12,7 @@ import static covidData.ConfirmedCasesRecord.NOT_FOUND;
 
 public class ConfirmedCases extends CovidData {
     private HashMap<String, ConfirmedCasesRecord> confirmedCasesTable;   // key: country location name  value: ConfirmedCasesRecord
-    private HashMap<String,XYChart.Series<String,Number>> confirmedCasesChart;   // key: country location name  value : data point <Date,value>
+    private HashMap<String,XYChart.Series<Number,Number>> confirmedCasesChart;   // key: country location name  value : data point <Date,value>
 
     //private HashMap<String,XYChart.Series<LocalDate,String>> confirmedCasesChart;   // key: country location name  value : data point <LocalDate,String>
 
@@ -46,34 +47,54 @@ public class ConfirmedCases extends CovidData {
                                                 Integer.parseInt(dateRecordInfo[0]),
                                                 Integer.parseInt(dateRecordInfo[1]));
 
-            if (recordDate.isEqual(startDate))
+            NumberFormat numberFormat = NumberFormat.getInstance();
+            numberFormat.setMaximumFractionDigits(2);
+            ConfirmedCasesRecord row = confirmedCasesTable.get(countryName);
+            String totalCases = csvRecord.get("total_cases").trim();
+            String totalCasesPerMillion = csvRecord.get("total_cases_per_million").trim();
+            if (recordDate.isBefore(startDate))
             {
-                String iso_code = csvRecord.get("iso_code");
+                if (!totalCases.equals("")){
+                    totalCases = numberFormat.format(Double.parseDouble(totalCases));
+                    String suffix = "last found on " + recordDate.toString();
 
-                String totalCases = csvRecord.get("total_cases");
-                String totalCasesPerMillion = csvRecord.get("total_cases_per_million");
+                    int numAppend = suffix.length() - totalCases.length();
+                    String prefix = " ".repeat(numAppend*2);
 
-                if (totalCases.equals(""))
-                    totalCases = NOT_FOUND;
+                    row.setTotalCases(prefix + totalCases + "\n" + suffix);
+                }
 
-                if (totalCasesPerMillion.equals(""))
-                    totalCasesPerMillion = NOT_FOUND;
+                if (!totalCasesPerMillion.equals("")){
+                    totalCasesPerMillion = numberFormat.format(Double.parseDouble(totalCasesPerMillion));
+                    String suffix = "last found on " + recordDate.toString();
 
-                ConfirmedCasesRecord display = confirmedCasesTable.get(countryName);
+                    int numAppend = suffix.length() - totalCasesPerMillion.length();
+                    String prefix = " ".repeat(numAppend*2);
 
-                display.setTotalCases(totalCases);
-                display.setTotalCasesPerMillion(totalCasesPerMillion);
+                    row.setTotalCasesPerMillion(prefix + totalCasesPerMillion + "\n" + suffix);
+                }
+            }
+            else if (recordDate.isEqual(startDate)){
+                if (!totalCases.equals("")) {
+                    totalCases = numberFormat.format(Double.parseDouble(totalCases));
+                    row.setTotalCases(totalCases);
+                }
+
+                if (!totalCasesPerMillion.equals("")){
+                    totalCasesPerMillion = numberFormat.format(Double.parseDouble(totalCasesPerMillion));
+                    row.setTotalCasesPerMillion(totalCasesPerMillion);
+                }
             }
         }
 
         return confirmedCasesTable;
     }
 
-    public HashMap<String,XYChart.Series<String, Number>> getConfirmedCasesChart() {
+    public HashMap<String,XYChart.Series<Number, Number>> getConfirmedCasesChart() {
         assert(startDate.isBefore(endDate) || startDate.equals(endDate));
 
         for (String countryName : countries) {
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
             series.setName(countryName);
             confirmedCasesChart.put(countryName, series);
         }
@@ -83,12 +104,9 @@ public class ConfirmedCases extends CovidData {
             if (!countries.contains(countryName))
                 continue;
 
-            String countryISO = csvRecord.get("iso_code");
             String dateRecord = csvRecord.get("date");
             if (dateRecord.equals("")) {
-                System.out.println("empty dateRecord??");
-                throw new IllegalArgumentException();
-                //continue;
+                continue;
             }
 
             String[] dateRecordInfo = dateRecord.trim().split("/");
@@ -98,62 +116,20 @@ public class ConfirmedCases extends CovidData {
 
             String totalCasesPerMillion = csvRecord.get("total_cases_per_million");
             if (recordDate.isEqual(startDate) || (recordDate.isAfter(startDate) && recordDate.isBefore(endDate)) || recordDate.isEqual(endDate)) {
-                if (!totalCasesPerMillion.equals("")) {
-                    confirmedCasesChart.get(countryName).getData().add(
-                            new XYChart.Data<String, Number>(recordDate.toString(), Double.parseDouble(totalCasesPerMillion))
-                    );
+                try {
+                    if (!totalCasesPerMillion.equals("")) {
+                        confirmedCasesChart.get(countryName).getData().add(
+                                new XYChart.Data<Number, Number>(recordDate.toEpochDay(), Double.parseDouble(totalCasesPerMillion))
+                        );
+                    }
                 }
-                else{
-
+                catch (NumberFormatException exception){
+                    // do nothing
+                    System.out.println("NumberFormatException");
                 }
             }
         }
 
         return confirmedCasesChart;
     }
-
-//    public HashMap<String,XYChart.Series<LocalDate, String>> getConfirmedCasesChart() {
-//        assert(startDate.isBefore(endDate) || startDate.equals(endDate));
-//
-//        for (String countryName : countries) {
-//            XYChart.Series<LocalDate, String> series = new XYChart.Series<>();
-//            series.setName(countryName);
-//            confirmedCasesChart.put(countryName, series);
-//        }
-//
-//        for (CSVRecord csvRecord : getFileParser(dataset)) {
-//            String countryName = csvRecord.get("location");
-//            if (!countries.contains(countryName))
-//                continue;
-//
-//            String dateRecord = csvRecord.get("date");
-//            if (dateRecord.equals("")) {
-//                System.out.println("empty dateRecord??");
-//                throw new IllegalArgumentException();
-//                //continue;
-//            }
-//
-//            String[] dateRecordInfo = dateRecord.trim().split("/");
-//            LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),
-//                                                Integer.parseInt(dateRecordInfo[0]),
-//                                                Integer.parseInt(dateRecordInfo[1]));
-//
-//            String totalCasesPerMillion = csvRecord.get("total_cases_per_million");
-//
-//            if (recordDate.isEqual(startDate) || (recordDate.isAfter(startDate) && recordDate.isBefore(endDate)) || recordDate.isEqual(endDate)) {
-//                if (!totalCasesPerMillion.equals("")) {
-//                    confirmedCasesChart.get(countryName).getData().add(
-//                            new XYChart.Data<LocalDate, String>(recordDate, totalCasesPerMillion)
-//                    );
-//                }
-//                else{
-//                    confirmedCasesChart.get(countryName).getData().add(
-//                            new XYChart.Data<LocalDate, String>(recordDate, NOT_FOUND)
-//                    );
-//                }
-//            }
-//        }
-//
-//        return confirmedCasesChart;
-//    }
 }
