@@ -1,4 +1,4 @@
-package covidData;
+/*package covidData;
 
 import org.junit.Test;
 
@@ -97,4 +97,6 @@ public class covidCasesTester {
 //	}
 }
 
+
+ */
 

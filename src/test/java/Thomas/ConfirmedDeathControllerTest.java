@@ -1,4 +1,4 @@
-package Wilson;
+package Thomas;
 
 import comp3111.covid.MyApplication;
 import javafx.fxml.FXMLLoader;
@@ -16,8 +16,8 @@ import org.testfx.matcher.base.NodeMatchers;
 
 import static org.testfx.api.FxAssert.verifyThat;
 
-public class ConfirmedCasesControllerTest extends ApplicationTest {
-    private static final String UI_FILE = "/ui/confirmedCases.fxml";  //file in the folder of src/main/resources/
+public class ConfirmedDeathControllerTest extends ApplicationTest {
+    private static final String UI_FILE = "/ui/confirmedDeath.fxml";  //file in the folder of src/main/resources/
 
     @Override
     public void start(Stage stage) throws Exception{
@@ -46,8 +46,8 @@ public class ConfirmedCasesControllerTest extends ApplicationTest {
         clickOn("#selectAllForTable");
         clickOn("#generateTableButton");
         clickOn("#generateTableButton");
-        clickOn("#totalCasesRadioButton");
-        clickOn("#totalCasesPerMillionRadioButton");
+        clickOn("#totalDeathRadioButton");
+        clickOn("#totalDeathPerMillionRadioButton");
         clickOn("#tableRadioButton");
     }
 
@@ -65,7 +65,7 @@ public class ConfirmedCasesControllerTest extends ApplicationTest {
         write("1/3/2021");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         clickOn("#endDatePicker");
-        write("13/3/2021");
+        write("7/7/2021");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
 
         clickOn("#selectAllForChart");
