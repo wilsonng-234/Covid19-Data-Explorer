@@ -35,9 +35,6 @@ public class HomeController {
         stage.setScene(scene);
         stage.show();
 
-   
-
-
     }
 
     @FXML
