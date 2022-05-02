@@ -11,6 +11,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * HomeController initializes home scene
+ */
 public class HomeController {
     @FXML
     private ImageView ConfirmedCasesIcon;
