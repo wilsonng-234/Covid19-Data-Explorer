@@ -1,4 +1,4 @@
-package Wilson;
+package Terry;
 
 import comp3111.covid.MyApplication;
 import javafx.fxml.FXMLLoader;
@@ -16,8 +16,8 @@ import org.testfx.matcher.base.NodeMatchers;
 
 import static org.testfx.api.FxAssert.verifyThat;
 
-public class ConfirmedCasesControllerTest extends ApplicationTest {
-    private static final String UI_FILE = "/ui/confirmedCases.fxml";  //file in the folder of src/main/resources/
+public class VaccinationRateControllerTest extends ApplicationTest{
+    private static final String UI_FILE = "/ui/vaccinationRate.fxml";  //file in the folder of src/main/resources/
 
     @Override
     public void start(Stage stage) throws Exception{
@@ -39,15 +39,15 @@ public class ConfirmedCasesControllerTest extends ApplicationTest {
 
     @Test
     public void testDailyStatistics() {
-        clickOn("#datePickerForTable");
+        clickOn("#tableDatePicker");
         write("20/7/2021");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
 
         clickOn("#selectAllForTable");
         clickOn("#generateTableButton");
         clickOn("#generateTableButton");
-        clickOn("#totalCasesRadioButton");
-        clickOn("#totalCasesPerMillionRadioButton");
+        clickOn("#fullyBarChartRadioButton");
+        clickOn("#rateBarChartRadioButton");
         clickOn("#tableRadioButton");
     }
 
@@ -65,7 +65,7 @@ public class ConfirmedCasesControllerTest extends ApplicationTest {
         write("1/3/2021");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         clickOn("#endDatePicker");
-        write("13/3/2021");
+        write("7/7/2021");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
 
         clickOn("#selectAllForChart");
