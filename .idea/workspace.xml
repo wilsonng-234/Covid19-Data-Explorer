@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c763aa0-3d9a-471d-a1d1-e99abd5c30b1" name="Changes" comment="Update">
+    <list default="true" id="2c763aa0-3d9a-471d-a1d1-e99abd5c30b1" name="Changes" comment="Update ConfirmedDeathController and UI">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/comp3111/covid/ConfirmedDeathController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/comp3111/covid/ConfirmedDeathController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/ui/confirmedDeath.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/ui/confirmedDeath.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/covidData/confirmedDeath.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/covidData/confirmedDeath.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +162,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651482624654</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Update ConfirmedDeathController and UI">
+      <created>1651488010639</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1651488010639</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -179,6 +186,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Upload confirmed Death UI" />
     <MESSAGE value="Update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update" />
+    <MESSAGE value="Update ConfirmedDeathController and UI" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update ConfirmedDeathController and UI" />
   </component>
 </project>

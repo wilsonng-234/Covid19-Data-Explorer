@@ -291,7 +291,7 @@ public class ConfirmedDeathController implements Initializable {
         perMillionBarChart.getData().clear();
 
         confirmedDeath confirmedDeath = new confirmedDeath(dateForTable, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
-        HashMap<String, confirmedDeathRecord> confirmedDeathHashMap = confirmedDeath.getDeathTable();
+        HashMap<String, confirmedDeathRecord> confirmedDeathHashMap = confirmedDeath.getconfirmedDeathTable();
         XYChart.Series<Number, String> totalConfirmedDeathSeries = new XYChart.Series<>();
         totalConfirmedDeathSeries.setName("Total Confirmed Death");
         XYChart.Series<Number, String> confirmedDeathPerMillionSeries = new XYChart.Series<>();
