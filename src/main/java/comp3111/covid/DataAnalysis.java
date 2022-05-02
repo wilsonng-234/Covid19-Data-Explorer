@@ -11,7 +11,11 @@ import edu.duke.*;
  * 
  */
 public class DataAnalysis {
- 
+	/**
+	 * helper function to get CSVParser
+	 * @param dataset The dataset file name
+	 * @return CSVParser of the dataset
+	 */
 	public static CSVParser getFileParser(String dataset) {
 	     FileResource fr = new FileResource("dataset/" + dataset);
 	     return fr.getCSVParser(true);

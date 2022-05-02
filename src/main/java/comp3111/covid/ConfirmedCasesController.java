@@ -39,6 +39,9 @@ import java.util.function.Consumer;
 import static comp3111.covid.DataAnalysis.getFileParser;
 import static covidData.ConfirmedCasesRecord.NOT_FOUND;
 
+/**
+ *  ConfirmedCasesController initializes ConfirmedCases scene
+ */
 public class ConfirmedCasesController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
     DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMMM d,yyyy",Locale.ENGLISH);
@@ -122,22 +125,36 @@ public class ConfirmedCasesController implements Initializable {
     HashSet<String> selectedCountriesForTable = new HashSet<>();
     HashSet<String> selectedCountriesForChart = new HashSet<>();
 
+    /**
+     * bind table title width with table width
+     */
     public void setTableTitleWidth(){
         tableTitle.wrappingWidthProperty().bind(
                 covidCasesTable.widthProperty()
         );
     }
 
+    /**
+     * set table title date when date is selected
+     */
     private void setTableTitleWithDate(){
         datePickerForTable.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     dateForTable = newValue;
 
-                    tableTitle.setText("Number of Covid Cases as of " + newValue);
+                    tableTitle.setText("Number of Covid Cases as of " + newValue.format(displayDateFormatter));
                 }
         );
     }
 
+    /**
+     * Initialize countrySelection table
+     *
+     * @param table The table to be initialized
+     * @param countryColumn The countryName column in the table
+     * @param checkBoxColumn The checkBox column in the table
+     * @param selectedCountries The selectedCountries HashSet
+     */
     private void setCountrySelectionTable(TableView<CountrySelection> table, TableColumn<CountrySelection,CheckBox> countryColumn,
                                           TableColumn<CountrySelection,CheckBox> checkBoxColumn,HashSet<String> selectedCountries)
     {
@@ -177,6 +194,11 @@ public class ConfirmedCasesController implements Initializable {
         }
     }
 
+    /**
+     *  Initialize cells in covidCasesTable.
+     *  Bind column width with table width.
+     *  Set column display alignment.
+     */
     private void setCovidCasesTable(){
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
         totalCasesColumn.setCellValueFactory(new PropertyValueFactory<>("totalCases"));
@@ -195,9 +217,14 @@ public class ConfirmedCasesController implements Initializable {
         totalCasesPerMillionColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
     }
 
-    private void sortCountrySelectionColumn(TableView<CountrySelection> countrySelection) {
+    /**
+     * Sort CountrySelectionColumn to put selected countries at top.
+     *
+     * @param countrySelectionTable The countrySelectionTable that user is using.
+     */
+    private void sortCountrySelectionColumn(TableView<CountrySelection> countrySelectionTable) {
         // once chosen, will move up to the top
-        countrySelection.getItems().sort((o1,o2) -> {
+        countrySelectionTable.getItems().sort((o1,o2) -> {
             if (o1.getSelect().isSelected() && !o2.getSelect().isSelected())
                 return -1;
             else if (!o1.getSelect().isSelected() && o2.getSelect().isSelected())
@@ -206,9 +233,12 @@ public class ConfirmedCasesController implements Initializable {
                 return o1.getName().compareTo(o2.getName());
             }
         });
-        countrySelection.sort();
+        countrySelectionTable.sort();
     }
 
+    /**
+     *  Initialize confirmedCases LineChart x-axis,y-axis property.
+     */
     private void setConfirmedCasesLineChart() {
         chartXAxis.setLabel("Date");
         chartYAxis.setLabel("Number of Cases");
@@ -228,6 +258,10 @@ public class ConfirmedCasesController implements Initializable {
         chartXAxis.setUpperBound(LocalDate.of(2021,7,20).toEpochDay());
     }
 
+    /**
+     * This method is called when the ConfirmedCases scene is going to be displayed.
+     * It initializes the ConfirmedCases scene.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // initalize table
@@ -270,6 +304,10 @@ public class ConfirmedCasesController implements Initializable {
 
     @FXML
     Button generateTableButton;
+
+    /**
+     *  Set generate table button on clicked.
+     */
     @FXML
     void generateTableButtonClicked(ActionEvent event) {
         if (dateForTable == null) {
@@ -341,6 +379,9 @@ public class ConfirmedCasesController implements Initializable {
     @FXML
     private Label nodeLabel;
 
+    /**
+     * Set curve in lineChart is Hovered.
+     */
     private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
         seriesPath.setStroke(strokeColor);
         seriesPath.setStrokeWidth(strokeWidth);
@@ -348,6 +389,9 @@ public class ConfirmedCasesController implements Initializable {
         seriesPath.toFront();
     }
 
+    /**
+     *  Set node in curve is hovered -> display country and corresponding datum in label.
+     */
     private void setNodeHovered(){
         for (XYChart.Series<Number,Number> series : confirmedCasesLineChart.getData()){
             Path seriesPath = (Path) series.getNode();
@@ -383,6 +427,10 @@ public class ConfirmedCasesController implements Initializable {
         }
     }
 
+    /**
+     *  Generate the curves corresponding to selected countries and period.
+     * @param event generate chart button is clicked
+     */
     @FXML
     void generateChartButtonClicked(ActionEvent event) {
         Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);
@@ -472,6 +520,11 @@ public class ConfirmedCasesController implements Initializable {
     @FXML
     private ImageView tableHomeImage;
 
+    /**
+     * Switch to the home scene.
+     * @param event switchToHomeImage is clicked
+     * @throws IOException
+     */
     @FXML
     void switchToHomeScene(MouseEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/ui/home.fxml"));
@@ -500,6 +553,10 @@ public class ConfirmedCasesController implements Initializable {
     @FXML
     CheckBox selectAllForTable;
 
+    /**
+     * Select all countries in the table.
+     * @param event select all button in table tab is clicked.
+     */
     @FXML
     void selectAllForTableClicked(ActionEvent event) {
         boolean tick = selectAllForTable.selectedProperty().get();
@@ -519,6 +576,10 @@ public class ConfirmedCasesController implements Initializable {
     @FXML
     CheckBox selectAllForChart;
 
+    /**
+     * Select all countries in the table.
+     * @param event select all button in chart tab is clicked.
+     */
     @FXML
     void selectAllForChartClicked(ActionEvent event) {
         boolean tick = selectAllForChart.selectedProperty().get();
@@ -535,6 +596,10 @@ public class ConfirmedCasesController implements Initializable {
             }
     }
 
+    /**
+     * Change the table/bar chart to be visible.
+     * @param event "Table"/"Total Confirmed Cases Bar Chart"/"Total Confirmed Cases Per Million Bar Chart" radio button is clicked.
+     */
     @FXML
     void getGraph(ActionEvent event) {
         if (tableRadioButton.isSelected()) {

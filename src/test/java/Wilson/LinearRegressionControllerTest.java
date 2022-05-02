@@ -71,7 +71,7 @@ public class LinearRegressionControllerTest extends ApplicationTest{
     }
 
     @Test
-    public void dateAlert(){
+    public void dataNotFoundAlert(){
         clickOn("Fully Vaccination Rate");
         clickOn("#yParameterList");
 
@@ -109,5 +109,104 @@ public class LinearRegressionControllerTest extends ApplicationTest{
         press(KeyCode.A);
         write("United");
         clickOn("United States");
+    }
+
+    @Test
+    public void countryNotFoundAlert(){
+        clickOn("#countryTextField");
+        write("gdsfgsfdg");
+
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateButton");
+        clickOn("OK");
+    }
+
+    @Test
+    public void startDateEqualsEndDateAlert(){
+        clickOn("#countryTextField");
+        write("Hong Kong");
+
+        clickOn("#xParameterList");
+        clickOn("#yParameterList");
+        clickOn("#generateButton");
+
+        clickOn("#startDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        clickOn("#endDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateButton");
+        clickOn("OK");
+    }
+
+    @Test
+    public void startDateAfterEndDateAlert(){
+        clickOn("#countryTextField");
+        write("Hong Kong");
+
+        clickOn("#xParameterList");
+        clickOn("#yParameterList");
+        clickOn("#generateButton");
+
+        clickOn("#startDatePicker");
+        write("5/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        clickOn("#endDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateButton");
+        clickOn("OK");
+    }
+
+    @Test
+    public void startDateNotFoundAlert(){
+        clickOn("#countryTextField");
+        write("Hong Kong");
+
+        clickOn("#xParameterList");
+        clickOn("#yParameterList");
+
+        clickOn("#endDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateButton");
+        clickOn("OK");
+    }
+
+    @Test
+    public void endDateNotFoundAlert(){
+        clickOn("#countryTextField");
+        write("Hong Kong");
+
+        clickOn("#xParameterList");
+        clickOn("#yParameterList");
+
+        clickOn("#startDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateButton");
+        clickOn("OK");
+    }
+
+    @Test
+    public void invalidParameterAlert(){
+        clickOn("#countryTextField");
+        write("Hong Kong");
+
+        clickOn("#startDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        clickOn("#endDatePicker");
+        write("7/7/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateButton");
+        clickOn("OK");
     }
 }

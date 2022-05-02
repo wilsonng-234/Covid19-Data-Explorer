@@ -72,6 +72,10 @@ public class LinearRegressionController implements Initializable {
     private HashSet<String> countries = getCountries(dataset);
     private List<String> sortedCountries;
 
+    /**
+     * This method is called when the LinearRegression scene is going to be displayed.
+     * It initializes the LinearRegression scene.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         sortedCountries = new ArrayList<>();
@@ -128,25 +132,10 @@ public class LinearRegressionController implements Initializable {
                         lineChart.getData().clear();
                         String country1 = countryTextField.getText();
 
-                        if (country1 == null) {
-                                Alert countryNotChosenAlert = new Alert(Alert.AlertType.WARNING);
-                                countryNotChosenAlert.setTitle("COUNTRY NOT CHOSEN");
-                                countryNotChosenAlert.setContentText("Please choose at least a country first");
-
-                                countryNotChosenAlert.showAndWait().ifPresent(
-                                        new Consumer<ButtonType>() {
-                                            @Override
-                                            public void accept(ButtonType buttonType) {
-                                            }
-                                        }
-                                        );
-                                return;
-                        }
-
                         if (!countries.contains(country1)){
                             Alert countryNotFound = new Alert(Alert.AlertType.WARNING);
                             countryNotFound.setTitle("COUNTRIES NOT FOUND");
-                            countryNotFound.setContentText("Country is not found");
+                            countryNotFound.setContentText("Country is not found.\nPlease enter the country name again with correct letter case.");
 
                             countryNotFound.showAndWait().ifPresent(
                                     new Consumer<ButtonType>() {
@@ -162,6 +151,21 @@ public class LinearRegressionController implements Initializable {
                         String xParameter = xParameterList.getSelectionModel().getSelectedItem();
                         String yParameter = yParameterList.getSelectionModel().getSelectedItem();
 
+                        Alert parameterNotFound = new Alert(Alert.AlertType.WARNING);
+                        if (xParameter == null || yParameter == null){
+                            parameterNotFound.setTitle("Parameter NOT FOUND");
+                            parameterNotFound.setContentText("Please enter both parameters of x-axis and y-axis");
+
+                            parameterNotFound.showAndWait().ifPresent(
+                                    new Consumer<ButtonType>() {
+                                        @Override
+                                        public void accept(ButtonType buttonType) {
+                                        }
+                                    }
+                            );
+
+                            return;
+                        }
                         lineChart.getXAxis().setLabel(xParameter);
                         lineChart.getYAxis().setLabel(yParameter);
 
@@ -242,6 +246,10 @@ public class LinearRegressionController implements Initializable {
         chartYaxis.setAutoRanging(false);
     }
 
+    /**
+     * This method validate the user input in startDatePicker and endDatePicker.
+     * @return startDate and endDate are both valid.
+     */
     private Boolean validateDate(){
         LocalDate startDate = startDatePicker.getValue();
         LocalDate endDate = endDatePicker.getValue();
@@ -304,6 +312,16 @@ public class LinearRegressionController implements Initializable {
         return true;
     }
 
+    /**
+     * This method generates curve with user's input parameter and period of interest.
+     * Also, a linear regression line corresponding to the curve is generated.
+     *
+     * @param country The selected country
+     * @param xParameter The x-axis parameter
+     * @param yParameter The y-axis parameter
+     * @param startDate The startDate of the period
+     * @param endDate The endDate of the period
+     */
     private void addCountryLine(String country,String xParameter,String yParameter,LocalDate startDate,LocalDate endDate){
         List<Double> xList = getData(country, xParameter, startDate, endDate);
         List<Double> yList = getData(country, yParameter, startDate, endDate);
@@ -384,6 +402,11 @@ public class LinearRegressionController implements Initializable {
         }
     }
 
+    /**
+     * Switch to the home scene.
+     * @param event switchToHomeImage is clicked
+     * @throws IOException
+     */
     @FXML
     void switchToHomeScene(MouseEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/ui/home.fxml"));
@@ -393,6 +416,11 @@ public class LinearRegressionController implements Initializable {
         stage.show();
     }
 
+    /**
+     * This method get all the countries' name in the dataset.
+     * @param dataset The dataset
+     * @return HashSet<String> containing all the countries' name
+     */
     private HashSet<String> getCountries(String dataset){
         HashSet<String> countries = new HashSet<String>();
 
@@ -407,6 +435,14 @@ public class LinearRegressionController implements Initializable {
         return countries;
     }
 
+    /**
+     * This method get data of a country within a period with specified parameter.
+     * @param country The selected country
+     * @param parameter The parameter of interest
+     * @param startDate The startDate of the period
+     * @param endDate   The endDate of the period
+     * @return a list of data
+     */
     private List<Double> getData(String country,String parameter,LocalDate startDate,LocalDate endDate){
         List<Double> data = new ArrayList<Double>();
 
