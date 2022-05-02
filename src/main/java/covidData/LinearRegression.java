@@ -11,6 +11,11 @@ public class LinearRegression {
     private final double r2;
     private final double svar0, svar1;
 
+    /**
+     * Calculate the regression line based on input list of x and list of y
+     * @param x List of x values
+     * @param y List of y values
+     */
     public LinearRegression(List<Double> x, List<Double> y) {
         if (x.size() != y.size()) {
             throw new IllegalArgumentException("array lengths are not equal");
@@ -53,18 +58,34 @@ public class LinearRegression {
         svar0 = svar/n + xbar*xbar*svar1;
     }
 
+    /**
+     * @return intercept
+     */
     public double intercept() {
         return intercept;
     }
 
+    /**
+     *
+     * @return slope
+     */
     public double slope() {
         return slope;
     }
 
+    /**
+     *
+     * @return r^2
+     */
     public double R2() {
         return r2;
     }
 
+    /**
+     * use x datum value to predict y value
+     * @param x x datum value
+     * @return predicted y value
+     */
     public double predict(double x) {
         return slope*x + intercept;
     }

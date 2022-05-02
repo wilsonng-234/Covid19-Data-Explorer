@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 
+/**
+ *  CovidData is an abstract class that contains user input : startDate,endDate,dataset,countries.
+ */
 public abstract class CovidData {
     protected LocalDate startDate;
     protected LocalDate endDate;
@@ -24,9 +27,28 @@ public abstract class CovidData {
         this.endDate = endDate;
     }
 
+    /**
+     * get user input startDate
+     * @return startDate
+     */
     public LocalDate getstartDate(){ return startDate; }
+
+    /**
+     * get user input endDate
+     * @return endDate
+     */
     public LocalDate getendDate(){ return endDate; }
-    public HashSet<String>  getCountriesIsoCode() { return countries; }
+
+    /**
+     * get user input countries
+     * @return HashSet<String> containing the user input countries
+     */
+    public HashSet<String> getCountries() { return countries; }
+
+    /**
+     * get dataset name
+     * @return dataset name
+     */
     public String getDataset() { return dataset; }
 
 //    public List<String> countryToISO (List<String> countries){
