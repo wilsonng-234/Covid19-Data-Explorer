@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="664.0" minWidth="960.0" prefHeight="664.0" prefWidth="960.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.HomeController">
+   <children>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <center>
+            <VBox alignment="CENTER" prefHeight="327.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="172.0" fitWidth="184.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/home.png" />
+                     </image>
+                  </ImageView>
+                  <HBox alignment="CENTER" prefHeight="153.0" prefWidth="550.0">
+                     <children>
+                        <ImageView fx:id="ConfirmedCasesIcon" fitHeight="113.0" fitWidth="119.0" onMouseClicked="#switchToConfirmedCasesScene" pickOnBounds="true" preserveRatio="true" translateY="30.0">
+                           <image>
+                              <Image url="@../images/virus_icon.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets bottom="50.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <ImageView fx:id="DeathCasesIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToDeathCasesScene" pickOnBounds="true" preserveRatio="true" scaleX="1.1" scaleY="1.1">
+                           <image>
+                              <Image url="@../images/death_icon.jpg" />
+                           </image>
+                           <HBox.margin>
+                              <Insets left="50.0" top="10.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <ImageView fx:id="VaccinationIcon" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#switchToRateOfVaccinationScene" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/vaccination_icon.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="LinearRegressionIcon" fitHeight="198.0" fitWidth="150.0" onMouseClicked="#switchToLinearRegressionScene" pickOnBounds="true" preserveRatio="true" scaleX="1.2" scaleY="1.5">
+                           <image>
+                              <Image url="@../images/linear_regression_icon.jpg" />
+                           </image>
+                           <HBox.margin>
+                              <Insets top="20.0" />
+                           </HBox.margin>
+                        </ImageView>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="38.0" prefWidth="468.0" spacing="20.0">
+                     <children>
+                        <Label prefHeight="19.0" prefWidth="303.0" text="Confirmed Cases">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="-50.0" />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="180.0" />
+                           </padding>
+                        </Label>
+                        <Label prefHeight="19.0" prefWidth="167.0" text="Death Cases" translateX="11.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="-10.0" />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="53.0" />
+                           </padding>
+                        </Label>
+                        <Label prefHeight="19.0" prefWidth="197.0" text="Vaccination" translateX="33.0">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets left="30.0" />
+                           </padding>
+                        </Label>
+                        <Label prefHeight="19.0" prefWidth="246.0" text="Linear Regression">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <padding>
+                              <Insets left="-15.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </VBox>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>

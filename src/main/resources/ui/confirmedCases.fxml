@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="664.0" minWidth="950.0" prefHeight="664.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.ConfirmedCasesController">
+   <children>
+      <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab fx:id="tableTab" text="Daily Satistics">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
+                     <children>
+                        <ImageView fx:id="tableHomeImage" fitHeight="71.0" fitWidth="62.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="471.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                           <image>
+                              <Image url="@../images/home.png" />
+                           </image>
+                        </ImageView>
+                        <DatePicker fx:id="datePickerForTable" layoutX="308.0" layoutY="29.0" AnchorPane.leftAnchor="360.0" />
+                        <Text layoutX="265.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date:" AnchorPane.leftAnchor="320.0" />
+                        <StackPane layoutX="288.0" layoutY="110.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="288.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="110.0">
+                           <children>
+                              <TableView fx:id="covidCasesTable" prefHeight="489.0" prefWidth="650.0">
+                                <columns>
+                                  <TableColumn fx:id="countryColumn" prefWidth="267.0" text="Country" />
+                                  <TableColumn fx:id="totalCasesColumn" prefWidth="190.0" text="Total Cases" />
+                                    <TableColumn fx:id="totalCasesPerMillionColumn" prefWidth="202.0" text="Total Cases (Per 1M)" />
+                                </columns>
+                              </TableView>
+                              <BarChart fx:id="totalCasesBarChart" legendSide="TOP">
+                                 <xAxis>
+                                    <NumberAxis fx:id="fullyBarChartYAxis" side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <CategoryAxis fx:id="fullyBarChartXAxis" side="LEFT" />
+                                 </yAxis>
+                                 <padding>
+                                    <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
+                                 </padding>
+                              </BarChart>
+                              <BarChart fx:id="perMillionBarChart" legendSide="TOP">
+                                 <xAxis>
+                                    <NumberAxis fx:id="fullyBarChartYAxis1" side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <CategoryAxis fx:id="fullyBarChartXAxis1" side="LEFT" />
+                                 </yAxis>
+                                 <padding>
+                                    <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
+                                 </padding>
+                              </BarChart>
+                           </children>
+                        </StackPane>
+                        <Label layoutX="47.0" layoutY="29.0" text="Select Countries" AnchorPane.leftAnchor="47.0">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="countrySelectionTableForTable" layoutX="14.0" layoutY="72.0" prefHeight="493.0" prefWidth="270.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="72.0">
+                           <columns>
+                              <TableColumn fx:id="countrySelectionColumnForTable" prefWidth="209.0" text="Country" />
+                              <TableColumn fx:id="checkBoxSelectionColumnForTable" prefWidth="49.0" text="Select" />
+                           </columns></TableView>
+                        <Button fx:id="generateTableButton" layoutX="172.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateTableButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate" AnchorPane.bottomAnchor="14.0" />
+                        <CheckBox fx:id="selectAllForTable" layoutX="207.0" layoutY="32.0" mnemonicParsing="false" onAction="#selectAllForTableClicked" text="Select All" AnchorPane.leftAnchor="207.0" />
+                        <Text fx:id="tableTitle" layoutX="314.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Covid Cases as of Date" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="505.0" AnchorPane.leftAnchor="314.0" AnchorPane.topAnchor="72.0">
+                           <font>
+                              <Font size="23.0" />
+                           </font>
+                        </Text>
+                        <RadioButton fx:id="tableRadioButton" layoutX="335.0" layoutY="574.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="16.0" prefWidth="72.0" text="Table" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="335.0">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="toggleGroup" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="totalCasesRadioButton" layoutX="414.0" layoutY="576.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="16.0" prefWidth="219.0" text="Total Confirmed Cases Bar Chart" toggleGroup="$toggleGroup" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="410.0" />
+                        <RadioButton fx:id="totalCasesPerMillionRadioButton" layoutX="553.0" layoutY="576.0" mnemonicParsing="false" onAction="#getGraph" text="Total Confirmed Cases Per Million Bar Chart" toggleGroup="$toggleGroup" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="630.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="chartTab" text="Period Satistics">
+            <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
+                     <children>
+                        <ImageView fx:id="chartHomeImage" fitHeight="42.0" fitWidth="43.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="555.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                           <image>
+                              <Image url="@../images/home.png" />
+                           </image>
+                        </ImageView>
+                        <DatePicker fx:id="startDatePicker" layoutX="308.0" layoutY="29.0" AnchorPane.leftAnchor="360.0" />
+                        <Text layoutX="321.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From:" wrappingWidth="44.21484375" AnchorPane.leftAnchor="321.0" />
+                        <Label layoutX="47.0" layoutY="29.0" text="Select Countries" AnchorPane.leftAnchor="47.0">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="countrySelectionTableForChart" layoutX="14.0" layoutY="72.0" prefHeight="493.0" prefWidth="270.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="72.0">
+                           <columns>
+                              <TableColumn fx:id="countrySelectionColumnForChart" prefWidth="209.0" text="Country" />
+                              <TableColumn fx:id="checkBoxSelectionColumnForChart" prefWidth="49.0" text="Select" />
+                           </columns>
+                        </TableView>
+                        <Button fx:id="generateChartButton" layoutX="172.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateChartButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate Chart" AnchorPane.bottomAnchor="14.0" />
+                        <CheckBox fx:id="selectAllForChart" layoutX="207.0" layoutY="32.0" mnemonicParsing="false" onAction="#selectAllForChartClicked" text="Select All" AnchorPane.leftAnchor="207.0" />
+                        <LineChart fx:id="confirmedCasesLineChart" layoutX="288.0" layoutY="83.0" prefHeight="494.0" prefWidth="641.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="288.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="83.0">
+                          <xAxis>
+                            <NumberAxis fx:id="chartXAxis" side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis fx:id="chartYAxis" side="LEFT" />
+                          </yAxis>
+                        </LineChart>
+                        <Text layoutX="586.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" />
+                        <DatePicker fx:id="endDatePicker" layoutX="609.0" layoutY="29.0" />
+                        <Label fx:id="nodeLabel" layoutX="801.0" layoutY="61.0" prefHeight="75.0" prefWidth="128.0" AnchorPane.rightAnchor="21.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
