@@ -54,7 +54,7 @@ public class CountrySelection implements Comparable<CountrySelection>{
     /**
      * Compare two check boxes by name lexicographically
      * @param o another CountrySelection
-     * @return 0 if equal names , 1 if this.name lexicographically follows o.name , -1 otherwise
+     * @return difference in lexicographically order
      */
     @Override
     public int compareTo(CountrySelection o) {
