@@ -33,10 +33,10 @@ public class LinearRegressionController implements Initializable {
     private String dataset = "COVID_Dataset_v1.0.csv";
 
     @FXML
-    private TextField countryTextField;
+    TextField countryTextField;
 
     @FXML
-    private ContextMenu countryContextMenu;
+    ContextMenu countryContextMenu;
 
     @FXML
     private ImageView HomeImage;
@@ -51,19 +51,19 @@ public class LinearRegressionController implements Initializable {
     private NumberAxis chartYaxis;
 
     @FXML
-    private DatePicker endDatePicker;
+    DatePicker startDatePicker;
 
     @FXML
-    private DatePicker startDatePicker;
+    DatePicker endDatePicker;
 
     @FXML
-    private ListView<String> xParameterList;
+    ListView<String> xParameterList;
 
     @FXML
-    private ListView<String> yParameterList;
+    ListView<String> yParameterList;
 
     @FXML
-    private Button generateButton;
+    Button generateButton;
 
     private HashSet<String> countries = getCountries(dataset);
     private List<String> sortedCountries;
@@ -330,6 +330,7 @@ public class LinearRegressionController implements Initializable {
             }
 
             System.out.println(linearRegression.slope() + "\t intercept: " + linearRegression.intercept());
+
             chartXaxis.setLowerBound(xList.get(0) - 1);
             chartXaxis.setUpperBound(xList.get(xList.size() - 1) + 1);
 
