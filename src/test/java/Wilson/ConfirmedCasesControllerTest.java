@@ -138,4 +138,14 @@ public class ConfirmedCasesControllerTest extends ApplicationTest {
         clickOn("#generateChartButton");
         clickOn("OK");
     }
+
+    @Test
+    public void selectAll(){
+        clickOn("#selectAllForTable");
+        clickOn("#selectAllForTable");
+
+        clickOn("#chartTab");
+        clickOn("#selectAllForChart");
+        clickOn("#selectAllForChart");
+    }
 }

@@ -175,12 +175,12 @@ public class ConfirmedCasesController implements Initializable {
                         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                             System.out.println(row.getName());
                             if (newValue){
-                                assert (!selectedCountries.contains(row.getName()));
+                                //assert (!selectedCountries.contains(row.getName()));
 
                                 selectedCountries.add(row.getName());
                             }
                             else{
-                                assert (selectedCountries.contains(row.getName()));
+                                //assert (selectedCountries.contains(row.getName()));
 
                                 selectedCountries.remove(row.getName());
                             }
