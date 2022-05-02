@@ -41,32 +41,32 @@ import static covidData.ConfirmedCasesRecord.NOT_FOUND;
 
 public class ConfirmedCasesController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
-    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMMM d,yyyy");
+    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMMM d,yyyy",Locale.ENGLISH);
 
     @FXML
     private AnchorPane rootPane;
 
     @FXML
-    private Tab tableTab;
+    Tab tableTab;
     @FXML
-    private Tab chartTab;
+    Tab chartTab;
 
     // datePicker
     @FXML
-    private DatePicker datePickerForTable;
+    DatePicker datePickerForTable;
     private LocalDate dateForTable = null;
 
     @FXML
-    private DatePicker startDatePicker;
+    DatePicker startDatePicker;
     private LocalDate startDate = null;
 
     @FXML
-    private DatePicker endDatePicker;
+    DatePicker endDatePicker;
     private LocalDate endDate = null;
 
     // countrySelectionTable
     @FXML
-    private TableView<CountrySelection> countrySelectionTableForTable;
+    TableView<CountrySelection> countrySelectionTableForTable;
     @FXML
     private TableColumn<CountrySelection,CheckBox> countrySelectionColumnForTable;
     @FXML
@@ -91,6 +91,10 @@ public class ConfirmedCasesController implements Initializable {
     private TableColumn<ConfirmedCasesRecord,String> totalCasesColumn;
     @FXML
     private TableColumn<ConfirmedCasesRecord,String> totalCasesPerMillionColumn;
+    @FXML
+    private BarChart<Number,String> totalCasesBarChart;
+    @FXML
+    private BarChart<Number,String> perMillionBarChart;
     // -----------
 
     // covidCasesLineChart
@@ -107,18 +111,18 @@ public class ConfirmedCasesController implements Initializable {
     private ToggleGroup toggleGroup;
 
     @FXML
-    private RadioButton tableRadioButton;
+    RadioButton tableRadioButton;
     @FXML
-    private RadioButton totalCasesRadioButton;
+    RadioButton totalCasesRadioButton;
     @FXML
-    private RadioButton totalCasesPerMillionRadioButton;
+    RadioButton totalCasesPerMillionRadioButton;
     // ---------
 
 
     HashSet<String> selectedCountriesForTable = new HashSet<>();
     HashSet<String> selectedCountriesForChart = new HashSet<>();
 
-    private void setTableTitleWidth(){
+    public void setTableTitleWidth(){
         tableTitle.wrappingWidthProperty().bind(
                 covidCasesTable.widthProperty()
         );
@@ -215,16 +219,13 @@ public class ConfirmedCasesController implements Initializable {
             public String toString(final Number object) {
                 long epochDay = object.longValue();
                 LocalDate date = LocalDate.ofEpochDay(epochDay);
-                String[] dateStringArray = date.toString().split("-");
-                String dateString = dateStringArray[0] + "-" + dateStringArray[1] + "-" + dateStringArray[2];
 
-                return dateString;
+                return date.format(displayDateFormatter);
             }
         });
         chartXAxis.setAutoRanging(false);
         chartXAxis.setLowerBound(LocalDate.of(2020,3,1).toEpochDay());
         chartXAxis.setUpperBound(LocalDate.of(2021,7,20).toEpochDay());
-        chartXAxis.setTickUnit((LocalDate.of(2021,7,20).toEpochDay()-LocalDate.of(2020,3,1).toEpochDay())/4.0);
     }
 
     @Override
@@ -268,7 +269,7 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     @FXML
-    private Button generateTableButton;
+    Button generateTableButton;
     @FXML
     void generateTableButtonClicked(ActionEvent event) {
         if (dateForTable == null) {
@@ -336,9 +337,16 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     @FXML
-    private Button generateChartButton;
+    Button generateChartButton;
     @FXML
     private Label nodeLabel;
+
+    private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
+        seriesPath.setStroke(strokeColor);
+        seriesPath.setStrokeWidth(strokeWidth);
+        if(!toFront){ return; }
+        seriesPath.toFront();
+    }
 
     private void setNodeHovered(){
         for (XYChart.Series<Number,Number> series : confirmedCasesLineChart.getData()){
@@ -373,13 +381,6 @@ public class ConfirmedCasesController implements Initializable {
                 });
             }
         }
-    }
-
-    private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
-        seriesPath.setStroke(strokeColor);
-        seriesPath.setStrokeWidth(strokeWidth);
-        if(!toFront){ return; }
-        seriesPath.toFront();
     }
 
     @FXML
@@ -497,7 +498,7 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     @FXML
-    private CheckBox selectAllForTable;
+    CheckBox selectAllForTable;
 
     @FXML
     void selectAllForTableClicked(ActionEvent event) {
@@ -516,7 +517,7 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     @FXML
-    private CheckBox selectAllForChart;
+    CheckBox selectAllForChart;
 
     @FXML
     void selectAllForChartClicked(ActionEvent event) {
@@ -535,12 +536,6 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     @FXML
-    private BarChart<Number,String> totalCasesBarChart;
-
-    @FXML
-    private BarChart<Number,String> perMillionBarChart;
-
-    @FXML
     void getGraph(ActionEvent event) {
         if (tableRadioButton.isSelected()) {
             covidCasesTable.setVisible(true);
@@ -557,5 +552,4 @@ public class ConfirmedCasesController implements Initializable {
             perMillionBarChart.setVisible(true);
         }
     }
-
 }
