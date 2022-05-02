@@ -10,6 +10,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -26,7 +27,7 @@
     <children>
         <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
-                <Tab fx:id="tableTab" text="Daily Satistics">
+                <Tab fx:id="tableTab" text="Daily Statistics">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
                             <children>
@@ -47,7 +48,7 @@
                                         <TableColumn fx:id="countrySelectionColumnForTable" prefWidth="209.0" text="Country" />
                                         <TableColumn fx:id="checkBoxSelectionColumnForTable" prefWidth="49.0" text="Select" />
                                     </columns></TableView>
-                                <Button fx:id="generateTableButton" layoutX="179.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateTableButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate Table" AnchorPane.bottomAnchor="15.0" />
+                                <Button fx:id="generateTableButton" layoutX="179.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateTableButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate" AnchorPane.bottomAnchor="15.0" />
                                 <CheckBox fx:id="selectAllForTable" layoutX="211.0" layoutY="45.0" mnemonicParsing="false" onAction="#selectAllForTableClicked" text="Select All" AnchorPane.leftAnchor="211.0" />
                                 <Text fx:id="tableTitleText" layoutX="314.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Title" textAlignment="CENTER" wrappingWidth="600.0" AnchorPane.bottomAnchor="505.0" AnchorPane.leftAnchor="314.0" AnchorPane.topAnchor="72.0">
                                     <font>
@@ -66,28 +67,30 @@
                                     <Insets bottom="-10.0" />
                                  </StackPane.margin>
                                       </TableView>
-                              <BarChart fx:id="fullyBarChart" legendSide="TOP">
-                                <xAxis>
-                                  <NumberAxis fx:id="fullyBarChartYAxis" side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <CategoryAxis fx:id="fullyBarChartXAxis" side="LEFT" />
-                                </yAxis>
-                                 <padding>
-                                    <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
-                                 </padding>
-                              </BarChart>
-                              <BarChart fx:id="rateBarChart" legendSide="TOP">
-                                 <xAxis>
-                                    <NumberAxis fx:id="rateBarChartYAxis" side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <CategoryAxis fx:id="rateBarChartXAxis" side="LEFT" />
-                                 </yAxis>
-                                 <padding>
-                                    <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
-                                 </padding>
-                              </BarChart>
+                              <ScrollPane fx:id="fullyBarCharScrollPane" prefHeight="200.0" prefWidth="200.0">
+                                 <content>
+                                    <BarChart fx:id="fullyBarChart" legendSide="TOP">
+                                      <xAxis>
+                                        <NumberAxis fx:id="fullyBarChartYAxis" side="BOTTOM" />
+                                      </xAxis>
+                                      <yAxis>
+                                        <CategoryAxis fx:id="fullyBarChartXAxis" side="LEFT" />
+                                      </yAxis>
+                                    </BarChart>
+                                 </content>
+                              </ScrollPane>
+                              <ScrollPane fx:id="rateBarCharScrollPane" prefHeight="200.0" prefWidth="200.0">
+                                 <content>
+                                    <BarChart fx:id="rateBarChart" legendSide="TOP">
+                                       <xAxis>
+                                          <NumberAxis fx:id="rateBarChartYAxis" side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <CategoryAxis fx:id="rateBarChartXAxis" side="LEFT" />
+                                       </yAxis>
+                                    </BarChart>
+                                 </content>
+                              </ScrollPane>
                            </children>
                         </StackPane>
                         <RadioButton fx:id="tableRadioButton" layoutX="325.0" layoutY="584.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="18.0" prefWidth="117.0" text="over view table" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="325.0" AnchorPane.rightAnchor="518.0">
@@ -97,11 +100,12 @@
                         </RadioButton>
                         <RadioButton fx:id="fullBarChartRadioButton" layoutX="460.0" layoutY="584.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="18.0" prefWidth="166.0" text="chart for fully vaccinated" toggleGroup="$tableOrChart" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="334.0" />
                         <RadioButton fx:id="rateBarChartRadioButton" layoutX="640.0" layoutY="584.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="18.0" prefWidth="206.0" text="chart for rate of vaccination" toggleGroup="$tableOrChart" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="640.0" AnchorPane.rightAnchor="114.0" />
+                        <Label fx:id="remarkForBarChartLabel" layoutX="573.0" layoutY="36.0" prefHeight="36.0" prefWidth="379.0" text="Remark: output becomes 0 if data can't found on excetly that day" />
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab fx:id="chartTab" text="Period Satistics">
+                <Tab fx:id="chartTab" text="Period Statistics">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
                             <children>
@@ -123,7 +127,7 @@
                                         <TableColumn fx:id="checkBoxSelectionColumnForChart" prefWidth="49.0" text="Select" />
                                     </columns>
                                 </TableView>
-                                <Button fx:id="generateChartButton" layoutX="179.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateChartButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate Chart" AnchorPane.bottomAnchor="15.0" />
+                                <Button fx:id="generateChartButton" layoutX="179.0" layoutY="572.0" mnemonicParsing="false" onAction="#generateChartButtonClicked" prefHeight="23.0" prefWidth="112.0" text="Generate" AnchorPane.bottomAnchor="15.0" />
                                 <CheckBox fx:id="selectAllForChart" layoutX="211.0" layoutY="45.0" mnemonicParsing="false" onAction="#selectAllForChartClicked" text="Select All" AnchorPane.leftAnchor="209.0" />
                                 <LineChart fx:id="vaccinationRateLineChart" layoutX="301.0" layoutY="99.0" prefHeight="494.0" prefWidth="628.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="301.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="99.0">
                                     <xAxis>

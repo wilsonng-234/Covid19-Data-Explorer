@@ -8,9 +8,12 @@ public class ConfirmedCasesRecord {
      *  NOT_FOUND String indicates datum is not found as of the date
      */
     final public static String NOT_FOUND = "NOT FOUND";
-    private String country;
-    private String totalCases;
-    private String totalCasesPerMillion;
+
+    String country;
+    String totalCases;
+    String totalCasesPerMillion;
+
+    
 
     /**
      *

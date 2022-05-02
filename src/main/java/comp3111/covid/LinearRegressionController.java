@@ -33,10 +33,12 @@ public class LinearRegressionController implements Initializable {
     private String dataset = "COVID_Dataset_v1.0.csv";
 
     @FXML
+
     TextField countryTextField;
 
     @FXML
     ContextMenu countryContextMenu;
+
 
     @FXML
     private ImageView HomeImage;
@@ -51,6 +53,7 @@ public class LinearRegressionController implements Initializable {
     private NumberAxis chartYaxis;
 
     @FXML
+
     DatePicker startDatePicker;
 
     @FXML
@@ -64,6 +67,7 @@ public class LinearRegressionController implements Initializable {
 
     @FXML
     Button generateButton;
+
 
     private HashSet<String> countries = getCountries(dataset);
     private List<String> sortedCountries;
@@ -332,7 +336,9 @@ public class LinearRegressionController implements Initializable {
             double intercept = linearRegression.intercept();
 
             XYChart.Series<Number, Number> regressionSeries = new XYChart.Series<>();
+
             regressionSeries.setName("Regression Line - " + country);
+
 
             for (Double xDatum : xList) {
                 XYChart.Data<Number, Number> data = new XYChart.Data<Number, Number>(xDatum, linearRegression.predict(xDatum));

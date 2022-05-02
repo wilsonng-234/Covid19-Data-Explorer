@@ -38,8 +38,12 @@ public class HomeController {
      * @throws IOException
      */
     @FXML
-    void switchToDeathCasesScene(MouseEvent event) throws IOException {
-
+    void switchToDeathCasesScene(MouseEvent event) throws IOException{
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/confirmedDeath.fxml"));
+        Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML

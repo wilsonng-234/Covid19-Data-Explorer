@@ -34,11 +34,10 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import static comp3111.covid.DataAnalysis.getFileParser;
-import static covidData.VaccinationRateRecord.NOT_FOUND;
 
 public class VaccinationRateController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
-    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMMM d,yyyy");
+    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMM d,yyyy", Locale.ENGLISH);
     private final List<String> defaultCountries = Arrays.asList("Hong Kong", "India", "Israel", "Japan", "Singapore", "United Kingdom", "United States", "World");
     String tableTitle = "Rate of Vaccination against COVID-19 as of ";
     String tableColumn1 = "Fully Vaccinated";
@@ -97,11 +96,15 @@ public class VaccinationRateController implements Initializable {
     private TableColumn<VaccinationRateRecord,String> rateColumn;
 
     @FXML
+    public ScrollPane fullyBarCharScrollPane;
+    @FXML
     private BarChart<Number, String> fullyBarChart;
     @FXML
     private CategoryAxis fullyBarChartXAxis;
     @FXML
     private NumberAxis fullyBarChartYAxis;
+    @FXML
+    public ScrollPane rateBarCharScrollPane;
     @FXML
     private BarChart<Number, String> rateBarChart;
     @FXML
@@ -116,6 +119,8 @@ public class VaccinationRateController implements Initializable {
     private RadioButton rateBarChartRadioButton;
     @FXML
     private ToggleGroup tableOrChart;
+    @FXML
+    public Label remarkForBarChartLabel;
     // -----------
 
     // line chart tab
@@ -151,8 +156,8 @@ public class VaccinationRateController implements Initializable {
 
         //init radio button
         tableRadioButton.setSelected(true);
-        fullyBarChart.setVisible(false);
-        rateBarChart.setVisible(false);
+        fullyBarCharScrollPane.setVisible(false);
+        rateBarCharScrollPane.setVisible(false);
 
         // init countrySelection for table
         countrySelectionColumnForTable.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -243,27 +248,33 @@ public class VaccinationRateController implements Initializable {
         LocalDate date = LocalDate.of(2021, 7, 20);
         tableDatePicker.setValue(date);
 
+        fullyBarChart.prefWidthProperty().bind(fullyBarCharScrollPane.widthProperty().divide(1.1));
+        fullyBarChart.animatedProperty().setValue(false);
+        rateBarChart.prefWidthProperty().bind(rateBarCharScrollPane.widthProperty().divide(1.1));
+        rateBarChart.animatedProperty().setValue(false);
         fullyColumn.setText(tableColumn1);
         rateColumn.setText(tableColumn2);
+        remarkForBarChartLabel.setVisible(false);
 
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
         fullyColumn.setCellValueFactory(new PropertyValueFactory<>("fullyVaccinated"));
         rateColumn.setCellValueFactory(new PropertyValueFactory<>("rateOfVaccination"));
 
         countryColumn.prefWidthProperty().bind(
-                vaccinationRateTable.widthProperty().divide(3.0)
+                vaccinationRateTable.widthProperty().divide(3.1)
         );
         fullyColumn.prefWidthProperty().bind(
-                vaccinationRateTable.widthProperty().divide(3.0)
+                vaccinationRateTable.widthProperty().divide(3.1)
         );
         rateColumn.prefWidthProperty().bind(
-                vaccinationRateTable.widthProperty().divide(3.0)
+                vaccinationRateTable.widthProperty().divide(3.1)
         );
 
         fullyColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         rateColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
 
         // init bar chart
+        vaccinationRateLineChart.animatedProperty().setValue(false);
         fullyBarChartXAxis.setLabel("Country");
         fullyBarChartYAxis.setLabel(chartAxisLabel1);
 
@@ -363,12 +374,14 @@ public class VaccinationRateController implements Initializable {
         Collections.sort(sortedSelectedCountriesList);
 
         // generate table and bar char
-        vaccinationRateTable.getItems().removeAll(vaccinationRateTable.getItems());
-        VaccinationRate vaccinationRate = new VaccinationRate(tableDate, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
-        HashMap<String, VaccinationRateRecord> vaccinationRateHashMap = vaccinationRate.getVaccinationRateTable();
+        vaccinationRateTable.getItems().clear();
 
         fullyBarChart.getData().clear();
         rateBarChart.getData().clear();
+
+        VaccinationRate vaccinationRate = new VaccinationRate(tableDate, selectedCountriesForTable,"COVID_Dataset_v1.0.csv");
+        HashMap<String, VaccinationRateRecord> vaccinationRateHashMap = vaccinationRate.getVaccinationRateTable();
+
         XYChart.Series<Number, String> fullySeries = new XYChart.Series<>();
         fullySeries.setName("fully vaccinated");
         XYChart.Series<Number, String> rateSeries = new XYChart.Series<>();
@@ -377,22 +390,34 @@ public class VaccinationRateController implements Initializable {
         NumberFormat numberFormat = NumberFormat.getInstance();
         for (String countryName : sortedSelectedCountriesList) {
             VaccinationRateRecord record = vaccinationRateHashMap.get(countryName);
-            if (!record.getFullyVaccinated().equals(NOT_FOUND)){
-                fullySeries.getData().add(new XYChart.Data<>(Integer.parseInt(record.getFullyVaccinated()), countryName));
-                record.setFullyVaccinated(numberFormat.format(Integer.parseInt(record.getFullyVaccinated())));
+
+            try{
+                String fullyVaccinated = record.getFullyVaccinated();
+                fullyVaccinated = fullyVaccinated.replaceAll(",","");
+
+                fullySeries.getData().add(new XYChart.Data<>(Integer.parseInt(fullyVaccinated),countryName));
             }
-            else {
+            catch(NumberFormatException exception){
                 fullySeries.getData().add(new XYChart.Data<>(0, countryName));
             }
-            if (!record.getFullyVaccinated().equals(NOT_FOUND)){
-                rateSeries.getData().add(new XYChart.Data<>(Double.parseDouble(record.getRateOfVaccination()), countryName));
-                record.setRateOfVaccination(String.format("%.2f%%", Double.parseDouble(record.getRateOfVaccination())));
+
+            try{
+                String rateOfVaccination = record.getRateOfVaccination();
+                rateOfVaccination = rateOfVaccination.replaceAll("%","");
+
+                rateSeries.getData().add(new XYChart.Data<>(Double.parseDouble(rateOfVaccination),countryName));
             }
-            else{
+            catch (NumberFormatException exception){
                 rateSeries.getData().add(new XYChart.Data<>(0, countryName));
             }
+
+            record.setFullyVaccinated(record.getFullyVaccinated());
+            record.setRateOfVaccination(record.getRateOfVaccination());
+
             vaccinationRateTable.getItems().add(record);
         }
+        fullyBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+        rateBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
         fullyBarChart.getData().add(fullySeries);
         rateBarChart.getData().add(rateSeries);
     }
@@ -459,6 +484,19 @@ public class VaccinationRateController implements Initializable {
             );
             return;
         }
+        if (startDate.isEqual(endDate)){
+            invalidDateAlert.setTitle("INVALID DATE INPUT");
+            invalidDateAlert.setContentText("start date cannot be equals to end date!!");
+
+            invalidDateAlert.showAndWait().ifPresent(
+                    new Consumer<ButtonType>() {
+                        @Override
+                        public void accept(ButtonType buttonType) {
+                        }
+                    }
+            );
+            return;
+        }
 
         // generate line chart
         vaccinationRateLineChart.getData().clear();
@@ -489,11 +527,10 @@ public class VaccinationRateController implements Initializable {
 
             for (XYChart.Data<Number,Number> data : series.getData()) {
 //                data.getNode().setVisible(false);
-                data.getNode().setStyle("""
-                        -fx-background-color: transparent, transparent;
-                        -fx-background-insets: 0, 2;
-                        -fx-background-radius: 5px;
-                        -fx-padding: 5px;""");
+                data.getNode().setStyle("-fx-background-color: transparent, transparent;\n"
+                        + "    -fx-background-insets: 0, 2;\n"
+                        + "    -fx-background-radius: 5px;\n"
+                        + "    -fx-padding: 5px;");
 
                 data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, event1 -> {
                     updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
@@ -574,17 +611,20 @@ public class VaccinationRateController implements Initializable {
     public void getGraph(ActionEvent actionEvent) {
         if (tableRadioButton.isSelected()) {
             vaccinationRateTable.setVisible(true);
-            fullyBarChart.setVisible(false);
-            rateBarChart.setVisible(false);
+            fullyBarCharScrollPane.setVisible(false);
+            rateBarCharScrollPane.setVisible(false);
+            remarkForBarChartLabel.setVisible(false);
         }
         else if (fullBarChartRadioButton.isSelected()) {
             vaccinationRateTable.setVisible(false);
-            fullyBarChart.setVisible(true);
-            rateBarChart.setVisible(false);
+            fullyBarCharScrollPane.setVisible(true);
+            rateBarCharScrollPane.setVisible(false);
+            remarkForBarChartLabel.setVisible(true);
         } else {
             vaccinationRateTable.setVisible(false);
-            fullyBarChart.setVisible(false);
-            rateBarChart.setVisible(true);
+            fullyBarCharScrollPane.setVisible(false);
+            rateBarCharScrollPane.setVisible(true);
+            remarkForBarChartLabel.setVisible(true);
         }
 
     }
