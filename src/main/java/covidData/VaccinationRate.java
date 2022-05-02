@@ -3,11 +3,13 @@ package covidData;
 import javafx.scene.chart.XYChart;
 import org.apache.commons.csv.CSVRecord;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import static comp3111.covid.DataAnalysis.getFileParser;
+import static covidData.VaccinationRateRecord.NOT_FOUND;
 
 public class VaccinationRate extends CovidData {
 	private HashMap<String, VaccinationRateRecord> vaccinationRateTable;
@@ -26,8 +28,6 @@ public class VaccinationRate extends CovidData {
 
     // table
 	public HashMap<String, VaccinationRateRecord> getVaccinationRateTable() {
-        final String NOT_FOUND = "NOT FOUND";
-
         for (String countryName : countries)
             vaccinationRateTable.put(countryName,new VaccinationRateRecord(countryName,NOT_FOUND,NOT_FOUND));
 
@@ -48,23 +48,45 @@ public class VaccinationRate extends CovidData {
                     Integer.parseInt(dateRecordInfo[0]),
                     Integer.parseInt(dateRecordInfo[1]));
 
-            if (recordDate.isEqual(startDate))
+            NumberFormat numberFormat = NumberFormat.getInstance();
+            numberFormat.setMaximumFractionDigits(2);
+            VaccinationRateRecord row = vaccinationRateTable.get(countryName);
+
+            String fullyVaccinated = csvRecord.get("people_fully_vaccinated").trim();
+            String rateOfVaccination = csvRecord.get("people_fully_vaccinated_per_hundred").trim();
+
+            if (recordDate.isBefore(startDate))
             {
-                //String iso_code = csvRecord.get("iso_code");
+                if (!fullyVaccinated.equals("")){
+                    fullyVaccinated = numberFormat.format(Double.parseDouble(fullyVaccinated));
+                    String suffix = "last found on " + recordDate.toString();
 
-                String fullyVaccinated = csvRecord.get("people_fully_vaccinated");
-                String rateOfVaccination = csvRecord.get("people_fully_vaccinated_per_hundred");
+                    int numAppend = suffix.length() - fullyVaccinated.length();
+                    String prefix = " ".repeat(numAppend*2);
 
-                if (fullyVaccinated.equals(""))
-                    fullyVaccinated = NOT_FOUND;
+                    row.setFullyVaccinated(prefix + fullyVaccinated + "\n" + suffix);
+                }
 
-                if (rateOfVaccination.equals(""))
-                    rateOfVaccination = NOT_FOUND;
+                if (!rateOfVaccination.equals("")){
+                    rateOfVaccination = numberFormat.format(Double.parseDouble(rateOfVaccination));
+                    String suffix = "last found on " + recordDate.toString();
 
-                VaccinationRateRecord row = vaccinationRateTable.get(countryName);
+                    int numAppend = suffix.length() - rateOfVaccination.length();
+                    String prefix = " ".repeat(numAppend*2);
 
-                row.setFullyVaccinated(fullyVaccinated);
-                row.setRateOfVaccination(rateOfVaccination);
+                    row.setRateOfVaccination(prefix + rateOfVaccination + "%\n" + suffix);
+                }
+            }
+            else if (recordDate.isEqual(startDate)){
+                if (!fullyVaccinated.equals("")) {
+                    fullyVaccinated = numberFormat.format(Double.parseDouble(fullyVaccinated));
+                    row.setFullyVaccinated(fullyVaccinated);
+                }
+
+                if (!rateOfVaccination.equals("")){
+                    rateOfVaccination = numberFormat.format(Double.parseDouble(rateOfVaccination))+"%";
+                    row.setRateOfVaccination(rateOfVaccination);
+                }
             }
 		}
 		return vaccinationRateTable;
