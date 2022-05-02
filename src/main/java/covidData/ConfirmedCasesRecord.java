@@ -2,9 +2,12 @@ package covidData;
 
 public class ConfirmedCasesRecord {
     final public static String NOT_FOUND = "NOT FOUND";
+
     String country;
     String totalCases;
     String totalCasesPerMillion;
+
+    
 
     public ConfirmedCasesRecord(String country , String totalCases , String totalCasesPerMillion){
         this.country = country;
