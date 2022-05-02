@@ -64,11 +64,4 @@ public class LinearRegression {
     public double predict(double x) {
         return slope*x + intercept;
     }
-
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append(String.format("%.2f n + %.2f", slope(), intercept()));
-        s.append("  (R^2 = " + String.format("%.3f", R2()) + ")");
-        return s.toString();
-    }
 }
