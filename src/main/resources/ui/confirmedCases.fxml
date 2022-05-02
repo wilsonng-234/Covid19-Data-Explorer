@@ -26,7 +26,7 @@
    <children>
       <TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
-          <Tab fx:id="tableTab" text="Daily Satistics">
+          <Tab fx:id="tableTab" text="Daily Statistics">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
                      <children>
@@ -98,7 +98,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab fx:id="chartTab" text="Period Satistics">
+          <Tab fx:id="chartTab" text="Period Statistics">
             <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
                      <children>
