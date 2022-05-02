@@ -225,7 +225,7 @@ public class ConfirmedDeathController implements Initializable {
 
         confirmedDeathLineChart.getXAxis().setLabel("Date");
         confirmedDeathLineChart.getYAxis().setLabel("Number of Death");
-        confirmedDeathLineChart.setTitle("Title");
+        confirmedDeathLineChart.setTitle("Cumulative Confirmed COVID-19 Deaths");
         confirmedDeathLineChart.setCreateSymbols(false);
 
         // tableTab onclick
