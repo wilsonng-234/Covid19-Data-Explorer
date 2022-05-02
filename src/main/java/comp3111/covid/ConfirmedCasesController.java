@@ -128,7 +128,7 @@ public class ConfirmedCasesController implements Initializable {
     /**
      * bind table title width with table width
      */
-    public void setTableTitleWidth(){
+    private void setTableTitleWidth(){
         tableTitle.wrappingWidthProperty().bind(
                 covidCasesTable.widthProperty()
         );
@@ -195,9 +195,9 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     /**
-     *  Initialize cells in covidCasesTable.
-     *  Bind column width with table width.
-     *  Set column display alignment.
+     *  Initialize cells in covidCasesTable. <br>
+     *  Bind column width with table width. <br>
+     *  Set column display alignment. <br>
      */
     private void setCovidCasesTable(){
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
@@ -259,7 +259,7 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     /**
-     * This method is called when the ConfirmedCases scene is going to be displayed.
+     * This method is called when the ConfirmedCases scene is going to be displayed. <br>
      * It initializes the ConfirmedCases scene.
      */
     @Override
@@ -428,7 +428,7 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     /**
-     *  Generate the curves corresponding to selected countries and period.
+     * Generate the curves corresponding to selected countries and period. <br>
      * @param event generate chart button is clicked
      */
     @FXML

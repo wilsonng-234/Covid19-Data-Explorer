@@ -29,6 +29,9 @@ import java.util.function.Consumer;
 
 import static comp3111.covid.DataAnalysis.getFileParser;
 
+/**
+ * LinearRegressionController initializes LinearRegression scene
+ */
 public class LinearRegressionController implements Initializable {
     private String dataset = "COVID_Dataset_v1.0.csv";
 
@@ -73,7 +76,7 @@ public class LinearRegressionController implements Initializable {
     private List<String> sortedCountries;
 
     /**
-     * This method is called when the LinearRegression scene is going to be displayed.
+     * This method is called when the LinearRegression scene is going to be displayed. <br>
      * It initializes the LinearRegression scene.
      */
     @Override
@@ -313,7 +316,7 @@ public class LinearRegressionController implements Initializable {
     }
 
     /**
-     * This method generates curve with user's input parameter and period of interest.
+     * This method generates curve with user's input parameter and period of interest. <br>
      * Also, a linear regression line corresponding to the curve is generated.
      *
      * @param country The selected country
