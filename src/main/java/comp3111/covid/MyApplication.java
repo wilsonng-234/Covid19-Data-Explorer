@@ -46,7 +46,7 @@ public class MyApplication extends Application {
     	loader.setLocation(getClass().getResource(UI_FILE));
    		AnchorPane root = (AnchorPane) loader.load();
    		Scene scene =  new Scene(root);
-		stage.setMinWidth(960); stage.setMinHeight(690);
+		stage.setMinWidth(1000); stage.setMinHeight(690);
    		stage.setScene(scene);
    		stage.setTitle("Data Explorer on COVID-19");
 

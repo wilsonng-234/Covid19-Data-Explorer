@@ -98,7 +98,7 @@
                               <ToggleGroup fx:id="tableOrChart" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton fx:id="fullBarChartRadioButton" layoutX="460.0" layoutY="584.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="18.0" prefWidth="166.0" text="chart for fully vaccinated" toggleGroup="$tableOrChart" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="334.0" />
+                        <RadioButton fx:id="fullyBarChartRadioButton" layoutX="460.0" layoutY="584.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="18.0" prefWidth="166.0" text="chart for fully vaccinated" toggleGroup="$tableOrChart" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="460.0" AnchorPane.rightAnchor="334.0" />
                         <RadioButton fx:id="rateBarChartRadioButton" layoutX="640.0" layoutY="584.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="18.0" prefWidth="206.0" text="chart for rate of vaccination" toggleGroup="$tableOrChart" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="640.0" AnchorPane.rightAnchor="114.0" />
                         <Label fx:id="remarkForBarChartLabel" layoutX="573.0" layoutY="36.0" prefHeight="36.0" prefWidth="379.0" text="Remark: output becomes 0 if data can't found on excetly that day" />
                             </children>

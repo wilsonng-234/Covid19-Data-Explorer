@@ -114,7 +114,7 @@ public class VaccinationRateController implements Initializable {
     @FXML
     private RadioButton tableRadioButton;
     @FXML
-    private RadioButton fullBarChartRadioButton;
+    private RadioButton fullyBarChartRadioButton;
     @FXML
     private RadioButton rateBarChartRadioButton;
     @FXML
@@ -241,12 +241,12 @@ public class VaccinationRateController implements Initializable {
             );
             countrySelectionTableForChart.getItems().add(row);
         }
-        initCountrySelectionCheckBox(countrySelectionList);
-        initCountrySelectionCheckBox(countrySelectionList1);
+//        initCountrySelectionCheckBox(countrySelectionList);
+//        initCountrySelectionCheckBox(countrySelectionList1);
 
         // init table
-        LocalDate date = LocalDate.of(2021, 7, 20);
-        tableDatePicker.setValue(date);
+//        LocalDate date = LocalDate.of(2021, 7, 20);
+//        tableDatePicker.setValue(date);
 
         fullyBarChart.prefWidthProperty().bind(fullyBarCharScrollPane.widthProperty().divide(1.1));
         fullyBarChart.animatedProperty().setValue(false);
@@ -283,10 +283,10 @@ public class VaccinationRateController implements Initializable {
         rateBarChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartYAxis, null, "%"));
 
         // init line chart
-        LocalDate sd = LocalDate.of(2020, 12, 27);
-        LocalDate ed = LocalDate.of(2021, 7, 20);
-        startDatePicker.setValue(sd);
-        endDatePicker.setValue(ed);
+//        LocalDate sd = LocalDate.of(2020, 12, 27);
+//        LocalDate ed = LocalDate.of(2021, 7, 20);
+//        startDatePicker.setValue(sd);
+//        endDatePicker.setValue(ed);
 
         vaccinationRateLineChart.setTitle(chartTitle);
 
@@ -340,13 +340,13 @@ public class VaccinationRateController implements Initializable {
 
     }
 
-    void initCountrySelectionCheckBox(List<CountrySelection> countrySelections) {
-        for (CountrySelection row : countrySelections) {
-            if (defaultCountries.contains(row.getName())){
-                row.getSelect().setSelected(true);
-            }
-        }
-    }
+//    void initCountrySelectionCheckBox(List<CountrySelection> countrySelections) {
+//        for (CountrySelection row : countrySelections) {
+//            if (defaultCountries.contains(row.getName())){
+//                row.getSelect().setSelected(true);
+//            }
+//        }
+//    }
 
     @FXML
     private Button generateTableButton;
@@ -615,7 +615,7 @@ public class VaccinationRateController implements Initializable {
             rateBarCharScrollPane.setVisible(false);
             remarkForBarChartLabel.setVisible(false);
         }
-        else if (fullBarChartRadioButton.isSelected()) {
+        else if (fullyBarChartRadioButton.isSelected()) {
             vaccinationRateTable.setVisible(false);
             fullyBarCharScrollPane.setVisible(true);
             rateBarCharScrollPane.setVisible(false);
