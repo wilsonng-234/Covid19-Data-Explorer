@@ -52,6 +52,13 @@ public class ConfirmedCasesControllerTest extends ApplicationTest {
     }
 
     @Test
+    public void tableDateNotChosen(){
+        clickOn("#selectAllForChart");
+        clickOn("#generateChartButton");
+        clickOn("OK");
+    }
+
+    @Test
     public void testPeriodicStatitics(){
         clickOn("#chartTab");
         clickOn("#startDatePicker");
@@ -66,23 +73,69 @@ public class ConfirmedCasesControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void dateAlert(){
+    public void invalidDateAlert(){
         clickOn("#chartTab");
         clickOn("#selectAllForChart");
 
         clickOn("#startDatePicker");
-        write("1/3/2021");
+        write("8/7/2020");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         clickOn("#endDatePicker");
         write("7/7/2020");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
 
         clickOn("#generateChartButton");
-        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        clickOn("OK");
     }
 
     @Test
-    public void a(){
+    public void bothDateNotFoundAlert(){
+        clickOn("#chartTab");
+        clickOn("#selectAllForChart");
 
+        clickOn("#generateChartButton");
+        clickOn("OK");
+    }
+
+    @Test
+    public void startDateNotFoundAlert(){
+        clickOn("#chartTab");
+        clickOn("#selectAllForChart");
+
+        clickOn("#endDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateChartButton");
+        clickOn("OK");
+    }
+
+    @Test
+    public void endDateNotFoundAlert(){
+        clickOn("#chartTab");
+        clickOn("#selectAllForChart");
+
+        clickOn("#startDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateChartButton");
+        clickOn("OK");
+    }
+
+    @Test
+    public void startDateEqualsEndDateAlert(){
+        clickOn("#chartTab");
+        clickOn("#selectAllForChart");
+
+        clickOn("#startDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+        clickOn("#endDatePicker");
+        write("1/4/2021");
+        press(KeyCode.ENTER).release(KeyCode.ENTER);
+
+        clickOn("#generateChartButton");
+        clickOn("OK");
     }
 }
