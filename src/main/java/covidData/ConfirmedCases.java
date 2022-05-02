@@ -10,23 +10,54 @@ import java.util.*;
 import static comp3111.covid.DataAnalysis.getFileParser;
 import static covidData.ConfirmedCasesRecord.NOT_FOUND;
 
+/**
+ *  Instances of ConfirmedCases contain required information for creating table and creating chart
+ *
+ *  table information : (total cases,total cases per million) for each country
+ *  chart information : (date,cumulative confirmed cases) for each country
+ */
+
 public class ConfirmedCases extends CovidData {
-    private HashMap<String, ConfirmedCasesRecord> confirmedCasesTable;   // key: country location name  value: ConfirmedCasesRecord
-    private HashMap<String,XYChart.Series<Number,Number>> confirmedCasesChart;   // key: country location name  value : data point <Date,value>
+    /**
+     *  key: country location name  value: ConfirmedCasesRecord
+     */
+    private HashMap<String, ConfirmedCasesRecord> confirmedCasesTable;
+    /**
+     *  key: country location name  value : data point <LocalDate.toEpochDay ,cumulative confirmed cases>
+     */
+    private HashMap<String,XYChart.Series<Number,Number>> confirmedCasesChart;
 
-    //private HashMap<String,XYChart.Series<LocalDate,String>> confirmedCasesChart;   // key: country location name  value : data point <LocalDate,String>
 
+    /**
+     *
+     * @param date  The date for table
+     * @param countries The countries selected for table
+     * @param dataset   The dataset
+     */
     public ConfirmedCases(LocalDate date, HashSet<String> countries, String dataset){
         super(date,countries,dataset);
         confirmedCasesTable = new HashMap<>();
         confirmedCasesChart = new HashMap<>();
     }
+
+    /**
+     *
+     * @param startDate The startDate of period for chart
+     * @param endDate   The endDate of period for chart
+     * @param countries The countries selected for chart
+     * @param dataset   The dataset
+     */
     public ConfirmedCases(LocalDate startDate,LocalDate endDate, HashSet<String> countries, String dataset){
         super(startDate,endDate,countries,dataset);
         confirmedCasesTable = new HashMap<>();
         confirmedCasesChart = new HashMap<>();
     }
 
+    /**
+     *
+     * @return  table information : (total cases,total cases per million) for each country
+     *          key : country  ,  value : (total cases,total cases per million)
+     */
     public HashMap<String, ConfirmedCasesRecord> getconfirmedCasesTable() {
         for (String countryName : countries)
             confirmedCasesTable.put(countryName,new ConfirmedCasesRecord(countryName,NOT_FOUND,NOT_FOUND));
@@ -90,6 +121,11 @@ public class ConfirmedCases extends CovidData {
         return confirmedCasesTable;
     }
 
+    /**
+     *
+     * @return  chart information : (date,cumulative confirmed cases) for each country
+     *          key : country  ,  value : (LocalDate.toEpochDay,cumulative cases per million)
+     */
     public HashMap<String,XYChart.Series<Number, Number>> getConfirmedCasesChart() {
         assert(startDate.isBefore(endDate) || startDate.equals(endDate));
 

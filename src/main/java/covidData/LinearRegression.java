@@ -2,7 +2,11 @@ package covidData;
 
 import java.util.List;
 
+/**
+ *  Instances of linearRegression calculate the equation of regression line based on input (x,y) pair
+ */
 public class LinearRegression {
+
     private final double intercept, slope;
     private final double r2;
     private final double svar0, svar1;
