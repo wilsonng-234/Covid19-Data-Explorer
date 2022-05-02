@@ -124,25 +124,10 @@ public class LinearRegressionController implements Initializable {
                         lineChart.getData().clear();
                         String country1 = countryTextField.getText();
 
-                        if (country1 == null) {
-                                Alert countryNotChosenAlert = new Alert(Alert.AlertType.WARNING);
-                                countryNotChosenAlert.setTitle("COUNTRY NOT CHOSEN");
-                                countryNotChosenAlert.setContentText("Please choose at least a country first");
-
-                                countryNotChosenAlert.showAndWait().ifPresent(
-                                        new Consumer<ButtonType>() {
-                                            @Override
-                                            public void accept(ButtonType buttonType) {
-                                            }
-                                        }
-                                        );
-                                return;
-                        }
-
                         if (!countries.contains(country1)){
                             Alert countryNotFound = new Alert(Alert.AlertType.WARNING);
                             countryNotFound.setTitle("COUNTRIES NOT FOUND");
-                            countryNotFound.setContentText("Country is not found");
+                            countryNotFound.setContentText("Country is not found.\nPlease enter the country name again with correct letter case.");
 
                             countryNotFound.showAndWait().ifPresent(
                                     new Consumer<ButtonType>() {
@@ -158,6 +143,21 @@ public class LinearRegressionController implements Initializable {
                         String xParameter = xParameterList.getSelectionModel().getSelectedItem();
                         String yParameter = yParameterList.getSelectionModel().getSelectedItem();
 
+                        Alert parameterNotFound = new Alert(Alert.AlertType.WARNING);
+                        if (xParameter == null || yParameter == null){
+                            parameterNotFound.setTitle("Parameter NOT FOUND");
+                            parameterNotFound.setContentText("Please enter both parameters of x-axis and y-axis");
+
+                            parameterNotFound.showAndWait().ifPresent(
+                                    new Consumer<ButtonType>() {
+                                        @Override
+                                        public void accept(ButtonType buttonType) {
+                                        }
+                                    }
+                            );
+
+                            return;
+                        }
                         lineChart.getXAxis().setLabel(xParameter);
                         lineChart.getYAxis().setLabel(yParameter);
 
