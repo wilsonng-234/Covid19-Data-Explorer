@@ -48,7 +48,7 @@ public class MyApplication extends Application {
    		Scene scene =  new Scene(root);
 		stage.setMinWidth(960); stage.setMinHeight(690);
    		stage.setScene(scene);
-   		stage.setTitle("Lovelive Superstar Liella : Data Explorer on COVID-19");
+   		stage.setTitle("Data Explorer on COVID-19");
 
    		stage.show();
 	}
