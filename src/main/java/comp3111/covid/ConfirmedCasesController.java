@@ -133,7 +133,7 @@ public class ConfirmedCasesController implements Initializable {
                 (observable, oldValue, newValue) -> {
                     dateForTable = newValue;
 
-                    tableTitle.setText("Number of Covid Cases as of " + newValue);
+                    tableTitle.setText("Number of Covid Cases as of " + newValue.format(displayDateFormatter));
                 }
         );
     }
