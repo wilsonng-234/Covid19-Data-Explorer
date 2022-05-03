@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinearRegressionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">LinearRegressionController.java</span></div><h1>LinearRegressionController.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import covidData.LinearRegression;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.geometry.Side;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import org.apache.commons.csv.CSVRecord;
+
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.function.Consumer;
+
+import static comp3111.covid.DataAnalysis.getFileParser;
+
+/**
+ * LinearRegressionController initializes LinearRegression scene
+ */
+<span class="fc" id="L35">public class LinearRegressionController implements Initializable {</span>
+<span class="fc" id="L36">    private String dataset = &quot;COVID_Dataset_v1.0.csv&quot;;</span>
+
+    @FXML
+
+    TextField countryTextField;
+
+    @FXML
+    ContextMenu countryContextMenu;
+
+
+    @FXML
+    private ImageView HomeImage;
+
+    @FXML
+    private LineChart&lt;Number, Number&gt; lineChart;
+
+    @FXML
+    private NumberAxis chartXaxis;
+
+    @FXML
+    private NumberAxis chartYaxis;
+
+    @FXML
+
+    DatePicker startDatePicker;
+
+    @FXML
+    DatePicker endDatePicker;
+
+    @FXML
+    ListView&lt;String&gt; xParameterList;
+
+    @FXML
+    ListView&lt;String&gt; yParameterList;
+
+    @FXML
+    Button generateButton;
+
+    @FXML
+    private Label report;
+
+
+<span class="fc" id="L78">    private HashSet&lt;String&gt; countries = getCountries(dataset);</span>
+    private List&lt;String&gt; sortedCountries;
+
+    /**
+     * This method is called when the LinearRegression scene is going to be displayed. &lt;br&gt;
+     * It initializes the LinearRegression scene.
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+<span class="fc" id="L87">        sortedCountries = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L88">        sortedCountries.addAll(countries);</span>
+<span class="fc" id="L89">        Collections.sort(sortedCountries);</span>
+        // set countryMenu
+<span class="fc" id="L91">        countryTextField.setOnKeyTyped(</span>
+<span class="fc" id="L92">                new EventHandler&lt;KeyEvent&gt;() {</span>
+                    @Override
+                    public void handle(KeyEvent event) {
+<span class="fc" id="L95">                        countryContextMenu.getItems().clear();</span>
+<span class="fc" id="L96">                        int numberOfItems = 0;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">                        for (String country : sortedCountries) {</span>
+<span class="fc" id="L98">                            String input = countryTextField.getText().toLowerCase().trim();</span>
+
+<span class="fc bfc" id="L100" title="All 4 branches covered.">                            if (!country.toLowerCase().trim().equals(input) &amp;&amp; country.toLowerCase().contains(input)) {</span>
+<span class="fc" id="L101">                                MenuItem item = new MenuItem(country);</span>
+<span class="fc" id="L102">                                countryContextMenu.getItems().add(item);</span>
+<span class="fc" id="L103">                                numberOfItems++;</span>
+
+<span class="fc" id="L105">                                item.setOnAction(</span>
+<span class="fc" id="L106">                                        new EventHandler&lt;ActionEvent&gt;() {</span>
+                                            @Override
+                                            public void handle(ActionEvent event) {
+<span class="fc" id="L109">                                                countryTextField.setText(item.getText());</span>
+<span class="fc" id="L110">                                            }</span>
+                                        }
+                                );
+                            }
+<span class="fc bfc" id="L114" title="All 2 branches covered.">                            if (numberOfItems == 10)</span>
+<span class="fc" id="L115">                                break;</span>
+<span class="fc" id="L116">                        }</span>
+<span class="fc" id="L117">                        countryContextMenu.show(countryTextField,Side.BOTTOM,0,0);</span>
+<span class="fc" id="L118">                    }</span>
+                }
+        );
+
+        // set ParameterList
+<span class="fc" id="L123">        List&lt;String&gt; parameterList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L124">        parameterList.add(&quot;Total Confirmed Cases&quot;);</span>
+<span class="fc" id="L125">        parameterList.add(&quot;Confirmed Cases Per Million&quot;);</span>
+<span class="fc" id="L126">        parameterList.add(&quot;Total Deaths&quot;);</span>
+<span class="fc" id="L127">        parameterList.add(&quot;Total Deaths Per Million&quot;);</span>
+<span class="fc" id="L128">        parameterList.add(&quot;Vaccination Rate&quot;);</span>
+<span class="fc" id="L129">        parameterList.add(&quot;Fully Vaccination Rate&quot;);</span>
+
+<span class="fc" id="L131">        xParameterList.getItems().addAll(parameterList);</span>
+<span class="fc" id="L132">        yParameterList.getItems().addAll(parameterList);</span>
+
+<span class="fc" id="L134">        generateButton.setOnMouseClicked(</span>
+<span class="fc" id="L135">                new EventHandler&lt;MouseEvent&gt;() {</span>
+                    @Override
+                    public void handle(MouseEvent event) {
+<span class="fc" id="L138">                        lineChart.getData().clear();</span>
+<span class="fc" id="L139">                        String country1 = countryTextField.getText();</span>
+
+<span class="fc bfc" id="L141" title="All 2 branches covered.">                        if (!countries.contains(country1)){</span>
+<span class="fc" id="L142">                            Alert countryNotFound = new Alert(Alert.AlertType.WARNING);</span>
+<span class="fc" id="L143">                            countryNotFound.setTitle(&quot;COUNTRIES NOT FOUND&quot;);</span>
+<span class="fc" id="L144">                            countryNotFound.setContentText(&quot;Country is not found.\nPlease enter the country name again with correct letter case.&quot;);</span>
+
+<span class="fc" id="L146">                            countryNotFound.showAndWait().ifPresent(</span>
+<span class="fc" id="L147">                                    new Consumer&lt;ButtonType&gt;() {</span>
+                                        @Override
+                                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L150">                                        }</span>
+                                    }
+                            );
+
+<span class="fc" id="L154">                            return;</span>
+                        }
+
+<span class="fc" id="L157">                        String xParameter = xParameterList.getSelectionModel().getSelectedItem();</span>
+<span class="fc" id="L158">                        String yParameter = yParameterList.getSelectionModel().getSelectedItem();</span>
+
+<span class="fc" id="L160">                        Alert parameterNotFound = new Alert(Alert.AlertType.WARNING);</span>
+<span class="pc bpc" id="L161" title="1 of 4 branches missed.">                        if (xParameter == null || yParameter == null){</span>
+<span class="fc" id="L162">                            parameterNotFound.setTitle(&quot;Parameter NOT FOUND&quot;);</span>
+<span class="fc" id="L163">                            parameterNotFound.setContentText(&quot;Please enter both parameters of x-axis and y-axis&quot;);</span>
+
+<span class="fc" id="L165">                            parameterNotFound.showAndWait().ifPresent(</span>
+<span class="fc" id="L166">                                    new Consumer&lt;ButtonType&gt;() {</span>
+                                        @Override
+                                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L169">                                        }</span>
+                                    }
+                            );
+
+<span class="fc" id="L173">                            return;</span>
+                        }
+<span class="fc" id="L175">                        lineChart.getXAxis().setLabel(xParameter);</span>
+<span class="fc" id="L176">                        lineChart.getYAxis().setLabel(yParameter);</span>
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">                        if (xParameter.equals(&quot;Total Confirmed Cases&quot;)) {</span>
+<span class="fc" id="L179">                            xParameter = &quot;total_cases&quot;;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">                        } else if (xParameter.equals(&quot;Confirmed Cases Per Million&quot;)) {</span>
+<span class="fc" id="L181">                            xParameter = &quot;total_cases_per_million&quot;;</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">                        } else if (xParameter.equals(&quot;Total Deaths&quot;)){</span>
+<span class="fc" id="L183">                            xParameter = &quot;total_deaths&quot;;</span>
+                        }
+<span class="fc bfc" id="L185" title="All 2 branches covered.">                        else if (xParameter.equals(&quot;Total Deaths Per Million&quot;)){</span>
+<span class="fc" id="L186">                            xParameter = &quot;total_deaths_per_million&quot;;</span>
+                        }
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                        else if (xParameter.equals(&quot;Vaccination Rate&quot;)) {</span>
+<span class="fc" id="L189">                            xParameter = &quot;total_vaccinations_per_hundred&quot;;</span>
+                        }
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">                        else if (xParameter.equals(&quot;Fully Vaccination Rate&quot;)){</span>
+<span class="fc" id="L192">                            xParameter = &quot;people_fully_vaccinated_per_hundred&quot;;</span>
+                        }
+
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">                        if (yParameter.equals(&quot;Total Confirmed Cases&quot;)) {</span>
+<span class="nc" id="L196">                            yParameter = &quot;total_cases&quot;;</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">                        } else if (yParameter.equals(&quot;Confirmed Cases Per Million&quot;)) {</span>
+<span class="nc" id="L198">                            yParameter = &quot;total_cases_per_million&quot;;</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">                        } else if (yParameter.equals(&quot;Total Deaths&quot;)){</span>
+<span class="nc" id="L200">                            yParameter = &quot;total_deaths&quot;;</span>
+                        }
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">                        else if (yParameter.equals(&quot;Total Deaths Per Million&quot;)){</span>
+<span class="nc" id="L203">                            yParameter = &quot;total_deaths_per_million&quot;;</span>
+                        }
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">                        else if (yParameter.equals(&quot;Vaccination Rate&quot;)) {</span>
+<span class="fc" id="L206">                            yParameter = &quot;total_vaccinations_per_hundred&quot;;</span>
+                        }
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                        else if (yParameter.equals(&quot;Fully Vaccination Rate&quot;)){</span>
+<span class="nc" id="L209">                            yParameter = &quot;people_fully_vaccinated_per_hundred&quot;;</span>
+                        }
+
+<span class="fc bfc" id="L212" title="All 2 branches covered.">                        if (validateDate()) {</span>
+<span class="fc" id="L213">                            LocalDate startDate = startDatePicker.getValue();</span>
+<span class="fc" id="L214">                            LocalDate endDate = endDatePicker.getValue();</span>
+
+                            try {
+<span class="fc" id="L217">                                addCountryLine(countryTextField.getText(), xParameter, yParameter, startDate, endDate);</span>
+                            }
+<span class="fc" id="L219">                            catch (IllegalArgumentException dateException){</span>
+<span class="fc" id="L220">                                Alert alert = new Alert(Alert.AlertType.WARNING);</span>
+
+<span class="fc bfc" id="L222" title="All 2 branches covered.">                                if (dateException.getLocalizedMessage().equals(&quot;Please select another start date, data is not found on the start date&quot;)) {</span>
+<span class="fc" id="L223">                                    alert.setTitle(&quot;Start Date Alert&quot;);</span>
+<span class="fc" id="L224">                                    alert.setContentText(&quot;Please select another start date, data is not found on the start date&quot;);</span>
+                                }
+                                else{
+<span class="fc" id="L227">                                    alert.setTitle(&quot;End Date Alert&quot;);</span>
+<span class="fc" id="L228">                                    alert.setContentText(&quot;Please select another end date, data is not found on the end date&quot;);</span>
+                                }
+
+<span class="fc" id="L231">                                alert.showAndWait().ifPresent(</span>
+<span class="fc" id="L232">                                        new Consumer&lt;ButtonType&gt;() {</span>
+                                            @Override
+                                            public void accept(ButtonType buttonType) {
+<span class="fc" id="L235">                                            }</span>
+                                        }
+                                );
+
+<span class="fc" id="L239">                                return;</span>
+<span class="fc" id="L240">                            }</span>
+                        }
+<span class="fc" id="L242">                    }</span>
+                }
+        );
+
+        // set LineChart
+
+<span class="fc" id="L248">        lineChart.setTitle(&quot;Linear Regression&quot;);</span>
+<span class="fc" id="L249">        lineChart.setCreateSymbols(false);</span>
+
+<span class="fc" id="L251">        chartXaxis.setAutoRanging(false);</span>
+<span class="fc" id="L252">        chartYaxis.setAutoRanging(false);</span>
+<span class="fc" id="L253">    }</span>
+
+    /**
+     * This method validate the user input in startDatePicker and endDatePicker.
+     * @return startDate and endDate are both valid.
+     */
+    private Boolean validateDate(){
+<span class="fc" id="L260">        LocalDate startDate = startDatePicker.getValue();</span>
+<span class="fc" id="L261">        LocalDate endDate = endDatePicker.getValue();</span>
+
+<span class="fc" id="L263">        Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);</span>
+
+<span class="fc bfc" id="L265" title="All 4 branches covered.">        if (startDate == null &amp;&amp; endDate == null){</span>
+<span class="fc" id="L266">            invalidDateAlert.setTitle(&quot;BOTH DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L267">            invalidDateAlert.setContentText(&quot;Please choose the start date and end date first&quot;);</span>
+
+<span class="fc" id="L269">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L270">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L273">                        }</span>
+                    }
+            );
+<span class="fc" id="L276">            return false;</span>
+        }
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        if (startDate == null){</span>
+<span class="fc" id="L279">            invalidDateAlert.setTitle(&quot;START DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L280">            invalidDateAlert.setContentText(&quot;Please choose the start date first&quot;);</span>
+
+<span class="fc" id="L282">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L283">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L286">                        }</span>
+                    }
+            );
+<span class="fc" id="L289">            return false;</span>
+        }
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        if (endDate == null){</span>
+<span class="fc" id="L292">            invalidDateAlert.setTitle(&quot;END DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L293">            invalidDateAlert.setContentText(&quot;Please choose the end date first&quot;);</span>
+
+<span class="fc" id="L295">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L296">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L299">                        }</span>
+                    }
+            );
+<span class="fc" id="L302">            return false;</span>
+        }
+<span class="pc bpc" id="L304" title="2 of 4 branches missed.">        if (startDate.isAfter(endDate) || startDate.isEqual(endDate)){</span>
+<span class="nc" id="L305">            invalidDateAlert.setTitle(&quot;INVALID DATE INPUT&quot;);</span>
+<span class="nc" id="L306">            invalidDateAlert.setContentText(&quot;start date cannot be after or equals to end date!!&quot;);</span>
+
+<span class="nc" id="L308">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="nc" id="L309">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="nc" id="L312">                        }</span>
+                    }
+            );
+<span class="nc" id="L315">            return false;</span>
+        }
+
+<span class="fc" id="L318">        return true;</span>
+    }
+
+    /**
+     * This method generates curve with user's input parameter and period of interest. &lt;br&gt;
+     * Also, a linear regression line corresponding to the curve is generated.
+     *
+     * @param country The selected country
+     * @param xParameter The x-axis parameter
+     * @param yParameter The y-axis parameter
+     * @param startDate The startDate of the period
+     * @param endDate The endDate of the period
+     */
+    private void addCountryLine(String country,String xParameter,String yParameter,LocalDate startDate,LocalDate endDate){
+<span class="fc" id="L332">        List&lt;Double&gt; xList = getData(country, xParameter, startDate, endDate);</span>
+<span class="fc" id="L333">        List&lt;Double&gt; yList = getData(country, yParameter, startDate, endDate);</span>
+
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (xList.size() &lt; ChronoUnit.DAYS.between(startDate,endDate) + 1){</span>
+<span class="fc" id="L336">            throw new IllegalArgumentException(&quot;Please select another end date, data is not found on the end date&quot;);</span>
+        }
+
+        try{
+<span class="fc" id="L340">            LinearRegression linearRegression = new LinearRegression(xList, yList);</span>
+<span class="fc" id="L341">            double slope = linearRegression.slope();</span>
+<span class="fc" id="L342">            double intercept = linearRegression.intercept();</span>
+
+<span class="fc" id="L344">            XYChart.Series&lt;Number, Number&gt; regressionSeries = new XYChart.Series&lt;&gt;();</span>
+
+<span class="fc" id="L346">            regressionSeries.setName(&quot;Regression Line - &quot; + country);</span>
+
+
+<span class="fc bfc" id="L349" title="All 2 branches covered.">            for (Double xDatum : xList) {</span>
+<span class="fc" id="L350">                XYChart.Data&lt;Number, Number&gt; data = new XYChart.Data&lt;Number, Number&gt;(xDatum, linearRegression.predict(xDatum));</span>
+
+<span class="fc" id="L352">                regressionSeries.getData().add(data);</span>
+<span class="fc" id="L353">            }</span>
+
+<span class="fc" id="L355">            XYChart.Series&lt;Number, Number&gt; countrySeries = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L356">            countrySeries.setName(country);</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">            for (int i = 0; i &lt; xList.size(); i++) {</span>
+<span class="fc" id="L358">                XYChart.Data&lt;Number, Number&gt; data = new XYChart.Data&lt;Number, Number&gt;(xList.get(i), yList.get(i));</span>
+<span class="fc" id="L359">                countrySeries.getData().add(data);</span>
+            }
+
+<span class="fc" id="L362">            System.out.println(linearRegression.slope() + &quot;\t intercept: &quot; + linearRegression.intercept());</span>
+
+<span class="fc" id="L364">            chartXaxis.setLowerBound(xList.get(0) - 1);</span>
+<span class="fc" id="L365">            chartXaxis.setUpperBound(xList.get(xList.size() - 1) + 1);</span>
+
+<span class="fc bfc" id="L367" title="All 4 branches covered.">            if (xParameter.equals(&quot;total_vaccinations_per_hundred&quot;) || xParameter.equals(&quot;people_fully_vaccinated_per_hundred&quot;)){</span>
+<span class="fc" id="L368">                chartXaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXaxis, null, &quot;%&quot;));</span>
+            }
+            else{
+<span class="fc" id="L371">                chartXaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXaxis, null, &quot;&quot;));</span>
+            }
+<span class="fc" id="L373">            chartXaxis.setTickUnit((chartXaxis.getUpperBound()-chartXaxis.getLowerBound())/5);</span>
+
+<span class="fc" id="L375">            Double yLowerBound = Math.min(yList.get(0),linearRegression.predict(xList.get(0))) - 1;</span>
+<span class="fc" id="L376">            Double yUpperBound = Math.max(yList.get(yList.size()-1),linearRegression.predict(xList.get(xList.size()-1))) + 1;</span>
+
+<span class="pc bpc" id="L378" title="2 of 4 branches missed.">            if (Double.isInfinite(yLowerBound) || Double.isNaN(yLowerBound)){</span>
+<span class="nc" id="L379">                chartYaxis.setLowerBound(yList.get(0) - 1);</span>
+            }
+            else {
+<span class="fc" id="L382">                chartYaxis.setLowerBound(yLowerBound);</span>
+            }
+
+<span class="pc bpc" id="L385" title="2 of 4 branches missed.">            if (Double.isInfinite(yUpperBound) || Double.isNaN(yUpperBound)){</span>
+<span class="nc" id="L386">                chartYaxis.setUpperBound(yList.get(yList.size() - 1) + 1);</span>
+            }
+            else {
+<span class="fc" id="L389">                chartYaxis.setUpperBound(yUpperBound);</span>
+            }
+
+<span class="pc bpc" id="L392" title="3 of 4 branches missed.">            if (yParameter.equals(&quot;total_vaccinations_per_hundred&quot;) || yParameter.equals(&quot;people_fully_vaccinated_per_hundred&quot;)){</span>
+<span class="fc" id="L393">                chartYaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYaxis, null, &quot;%&quot;));</span>
+            }
+            else{
+<span class="nc" id="L396">                chartYaxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYaxis, null, &quot;&quot;));</span>
+            }
+
+<span class="fc" id="L399">            chartYaxis.setTickUnit((chartYaxis.getUpperBound()-chartYaxis.getLowerBound())/5);</span>
+
+<span class="fc" id="L401">            lineChart.getData().add(countrySeries);</span>
+<span class="fc" id="L402">            lineChart.getData().add(regressionSeries);</span>
+
+<span class="fc" id="L404">            double r2 = linearRegression.R2();</span>
+<span class="fc" id="L405">            report.setText(&quot;Report:\n\t&quot; + &quot;slope = &quot; + slope + &quot;\n\t&quot; + &quot;intercept = &quot; + intercept + &quot;\n\t&quot; + &quot;r^2 = &quot; + r2 + &quot;\n\t&quot; + linearRegression.toString());</span>
+        }
+<span class="nc" id="L407">        catch (IllegalArgumentException lengthNotEqualException){</span>
+<span class="nc" id="L408">            System.out.println(lengthNotEqualException.toString());</span>
+<span class="nc" id="L409">            System.out.println(country + &quot;\t&quot; + xParameter + &quot; against &quot; + yParameter);</span>
+<span class="fc" id="L410">        }</span>
+<span class="fc" id="L411">    }</span>
+
+    /**
+     * Switch to the home scene.
+     * @param event switchToHomeImage is clicked
+     * @throws IOException
+     */
+    @FXML
+    void switchToHomeScene(MouseEvent event) throws IOException {
+<span class="nc" id="L420">        Parent root = FXMLLoader.load(getClass().getResource(&quot;/ui/home.fxml&quot;));</span>
+<span class="nc" id="L421">        Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();</span>
+<span class="nc" id="L422">        Scene scene = new Scene(root);</span>
+<span class="nc" id="L423">        stage.setScene(scene);</span>
+<span class="nc" id="L424">        stage.show();</span>
+<span class="nc" id="L425">    }</span>
+
+    /**
+     * This method get all the countries' name in the dataset.
+     * @param dataset The dataset
+     * @return HashSet&lt;String&gt; containing all the countries' name
+     */
+    private HashSet&lt;String&gt; getCountries(String dataset){
+<span class="fc" id="L433">        HashSet&lt;String&gt; countries = new HashSet&lt;String&gt;();</span>
+
+<span class="fc bfc" id="L435" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)) {</span>
+<span class="fc" id="L436">            String country = csvRecord.get(&quot;location&quot;);</span>
+
+<span class="fc bfc" id="L438" title="All 2 branches covered.">            if (!countries.contains(country)) {</span>
+<span class="fc" id="L439">                countries.add(country);</span>
+            }
+<span class="fc" id="L441">        }</span>
+
+<span class="fc" id="L443">        return countries;</span>
+    }
+
+    /**
+     * This method get data of a country within a period with specified parameter.
+     * @param country The selected country
+     * @param parameter The parameter of interest
+     * @param startDate The startDate of the period
+     * @param endDate   The endDate of the period
+     * @return a list of data
+     */
+    private List&lt;Double&gt; getData(String country,String parameter,LocalDate startDate,LocalDate endDate){
+<span class="fc" id="L455">        List&lt;Double&gt; data = new ArrayList&lt;Double&gt;();</span>
+
+<span class="fc bfc" id="L457" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)) {</span>
+<span class="fc" id="L458">            String countryName = csvRecord.get(&quot;location&quot;);</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">            if (!country.equals(countryName))</span>
+<span class="fc" id="L460">                continue;</span>
+
+<span class="fc" id="L462">            String countryISO = csvRecord.get(&quot;iso_code&quot;);</span>
+<span class="fc" id="L463">            String dateRecord = csvRecord.get(&quot;date&quot;);</span>
+<span class="pc bpc" id="L464" title="1 of 2 branches missed.">            if (dateRecord.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L465">                System.out.println(&quot;empty dateRecord??&quot;);</span>
+<span class="nc" id="L466">                throw new IllegalArgumentException();</span>
+                //continue;
+            }
+
+<span class="fc" id="L470">            String[] dateRecordInfo = dateRecord.trim().split(&quot;/&quot;);</span>
+<span class="fc" id="L471">            LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),</span>
+<span class="fc" id="L472">                    Integer.parseInt(dateRecordInfo[0]),</span>
+<span class="fc" id="L473">                    Integer.parseInt(dateRecordInfo[1]));</span>
+
+<span class="fc" id="L475">            String datum = csvRecord.get(parameter);</span>
+<span class="fc bfc" id="L476" title="All 8 branches covered.">            if (recordDate.isEqual(startDate) || (recordDate.isAfter(startDate) &amp;&amp; recordDate.isBefore(endDate)) || recordDate.isEqual(endDate)) {</span>
+                try{
+<span class="fc" id="L478">                    data.add(Double.parseDouble(datum));</span>
+                    //System.out.println(data);
+                }
+<span class="fc" id="L481">                catch (NumberFormatException exception){</span>
+<span class="pc bpc" id="L482" title="1 of 2 branches missed.">                    if (data.size() == 0){</span>
+<span class="fc" id="L483">                        throw new IllegalArgumentException(&quot;Please select another start date, data is not found on the start date&quot;);</span>
+                    }
+<span class="nc" id="L485">                    data.add(data.get(data.size()-1));</span>
+<span class="fc" id="L486">                }</span>
+            }
+<span class="fc" id="L488">        }</span>
+
+<span class="pc bpc" id="L490" title="1 of 2 branches missed.">        if (data.size() == 0){</span>
+<span class="nc" id="L491">            throw  new IllegalArgumentException(&quot;Please select another select start date, data is not found on start date&quot;);</span>
+        }
+<span class="fc" id="L493">        return data;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

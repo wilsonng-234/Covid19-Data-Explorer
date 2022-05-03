@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VaccinationRate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">covidData</a> &gt; <span class="el_source">VaccinationRate.java</span></div><h1>VaccinationRate.java</h1><pre class="source lang-java linenums">package covidData;
+
+import javafx.scene.chart.XYChart;
+import org.apache.commons.csv.CSVRecord;
+
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import static comp3111.covid.DataAnalysis.getFileParser;
+import static covidData.VaccinationRateRecord.NOT_FOUND;
+
+/**
+ *  Instances of VaccinationRate contain required information for creating table and creating chart
+ *
+ *  table information : (fully vaccinated, rate of vaccination) for each country
+ *  chart information : (date,cumulative rate of vaccination) for each country
+ */
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">public class VaccinationRate extends CovidData {</span>
+    /**
+     *  key: country location name  value: VaccinationRateRecord
+     */
+	private HashMap&lt;String, VaccinationRateRecord&gt; vaccinationRateTable;
+    /**
+     *  key: country location name  value : data point &lt;LocalDate.toEpochDay ,cumulative rate of vaccination&gt;
+     */
+    private HashMap&lt;String, XYChart.Series&lt;Number, Number&gt;&gt;  vaccinationRateChart;
+
+    /**
+     * Constructor for VaccinationRate with one date
+     * @param date  The date for table
+     * @param countries The countries selected for table
+     * @param dataset   The dataset
+     */
+	public VaccinationRate(LocalDate date, HashSet&lt;String&gt; countries, String dataset) {
+<span class="fc" id="L37">		super(date, countries, dataset);</span>
+<span class="fc" id="L38">		vaccinationRateTable = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L39">	}</span>
+    /**
+     * Constructor for VaccinationRate with start and end date
+     * @param startDate The startDate of period for chart
+     * @param endDate   The endDate of period for chart
+     * @param countries The countries selected for chart
+     * @param dataset   The dataset
+     */
+    public VaccinationRate(LocalDate startDate, LocalDate endDate, HashSet&lt;String&gt; countries, String dataset) {
+<span class="fc" id="L48">        this(startDate, countries, dataset);</span>
+<span class="fc" id="L49">        this.endDate = endDate;</span>
+<span class="fc" id="L50">        vaccinationRateChart = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L51">    }</span>
+
+
+    /**
+     * get data of vaccination rate table
+     * @return  table information : (fully vaccinated, rate of vaccination) for each country
+     *          key : country  ,  value : (fully vaccinated, rate of vaccination)
+     */
+	public HashMap&lt;String, VaccinationRateRecord&gt; getVaccinationRateTable() {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        for (String countryName : countries)</span>
+<span class="fc" id="L61">            vaccinationRateTable.put(countryName,new VaccinationRateRecord(countryName,NOT_FOUND,NOT_FOUND));</span>
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		for (CSVRecord csvRecord : getFileParser(dataset)) {</span>
+<span class="fc" id="L64">            String countryName = csvRecord.get(&quot;location&quot;);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">            if (!countries.contains(countryName))</span>
+<span class="fc" id="L66">                continue;</span>
+
+            //String countryISO = csvRecord.get(&quot;iso_code&quot;);
+<span class="fc" id="L69">            String dateRecord = csvRecord.get(&quot;date&quot;);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">            if (dateRecord.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L71">                continue;</span>
+            }
+
+<span class="fc" id="L74">            String[] dateRecordInfo = dateRecord.trim().split(&quot;/&quot;);</span>
+<span class="fc" id="L75">            LocalDate recordDate = LocalDate.of(</span>
+<span class="fc" id="L76">                    Integer.parseInt(dateRecordInfo[2]),</span>
+<span class="fc" id="L77">                    Integer.parseInt(dateRecordInfo[0]),</span>
+<span class="fc" id="L78">                    Integer.parseInt(dateRecordInfo[1]));</span>
+
+<span class="fc" id="L80">            NumberFormat numberFormat = NumberFormat.getInstance();</span>
+<span class="fc" id="L81">            numberFormat.setMaximumFractionDigits(2);</span>
+<span class="fc" id="L82">            VaccinationRateRecord row = vaccinationRateTable.get(countryName);</span>
+
+<span class="fc" id="L84">            String fullyVaccinated = csvRecord.get(&quot;people_fully_vaccinated&quot;).trim();</span>
+<span class="fc" id="L85">            String rateOfVaccination = csvRecord.get(&quot;people_fully_vaccinated_per_hundred&quot;).trim();</span>
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            if (recordDate.isBefore(startDate))</span>
+            {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                if (!fullyVaccinated.equals(&quot;&quot;)){</span>
+<span class="fc" id="L90">                    fullyVaccinated = numberFormat.format(Double.parseDouble(fullyVaccinated));</span>
+<span class="fc" id="L91">                    String suffix = &quot;last found on &quot; + recordDate.toString();</span>
+
+<span class="fc" id="L93">                    int numAppend = suffix.length() - fullyVaccinated.length();</span>
+<span class="fc" id="L94">                    String prefix = &quot; &quot;.repeat(numAppend*2);</span>
+
+<span class="fc" id="L96">                    row.setFullyVaccinated(prefix + fullyVaccinated + &quot;\n&quot; + suffix);</span>
+                }
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                if (!rateOfVaccination.equals(&quot;&quot;)){</span>
+<span class="fc" id="L100">                    rateOfVaccination = numberFormat.format(Double.parseDouble(rateOfVaccination));</span>
+<span class="fc" id="L101">                    String suffix = &quot;last found on &quot; + recordDate.toString();</span>
+
+<span class="fc" id="L103">                    int numAppend = suffix.length() - rateOfVaccination.length();</span>
+<span class="fc" id="L104">                    String prefix = &quot; &quot;.repeat(numAppend*2);</span>
+
+<span class="fc" id="L106">                    row.setRateOfVaccination(prefix + rateOfVaccination + &quot;%\n&quot; + suffix);</span>
+<span class="fc" id="L107">                }</span>
+            }
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">            else if (recordDate.isEqual(startDate)){</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">                if (!fullyVaccinated.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L111">                    fullyVaccinated = numberFormat.format(Double.parseDouble(fullyVaccinated));</span>
+<span class="fc" id="L112">                    row.setFullyVaccinated(fullyVaccinated);</span>
+                }
+
+<span class="fc bfc" id="L115" title="All 2 branches covered.">                if (!rateOfVaccination.equals(&quot;&quot;)){</span>
+<span class="fc" id="L116">                    rateOfVaccination = numberFormat.format(Double.parseDouble(rateOfVaccination))+&quot;%&quot;;</span>
+<span class="fc" id="L117">                    row.setRateOfVaccination(rateOfVaccination);</span>
+                }
+            }
+<span class="fc" id="L120">		}</span>
+<span class="fc" id="L121">		return vaccinationRateTable;</span>
+	}
+
+    /**
+     *
+     * @return  chart information : (date, cumulative rate of vaccination) for each country
+     *          key : country  ,  value : (LocalDate.toEpochDay, cumulative rate of vaccination)
+     */
+    public HashMap&lt;String, XYChart.Series&lt;Number, Number&gt;&gt; getVaccinationRateChart() {
+<span class="pc bpc" id="L130" title="4 of 6 branches missed.">        assert (startDate.isBefore(endDate) || startDate.equals(endDate));</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (String country : countries) {</span>
+<span class="fc" id="L133">            XYChart.Series&lt;Number, Number&gt; series = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L134">            series.setName(country);</span>
+<span class="fc" id="L135">            vaccinationRateChart.put(country, series);</span>
+<span class="fc" id="L136">        }</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)) {</span>
+<span class="fc" id="L139">            String countryName = csvRecord.get(&quot;location&quot;);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (!countries.contains(countryName))</span>
+<span class="fc" id="L141">                continue;</span>
+
+            //String countryISO = csvRecord.get(&quot;iso_code&quot;);
+<span class="fc" id="L144">            String dateRecord = csvRecord.get(&quot;date&quot;);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">            if (dateRecord.equals(&quot;&quot;)) continue;</span>
+<span class="fc" id="L146">            LocalDate recordDate = LocalDate.parse(csvRecord.get(&quot;date&quot;), datasetFormatter);</span>
+<span class="fc" id="L147">            String rateOfVaccination = csvRecord.get(&quot;people_fully_vaccinated_per_hundred&quot;);</span>
+<span class="fc bfc" id="L148" title="All 4 branches covered.">            if (!recordDate.isBefore(startDate) &amp;&amp; !recordDate.isAfter(endDate)) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                if (!rateOfVaccination.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L150">                    vaccinationRateChart.get(countryName).getData().add(</span>
+<span class="fc" id="L151">                            new XYChart.Data&lt;&gt;(recordDate.toEpochDay(), Float.parseFloat(rateOfVaccination))</span>
+                    );
+                } else {
+
+                }
+            }
+<span class="fc" id="L157">        }</span>
+<span class="fc" id="L158">        return vaccinationRateChart;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

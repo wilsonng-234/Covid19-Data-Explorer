@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfirmedCasesRecord.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">covidData</a> &gt; <span class="el_source">ConfirmedCasesRecord.java</span></div><h1>ConfirmedCasesRecord.java</h1><pre class="source lang-java linenums">package covidData;
+
+/**
+ *  Instances of ConfirmedCasesRecord contain totalCases and totalCasesPerMillion for a country
+ */
+public class ConfirmedCasesRecord {
+    /**
+     *  NOT_FOUND String indicates datum is not found as of the date
+     */
+    final public static String NOT_FOUND = &quot;NOT FOUND&quot;;
+
+    String country;
+    String totalCases;
+    String totalCasesPerMillion;
+
+    
+
+    /**
+     *
+     * @param country               The selected country
+     * @param totalCases            String formatted totalCases datum
+     * @param totalCasesPerMillion  String formatted totalCasesPerMillion datum
+     */
+<span class="fc" id="L24">    public ConfirmedCasesRecord(String country , String totalCases , String totalCasesPerMillion){</span>
+<span class="fc" id="L25">        this.country = country;</span>
+<span class="fc" id="L26">        this.totalCases = totalCases;</span>
+<span class="fc" id="L27">        this.totalCasesPerMillion = totalCasesPerMillion;</span>
+<span class="fc" id="L28">    }</span>
+
+    /**
+     *
+     * @return country
+     */
+    public String getCountry() {
+<span class="fc" id="L35">        return country;</span>
+    }
+
+    /**
+     *
+     * @return totalCases
+     */
+    public String getTotalCases() {
+<span class="fc" id="L43">        return totalCases;</span>
+    }
+
+    /**
+     *
+     * @return totalCasesPerMillion
+     */
+    public String getTotalCasesPerMillion() {
+<span class="fc" id="L51">        return totalCasesPerMillion;</span>
+    }
+
+    /**
+     * Set the country
+     * @param country country to set
+     *
+     */
+    public void setCountry(String country) {
+<span class="fc" id="L60">        this.country = country;</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * Set totalCases
+     * @param totalCases totalCases to set
+     */
+    public void setTotalCases(String totalCases) {
+<span class="fc" id="L68">        this.totalCases = totalCases;</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * Set totalCasesPerMillion
+     * @param totalCasesPerMillion totalCasesPerMillion to set
+     */
+    public void setTotalCasesPerMillion(String totalCasesPerMillion) {
+<span class="fc" id="L76">        this.totalCasesPerMillion = totalCasesPerMillion;</span>
+<span class="fc" id="L77">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

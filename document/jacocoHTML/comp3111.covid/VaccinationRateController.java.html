@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VaccinationRateController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">VaccinationRateController.java</span></div><h1>VaccinationRateController.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import covidData.VaccinationRate;
+import covidData.CountrySelection;
+import covidData.VaccinationRateRecord;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.chart.*;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Path;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import org.apache.commons.csv.CSVRecord;
+
+import java.io.IOException;
+import java.net.URL;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.function.Consumer;
+
+import static comp3111.covid.DataAnalysis.getFileParser;
+
+<span class="fc" id="L36">public class VaccinationRateController implements Initializable {</span>
+<span class="fc" id="L37">    String dataset = &quot;COVID_Dataset_v1.0.csv&quot;;</span>
+<span class="fc" id="L38">    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern(&quot;MMM d,yyyy&quot;, Locale.ENGLISH);</span>
+<span class="fc" id="L39">    private final List&lt;String&gt; defaultCountries = Arrays.asList(&quot;Hong Kong&quot;, &quot;India&quot;, &quot;Israel&quot;, &quot;Japan&quot;, &quot;Singapore&quot;, &quot;United Kingdom&quot;, &quot;United States&quot;, &quot;World&quot;);</span>
+<span class="fc" id="L40">    String tableTitle = &quot;Rate of Vaccination against COVID-19 as of &quot;;</span>
+<span class="fc" id="L41">    String tableColumn1 = &quot;Fully Vaccinated&quot;;</span>
+<span class="fc" id="L42">    String tableColumn2 = &quot;Rate of Vaccination&quot;;</span>
+<span class="fc" id="L43">    String chartTitle = &quot;Cumulative Rate of Vaccination against COVID-19&quot;;</span>
+<span class="fc" id="L44">    String chartAxisLabel1 = &quot;Fully Vaccinated Number&quot;;</span>
+<span class="fc" id="L45">    String chartAxisLabel2 = &quot;Fully Vaccinated per Hundred People(%)&quot;;</span>
+
+    // tab
+    @FXML
+    private Tab tableTab;
+    @FXML
+    private Tab chartTab;
+    @FXML
+    private Tab relationTab;
+
+    // datePicker
+    @FXML
+    private DatePicker tableDatePicker;
+<span class="fc" id="L58">    private LocalDate tableDate = null;</span>
+
+    @FXML
+    private DatePicker startDatePicker;
+<span class="fc" id="L62">    private LocalDate startDate = null;</span>
+
+    @FXML
+    private DatePicker endDatePicker;
+<span class="fc" id="L66">    private LocalDate endDate = null;</span>
+
+    // country selection table
+    @FXML
+    private TableView&lt;CountrySelection&gt; countrySelectionTableForTable;
+    @FXML
+    private TableColumn&lt;CountrySelection,CheckBox&gt; countrySelectionColumnForTable;
+    @FXML
+    private TableColumn&lt;CountrySelection,CheckBox&gt; checkBoxSelectionColumnForTable;
+
+    @FXML
+    private TableView&lt;CountrySelection&gt; countrySelectionTableForChart;
+    @FXML
+    private TableColumn&lt;CountrySelection,CheckBox&gt; countrySelectionColumnForChart;
+    @FXML
+    private TableColumn&lt;CountrySelection,CheckBox&gt; checkBoxSelectionColumnForChart;
+    // -----------
+
+    // table tab
+    @FXML
+    private Text tableTitleText;
+    @FXML
+    private TableView&lt;VaccinationRateRecord&gt; vaccinationRateTable;
+    @FXML
+    private TableColumn&lt;VaccinationRateRecord,String&gt; countryColumn;
+    @FXML
+    private TableColumn&lt;VaccinationRateRecord,String&gt; fullyColumn;
+    @FXML
+    private TableColumn&lt;VaccinationRateRecord,String&gt; rateColumn;
+
+    @FXML
+    public ScrollPane fullyBarCharScrollPane;
+    @FXML
+    private BarChart&lt;Number, String&gt; fullyBarChart;
+    @FXML
+    private CategoryAxis fullyBarChartXAxis;
+    @FXML
+    private NumberAxis fullyBarChartYAxis;
+    @FXML
+    public ScrollPane rateBarCharScrollPane;
+    @FXML
+    private BarChart&lt;Number, String&gt; rateBarChart;
+    @FXML
+    private CategoryAxis rateBarChartXAxis;
+    @FXML
+    private NumberAxis rateBarChartYAxis;
+    @FXML
+    private RadioButton tableRadioButton;
+    @FXML
+    private RadioButton fullyBarChartRadioButton;
+    @FXML
+    private RadioButton rateBarChartRadioButton;
+    @FXML
+    private ToggleGroup tableOrChart;
+    @FXML
+    public Label remarkForBarChartLabel;
+    // -----------
+
+    // line chart tab
+    @FXML
+    private LineChart&lt;Number,Number&gt; vaccinationRateLineChart;
+    @FXML
+    private NumberAxis lineChartXAxis;
+    @FXML
+    private NumberAxis lineChartYAxis;
+    @FXML
+    private Label nodeLabel;
+    // -----------
+
+<span class="fc" id="L135">    HashSet&lt;String&gt; selectedCountriesForTable = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L136">    HashSet&lt;String&gt; selectedCountriesForChart = new HashSet&lt;&gt;();</span>
+
+    /**
+     * add listener to date picker
+     * bind table title width with table width
+     * set table title date when date is selected
+     * set default value for radio button and stack pane
+     */
+    private void initDailyTabView() {
+<span class="fc" id="L145">        tableTitleText.wrappingWidthProperty().bind(</span>
+<span class="fc" id="L146">                vaccinationRateTable.widthProperty()</span>
+        );
+
+<span class="fc" id="L149">        tableDatePicker.valueProperty().addListener(</span>
+                (observable, oldValue, newValue) -&gt; {
+<span class="fc" id="L151">                    tableDate = newValue;</span>
+<span class="fc" id="L152">                    tableTitleText.setText(tableTitle + newValue.format(displayDateFormatter));</span>
+<span class="fc" id="L153">                }</span>
+        );
+
+<span class="fc" id="L156">        tableRadioButton.setSelected(true);</span>
+<span class="fc" id="L157">        fullyBarCharScrollPane.setVisible(false);</span>
+<span class="fc" id="L158">        rateBarCharScrollPane.setVisible(false);</span>
+<span class="fc" id="L159">    }</span>
+
+    /**
+     *  Initialize cells in vaccinationRateTable.
+     *  Bind column width with table width.
+     *  Set column display alignment.
+     *  Initialize bar chart x-axis,y-axis property
+     */
+    private void setTableAndBarChar(){
+        // table
+//        LocalDate date = LocalDate.of(2021, 7, 20);
+//        tableDatePicker.setValue(date);
+<span class="fc" id="L171">        countryColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;country&quot;));</span>
+<span class="fc" id="L172">        fullyColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;fullyVaccinated&quot;));</span>
+<span class="fc" id="L173">        rateColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;rateOfVaccination&quot;));</span>
+
+<span class="fc" id="L175">        countryColumn.prefWidthProperty().bind(</span>
+<span class="fc" id="L176">                vaccinationRateTable.widthProperty().divide(3.1)</span>
+        );
+<span class="fc" id="L178">        fullyColumn.prefWidthProperty().bind(</span>
+<span class="fc" id="L179">                vaccinationRateTable.widthProperty().divide(3.1)</span>
+        );
+<span class="fc" id="L181">        rateColumn.prefWidthProperty().bind(</span>
+<span class="fc" id="L182">                vaccinationRateTable.widthProperty().divide(3.1)</span>
+        );
+
+<span class="fc" id="L185">        fullyColumn.setStyle(&quot;-fx-alignment: CENTER-RIGHT;&quot;);</span>
+<span class="fc" id="L186">        rateColumn.setStyle(&quot;-fx-alignment: CENTER-RIGHT;&quot;);</span>
+
+        // bar chart
+<span class="fc" id="L189">        fullyBarChart.prefWidthProperty().bind(fullyBarCharScrollPane.widthProperty().divide(1.1));</span>
+<span class="fc" id="L190">        fullyBarChart.setPrefHeight(445);</span>
+<span class="fc" id="L191">        fullyBarChart.animatedProperty().setValue(false);</span>
+<span class="fc" id="L192">        rateBarChart.prefWidthProperty().bind(rateBarCharScrollPane.widthProperty().divide(1.1));</span>
+<span class="fc" id="L193">        rateBarChart.setPrefHeight(445);</span>
+<span class="fc" id="L194">        rateBarChart.animatedProperty().setValue(false);</span>
+<span class="fc" id="L195">        fullyColumn.setText(tableColumn1);</span>
+<span class="fc" id="L196">        rateColumn.setText(tableColumn2);</span>
+<span class="fc" id="L197">        remarkForBarChartLabel.setVisible(false);</span>
+
+<span class="fc" id="L199">        fullyBarChartXAxis.setLabel(&quot;Country&quot;);</span>
+<span class="fc" id="L200">        fullyBarChartYAxis.setLabel(chartAxisLabel1);</span>
+
+<span class="fc" id="L202">        rateBarChartXAxis.setLabel(&quot;Country&quot;);</span>
+<span class="fc" id="L203">        rateBarChartYAxis.setLabel(chartAxisLabel2);</span>
+<span class="fc" id="L204">        rateBarChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartYAxis, null, &quot;%&quot;));</span>
+<span class="fc" id="L205">    }</span>
+
+    /**
+     * add listener to start and end date picker
+     */
+    private void initPeriodTab() {
+<span class="fc" id="L211">        startDatePicker.valueProperty().addListener(</span>
+<span class="fc" id="L212">                (observable, oldValue, newValue) -&gt; startDate = newValue</span>
+        );
+<span class="fc" id="L214">        endDatePicker.valueProperty().addListener(</span>
+<span class="fc" id="L215">                (observable, oldValue, newValue) -&gt; endDate = newValue</span>
+        );
+<span class="fc" id="L217">    }</span>
+
+    /**
+     *  Initialize vaccinationRate LineChart x-axis,y-axis property.
+     */
+    private void setLineChart() {
+//        LocalDate sd = LocalDate.of(2020, 12, 27);
+//        LocalDate ed = LocalDate.of(2021, 7, 20);
+//        startDatePicker.setValue(sd);
+//        endDatePicker.setValue(ed);
+
+<span class="fc" id="L228">        vaccinationRateLineChart.setTitle(chartTitle);</span>
+<span class="fc" id="L229">        vaccinationRateLineChart.animatedProperty().setValue(false);</span>
+
+<span class="fc" id="L231">        lineChartXAxis.setLabel(&quot;Date&quot;);</span>
+<span class="fc" id="L232">        lineChartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartXAxis) {</span>
+            @Override
+            public String toString(final Number object) {
+<span class="fc" id="L235">                long longValue = object.longValue();</span>
+<span class="fc" id="L236">                LocalDate date = LocalDate.ofEpochDay(longValue);</span>
+<span class="fc" id="L237">                return date.format(displayDateFormatter);</span>
+            }
+        });
+<span class="fc" id="L240">        lineChartYAxis.setLabel(chartAxisLabel2);</span>
+<span class="fc" id="L241">        lineChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartYAxis, null, &quot;%&quot;));</span>
+
+<span class="fc" id="L243">    }</span>
+
+    /**
+     * Initialize countrySelection table
+     *
+     * @param table The table to be initialized
+     * @param countryColumn The countryName column in the table
+     * @param checkBoxColumn The checkBox column in the table
+     * @param selectedCountries The selectedCountries HashSet
+     */
+    private void setCountrySelectionTable(TableView&lt;CountrySelection&gt; table, TableColumn&lt;CountrySelection,CheckBox&gt; countryColumn,
+                                          TableColumn&lt;CountrySelection,CheckBox&gt; checkBoxColumn,HashSet&lt;String&gt; selectedCountries)
+    {
+<span class="fc" id="L256">        countryColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</span>
+<span class="fc" id="L257">        checkBoxColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;select&quot;));</span>
+
+<span class="fc" id="L259">        Map&lt;String, CountrySelection&gt; countrySelectionRows = getCountrySelectionRows(&quot;COVID_Dataset_v1.0.csv&quot;);</span>
+<span class="fc" id="L260">        List&lt;CountrySelection&gt; countrySelectionList = new ArrayList&lt;&gt;(countrySelectionRows.size());</span>
+<span class="fc" id="L261">        countrySelectionList.addAll(countrySelectionRows.values());</span>
+<span class="fc" id="L262">        Collections.sort(countrySelectionList);</span>
+
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        for (CountrySelection row : countrySelectionList) {</span>
+<span class="fc" id="L265">            CheckBox checkBox = row.getSelect();</span>
+
+<span class="fc" id="L267">            checkBox.selectedProperty().addListener(</span>
+<span class="fc" id="L268">                    new ChangeListener&lt;Boolean&gt;() {</span>
+                        @Override
+                        public void changed(ObservableValue&lt;? extends Boolean&gt; observable, Boolean oldValue, Boolean newValue) {
+<span class="fc" id="L271">                            System.out.println(row.getName());</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">                            if (newValue){</span>
+                                //assert (!selectedCountries.contains(row.getName()));
+
+<span class="fc" id="L275">                                selectedCountries.add(row.getName());</span>
+                            }
+                            else{
+                                //assert (selectedCountries.contains(row.getName()));
+
+<span class="fc" id="L280">                                selectedCountries.remove(row.getName());</span>
+                            }
+
+<span class="fc" id="L283">                            sortCountrySelectionColumn(table);</span>
+<span class="fc" id="L284">                        }</span>
+                    }
+            );
+
+<span class="fc" id="L288">            table.getItems().add(row);</span>
+<span class="fc" id="L289">        }</span>
+<span class="fc" id="L290">    }</span>
+    /**
+     * Sort CountrySelectionColumn to put selected countries at top.
+     *
+     * @param countrySelectionTable The countrySelectionTable that user is using.
+     */
+    void sortCountrySelectionColumn(TableView&lt;CountrySelection&gt; countrySelectionTable) {
+        // once chosen, will move up to the top
+<span class="fc" id="L298">        countrySelectionTable.getItems().sort((o1,o2) -&gt; {</span>
+<span class="fc bfc" id="L299" title="All 4 branches covered.">            if (o1.getSelect().isSelected() &amp;&amp; !o2.getSelect().isSelected())</span>
+<span class="fc" id="L300">                return -1;</span>
+<span class="fc bfc" id="L301" title="All 4 branches covered.">            else if (!o1.getSelect().isSelected() &amp;&amp; o2.getSelect().isSelected())</span>
+<span class="fc" id="L302">                return 1;</span>
+            else {
+<span class="fc" id="L304">                return o1.getName().compareTo(o2.getName());</span>
+            }
+        });
+<span class="fc" id="L307">        countrySelectionTable.sort();</span>
+
+<span class="fc" id="L309">    }</span>
+
+
+//    void initCountrySelectionCheckBox(List&lt;CountrySelection&gt; countrySelections) {
+//        for (CountrySelection row : countrySelections) {
+//            if (defaultCountries.contains(row.getName())){
+//                row.getSelect().setSelected(true);
+//            }
+//        }
+//    }
+
+    /**
+     * UI initialization
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // datePicker get date
+
+<span class="fc" id="L327">        initDailyTabView();</span>
+<span class="fc" id="L328">        setTableAndBarChar();</span>
+
+<span class="fc" id="L330">        initPeriodTab();</span>
+<span class="fc" id="L331">        setLineChart();</span>
+
+<span class="fc" id="L333">        setCountrySelectionTable(countrySelectionTableForTable,countrySelectionColumnForTable,checkBoxSelectionColumnForTable,selectedCountriesForTable);</span>
+<span class="fc" id="L334">        setCountrySelectionTable(countrySelectionTableForChart,countrySelectionColumnForChart,checkBoxSelectionColumnForChart,selectedCountriesForChart);</span>
+
+//        initCountrySelectionCheckBox(countrySelectionList);
+//        initCountrySelectionCheckBox(countrySelectionList1);
+
+<span class="fc" id="L339">    }</span>
+
+    @FXML
+    private Button generateTableButton;
+
+    /**
+     *  Generate the table and bar chart corresponding to selected countries and period.
+     * @param event generate chart button is clicked
+     */
+    @FXML
+    void generateTableButtonClicked(ActionEvent event) {
+        //check validity
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        if (tableDate == null) {</span>
+<span class="fc" id="L352">            Alert dateNotChosenAlert = new Alert(Alert.AlertType.WARNING);</span>
+<span class="fc" id="L353">            dateNotChosenAlert.setTitle(&quot;DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L354">            dateNotChosenAlert.setContentText(&quot;Please choose the date first&quot;);</span>
+
+<span class="fc" id="L356">            dateNotChosenAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L357">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L360">                        }</span>
+                    }
+            );
+<span class="fc" id="L363">            return;</span>
+        }
+
+<span class="fc" id="L366">        List&lt;String&gt; sortedSelectedCountriesList = new ArrayList&lt;&gt;(selectedCountriesForTable.size());</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        for (String countryName : selectedCountriesForTable)</span>
+<span class="fc" id="L368">            sortedSelectedCountriesList.add(countryName);</span>
+<span class="fc" id="L369">        Collections.sort(sortedSelectedCountriesList);</span>
+
+        // generate table and bar char
+<span class="fc" id="L372">        vaccinationRateTable.getItems().clear();</span>
+
+<span class="fc" id="L374">        fullyBarChart.getData().clear();</span>
+<span class="fc" id="L375">        rateBarChart.getData().clear();</span>
+
+<span class="fc" id="L377">        VaccinationRate vaccinationRate = new VaccinationRate(tableDate, selectedCountriesForTable,&quot;COVID_Dataset_v1.0.csv&quot;);</span>
+<span class="fc" id="L378">        HashMap&lt;String, VaccinationRateRecord&gt; vaccinationRateHashMap = vaccinationRate.getVaccinationRateTable();</span>
+
+<span class="fc" id="L380">        XYChart.Series&lt;Number, String&gt; fullySeries = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L381">        fullySeries.setName(&quot;fully vaccinated&quot;);</span>
+<span class="fc" id="L382">        XYChart.Series&lt;Number, String&gt; rateSeries = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L383">        rateSeries.setName(&quot;rate of vaccination&quot;);</span>
+
+<span class="fc" id="L385">        NumberFormat numberFormat = NumberFormat.getInstance();</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        for (String countryName : sortedSelectedCountriesList) {</span>
+<span class="fc" id="L387">            VaccinationRateRecord record = vaccinationRateHashMap.get(countryName);</span>
+
+            try{
+<span class="fc" id="L390">                String fullyVaccinated = record.getFullyVaccinated();</span>
+<span class="fc" id="L391">                fullyVaccinated = fullyVaccinated.replaceAll(&quot;,&quot;,&quot;&quot;);</span>
+
+<span class="fc" id="L393">                fullySeries.getData().add(new XYChart.Data&lt;&gt;(Integer.parseInt(fullyVaccinated),countryName));</span>
+            }
+<span class="fc" id="L395">            catch(NumberFormatException exception){</span>
+<span class="fc" id="L396">                fullySeries.getData().add(new XYChart.Data&lt;&gt;(0, countryName));</span>
+<span class="fc" id="L397">            }</span>
+
+            try{
+<span class="fc" id="L400">                String rateOfVaccination = record.getRateOfVaccination();</span>
+<span class="fc" id="L401">                rateOfVaccination = rateOfVaccination.replaceAll(&quot;%&quot;,&quot;&quot;);</span>
+
+<span class="fc" id="L403">                rateSeries.getData().add(new XYChart.Data&lt;&gt;(Double.parseDouble(rateOfVaccination),countryName));</span>
+            }
+<span class="fc" id="L405">            catch (NumberFormatException exception){</span>
+<span class="fc" id="L406">                rateSeries.getData().add(new XYChart.Data&lt;&gt;(0, countryName));</span>
+<span class="fc" id="L407">            }</span>
+
+<span class="fc" id="L409">            record.setFullyVaccinated(record.getFullyVaccinated());</span>
+<span class="fc" id="L410">            record.setRateOfVaccination(record.getRateOfVaccination());</span>
+
+<span class="fc" id="L412">            vaccinationRateTable.getItems().add(record);</span>
+<span class="fc" id="L413">        }</span>
+
+<span class="pc bpc" id="L415" title="1 of 2 branches missed.">        if (selectedCountriesForTable.size() &gt; 10) {</span>
+<span class="fc" id="L416">            fullyBarChart.setPrefHeight(selectedCountriesForTable.size()*50);</span>
+<span class="fc" id="L417">            rateBarChart.setPrefHeight(selectedCountriesForTable.size()*50);</span>
+        }
+        else {
+<span class="nc" id="L420">            fullyBarChart.setPrefHeight(445);</span>
+<span class="nc" id="L421">            rateBarChart.setMinHeight(445);</span>
+        }
+<span class="fc" id="L423">        fullyBarChart.getData().add(fullySeries);</span>
+<span class="fc" id="L424">        rateBarChart.getData().add(rateSeries);</span>
+<span class="fc" id="L425">    }</span>
+
+    @FXML
+    private Button generateChartButton;
+
+
+    /**
+     *  Generate the curves corresponding to selected countries and period.
+     * @param event generate chart button is clicked
+     */
+    @FXML
+    void generateChartButtonClicked(ActionEvent event) {
+        //check validity
+<span class="fc" id="L438">        Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);</span>
+
+<span class="fc bfc" id="L440" title="All 4 branches covered.">        if (startDate == null &amp;&amp; endDate == null){</span>
+<span class="fc" id="L441">            invalidDateAlert.setTitle(&quot;BOTH DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L442">            invalidDateAlert.setContentText(&quot;Please choose the start date and end date first&quot;);</span>
+
+<span class="fc" id="L444">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L445">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L448">                        }</span>
+                    }
+            );
+<span class="fc" id="L451">            return;</span>
+        }
+<span class="fc bfc" id="L453" title="All 2 branches covered.">        if (startDate == null){</span>
+<span class="fc" id="L454">            invalidDateAlert.setTitle(&quot;START DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L455">            invalidDateAlert.setContentText(&quot;Please choose the start date first&quot;);</span>
+
+<span class="fc" id="L457">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L458">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L461">                        }</span>
+                    }
+            );
+<span class="fc" id="L464">            return;</span>
+        }
+<span class="fc bfc" id="L466" title="All 2 branches covered.">        if (endDate == null){</span>
+<span class="fc" id="L467">            invalidDateAlert.setTitle(&quot;END DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L468">            invalidDateAlert.setContentText(&quot;Please choose the end date first&quot;);</span>
+
+<span class="fc" id="L470">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L471">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L474">                        }</span>
+                    }
+            );
+<span class="fc" id="L477">            return;</span>
+        }
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        if (startDate.isAfter(endDate)){</span>
+<span class="fc" id="L480">            invalidDateAlert.setTitle(&quot;INVALID DATE INPUT&quot;);</span>
+<span class="fc" id="L481">            invalidDateAlert.setContentText(&quot;start date cannot be after end date!!&quot;);</span>
+
+<span class="fc" id="L483">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L484">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L487">                        }</span>
+                    }
+            );
+<span class="fc" id="L490">            return;</span>
+        }
+<span class="fc bfc" id="L492" title="All 2 branches covered.">        if (startDate.isEqual(endDate)){</span>
+<span class="fc" id="L493">            invalidDateAlert.setTitle(&quot;INVALID DATE INPUT&quot;);</span>
+<span class="fc" id="L494">            invalidDateAlert.setContentText(&quot;start date cannot be equals to end date!!&quot;);</span>
+
+<span class="fc" id="L496">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L497">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L500">                        }</span>
+                    }
+            );
+<span class="fc" id="L503">            return;</span>
+        }
+
+        // generate line chart
+<span class="fc" id="L507">        vaccinationRateLineChart.getData().clear();</span>
+<span class="fc" id="L508">        lineChartXAxis.setAutoRanging(false);</span>
+<span class="fc" id="L509">        lineChartXAxis.setLowerBound(startDate.toEpochDay());</span>
+<span class="fc" id="L510">        lineChartXAxis.setUpperBound(endDate.toEpochDay());</span>
+<span class="fc" id="L511">        VaccinationRate vaccinationRate = new VaccinationRate(startDate, endDate, selectedCountriesForChart,&quot;COVID_Dataset_v1.0.csv&quot;);</span>
+<span class="fc" id="L512">        HashMap&lt;String,XYChart.Series&lt;Number,Number&gt;&gt; vaccinationRateHashMap = vaccinationRate.getVaccinationRateChart();</span>
+<span class="fc bfc" id="L513" title="All 2 branches covered.">        for (String countryName : selectedCountriesForChart){</span>
+<span class="fc" id="L514">            vaccinationRateLineChart.getData().add(vaccinationRateHashMap.get(countryName));</span>
+<span class="fc" id="L515">        }</span>
+
+        // add event handler to every node in lines
+<span class="fc" id="L518">        Collection&lt;XYChart.Series&lt;Number,Number&gt;&gt; seriesList = vaccinationRateHashMap.values();</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">        for(XYChart.Series&lt;Number,Number&gt; series : seriesList){</span>
+            //Setup for hovering on series (cleaner)
+<span class="fc" id="L521">            Path seriesPath = (Path) series.getNode();</span>
+<span class="fc" id="L522">            double initialStrokeWidth = seriesPath.getStrokeWidth();</span>
+
+<span class="fc" id="L524">            seriesPath.setOnMouseEntered(e -&gt; {</span>
+<span class="nc" id="L525">                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);</span>
+<span class="nc" id="L526">                nodeLabel.setText(series.getName() + &quot;\n &quot; + &quot;\n &quot;);</span>
+<span class="nc" id="L527">            });</span>
+<span class="fc" id="L528">            seriesPath.setOnMouseExited(e -&gt; {</span>
+<span class="nc" id="L529">                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);</span>
+<span class="nc" id="L530">                nodeLabel.setText(&quot;&quot;);</span>
+<span class="nc" id="L531">            });</span>
+
+<span class="fc bfc" id="L533" title="All 2 branches covered.">            for (XYChart.Data&lt;Number,Number&gt; data : series.getData()) {</span>
+//                data.getNode().setVisible(false);
+<span class="fc" id="L535">                data.getNode().setStyle(&quot;-fx-background-color: transparent, transparent;\n&quot;</span>
+                        + &quot;    -fx-background-insets: 0, 2;\n&quot;
+                        + &quot;    -fx-background-radius: 5px;\n&quot;
+                        + &quot;    -fx-padding: 5px;&quot;);
+
+<span class="fc" id="L540">                data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, event1 -&gt; {</span>
+<span class="nc" id="L541">                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);</span>
+<span class="nc" id="L542">                    nodeLabel.setText(series.getName()+ &quot;\n&quot; + &quot;Date : &quot; + LocalDate.ofEpochDay((Long) data.getXValue()).format(displayDateFormatter) + &quot;\nRate : &quot; + data.getYValue() + &quot;%&quot;);</span>
+<span class="nc" id="L543">                });</span>
+<span class="fc" id="L544">                data.getNode().addEventHandler(MouseEvent.MOUSE_EXITED, event2 -&gt; {</span>
+<span class="nc" id="L545">                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);</span>
+<span class="nc" id="L546">                    nodeLabel.setText(&quot;&quot;);</span>
+<span class="nc" id="L547">                });</span>
+<span class="fc" id="L548">            }</span>
+<span class="fc" id="L549">        }</span>
+<span class="fc" id="L550">    }</span>
+
+    /**
+     * Set curve in lineChart is Hovered.
+     */
+    private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
+<span class="nc" id="L556">        seriesPath.setStroke(strokeColor);</span>
+<span class="nc" id="L557">        seriesPath.setStrokeWidth(strokeWidth);</span>
+<span class="nc bnc" id="L558" title="All 2 branches missed.">        if(!toFront){ return; }</span>
+<span class="nc" id="L559">        seriesPath.toFront();</span>
+<span class="nc" id="L560">    }</span>
+
+    @FXML
+    private ImageView tableHomeImage;
+
+    /**
+     * Switch to the home scene.
+     * @param event switchToHomeImage is clicked
+     * @throws IOException
+     */
+    @FXML
+    void switchToHomeScene(MouseEvent event) throws IOException {
+<span class="nc" id="L572">        Parent root = FXMLLoader.load(getClass().getResource(&quot;/ui/home.fxml&quot;));</span>
+<span class="nc" id="L573">        Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();</span>
+<span class="nc" id="L574">        Scene scene = new Scene(root);</span>
+<span class="nc" id="L575">        stage.setScene(scene);</span>
+<span class="nc" id="L576">        stage.show();</span>
+<span class="nc" id="L577">    }</span>
+
+    private Map&lt;String, CountrySelection&gt; getCountrySelectionRows(String dataset){
+<span class="fc" id="L580">        Map&lt;String, CountrySelection&gt; countrySelectionRows = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L582" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)) {</span>
+<span class="fc" id="L583">            String country = csvRecord.get(&quot;location&quot;);</span>
+
+<span class="fc bfc" id="L585" title="All 2 branches covered.">            if (!countrySelectionRows.containsKey(country)) {</span>
+<span class="fc" id="L586">                CountrySelection countrySelection = new CountrySelection(country);</span>
+
+<span class="fc" id="L588">                countrySelectionRows.put(country,countrySelection);</span>
+            }
+<span class="fc" id="L590">        }</span>
+
+<span class="fc" id="L592">        return countrySelectionRows;</span>
+    }
+
+    @FXML
+    private CheckBox selectAllForTable;
+
+    /**
+     * Select all countries in the table.
+     * @param event select all button in table tab is clicked.
+     */
+    @FXML
+    void selectAllForTableClicked(ActionEvent event) {
+<span class="fc" id="L604">        clickAllOrNone(selectAllForTable, countrySelectionTableForTable);</span>
+<span class="fc" id="L605">    }</span>
+
+    @FXML
+    private CheckBox selectAllForChart;
+
+    /**
+     * Select all countries in the chart.
+     * @param event select all button in chart tab is clicked.
+     */
+    @FXML
+    void selectAllForChartClicked(ActionEvent event) {
+<span class="fc" id="L616">        clickAllOrNone(selectAllForChart, countrySelectionTableForChart);</span>
+<span class="fc" id="L617">    }</span>
+
+    void clickAllOrNone(CheckBox selectAll, TableView&lt;CountrySelection&gt; countrySelection) {
+<span class="fc" id="L620">        boolean tick = selectAll.selectedProperty().get();</span>
+<span class="fc bfc" id="L621" title="All 2 branches covered.">        if (tick)</span>
+<span class="fc bfc" id="L622" title="All 2 branches covered.">            for (int i=0; i&lt;countrySelection.getItems().size(); i++){</span>
+<span class="fc" id="L623">                CountrySelection row = countrySelection.getItems().get(i);</span>
+<span class="fc" id="L624">                row.getSelect().setSelected(true);</span>
+            }
+        else
+<span class="fc bfc" id="L627" title="All 2 branches covered.">            for (int i=0; i&lt;countrySelection.getItems().size(); i++){</span>
+<span class="fc" id="L628">                CountrySelection row = countrySelection.getItems().get(0);</span>
+<span class="fc" id="L629">                row.getSelect().setSelected(false);</span>
+            }
+<span class="fc" id="L631">    }</span>
+
+    /**
+     * Change the table/bar chart to be visible.
+     * @param event &quot;Table&quot;/&quot;Total Confirmed Cases Bar Chart&quot;/&quot;Total Confirmed Cases Per Million Bar Chart&quot; radio button is clicked.
+     */
+    public void getGraph(ActionEvent event) {
+<span class="fc bfc" id="L638" title="All 2 branches covered.">        if (tableRadioButton.isSelected()) {</span>
+<span class="fc" id="L639">            vaccinationRateTable.setVisible(true);</span>
+<span class="fc" id="L640">            fullyBarCharScrollPane.setVisible(false);</span>
+<span class="fc" id="L641">            rateBarCharScrollPane.setVisible(false);</span>
+<span class="fc" id="L642">            remarkForBarChartLabel.setVisible(false);</span>
+        }
+<span class="fc bfc" id="L644" title="All 2 branches covered.">        else if (fullyBarChartRadioButton.isSelected()) {</span>
+<span class="fc" id="L645">            vaccinationRateTable.setVisible(false);</span>
+<span class="fc" id="L646">            fullyBarCharScrollPane.setVisible(true);</span>
+<span class="fc" id="L647">            rateBarCharScrollPane.setVisible(false);</span>
+<span class="fc" id="L648">            remarkForBarChartLabel.setVisible(true);</span>
+        } else {
+<span class="fc" id="L650">            vaccinationRateTable.setVisible(false);</span>
+<span class="fc" id="L651">            fullyBarCharScrollPane.setVisible(false);</span>
+<span class="fc" id="L652">            rateBarCharScrollPane.setVisible(true);</span>
+<span class="fc" id="L653">            remarkForBarChartLabel.setVisible(true);</span>
+        }
+
+<span class="fc" id="L656">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

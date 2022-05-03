@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinearRegression.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">covidData</a> &gt; <span class="el_source">LinearRegression.java</span></div><h1>LinearRegression.java</h1><pre class="source lang-java linenums">package covidData;
+
+import java.util.List;
+
+/**
+ *  Instances of linearRegression calculate the equation of regression line based on input (x,y) pair
+ */
+public class LinearRegression {
+
+    private final double intercept, slope;
+    private final double r2;
+    private final double svar0, svar1;
+
+    /**
+     * Calculate the regression line based on input list of x and list of y
+     * @param x List of x values
+     * @param y List of y values
+     */
+<span class="fc" id="L19">    public LinearRegression(List&lt;Double&gt; x, List&lt;Double&gt; y) {</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        if (x.size() != y.size()) {</span>
+<span class="fc" id="L21">            throw new IllegalArgumentException(&quot;array lengths are not equal&quot;);</span>
+        }
+<span class="fc" id="L23">        int n = x.size();</span>
+
+        // first pass
+<span class="fc" id="L26">        double sumx = 0.0, sumy = 0.0, sumx2 = 0.0;</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L28">            sumx  += x.get(i);</span>
+<span class="fc" id="L29">            sumx2 += x.get(i)*x.get(i);</span>
+<span class="fc" id="L30">            sumy  += y.get(i);</span>
+        }
+<span class="fc" id="L32">        double xbar = sumx / n;</span>
+<span class="fc" id="L33">        double ybar = sumy / n;</span>
+
+        // second pass: compute summary statistics
+<span class="fc" id="L36">        double xxbar = 0.0, yybar = 0.0, xybar = 0.0;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L38">            xxbar += (x.get(i)- xbar) * (x.get(i) - xbar);</span>
+<span class="fc" id="L39">            yybar += (y.get(i) - ybar) * (y.get(i) - ybar);</span>
+<span class="fc" id="L40">            xybar += (x.get(i) - xbar) * (y.get(i) - ybar);</span>
+        }
+<span class="fc" id="L42">        slope  = xybar / xxbar;</span>
+<span class="fc" id="L43">        intercept = ybar - slope * xbar;</span>
+
+        // more statistical analysis
+<span class="fc" id="L46">        double rss = 0.0;      // residual sum of squares</span>
+<span class="fc" id="L47">        double ssr = 0.0;      // regression sum of squares</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L49">            double fit = slope*x.get(i) + intercept;</span>
+<span class="fc" id="L50">            rss += (fit - y.get(i)) * (fit - y.get(i));</span>
+<span class="fc" id="L51">            ssr += (fit - ybar) * (fit - ybar);</span>
+        }
+
+<span class="fc" id="L54">        int degreesOfFreedom = n-2;</span>
+<span class="fc" id="L55">        r2    = ssr / yybar;</span>
+<span class="fc" id="L56">        double svar  = rss / degreesOfFreedom;</span>
+<span class="fc" id="L57">        svar1 = svar / xxbar;</span>
+<span class="fc" id="L58">        svar0 = svar/n + xbar*xbar*svar1;</span>
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * @return intercept
+     */
+    public double intercept() {
+<span class="fc" id="L65">        return intercept;</span>
+    }
+
+    /**
+     *
+     * @return slope
+     */
+    public double slope() {
+<span class="fc" id="L73">        return slope;</span>
+    }
+
+    /**
+     *
+     * @return r^2
+     */
+    public double R2() {
+<span class="fc" id="L81">        return r2;</span>
+    }
+
+    /**
+     * use x datum value to predict y value
+     * @param x x datum value
+     * @return predicted y value
+     */
+    public double predict(double x) {
+<span class="fc" id="L90">        return slope*x + intercept;</span>
+    }
+
+
+    public String toString() {
+<span class="fc" id="L95">        return &quot;y = &quot; + slope + &quot;x + &quot; + intercept;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

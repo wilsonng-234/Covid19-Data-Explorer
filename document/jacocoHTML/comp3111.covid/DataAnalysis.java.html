@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataAnalysis.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">DataAnalysis.java</span></div><h1>DataAnalysis.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import org.apache.commons.csv.*;
+import edu.duke.*;
+
+/**
+ * 
+ * Data Explorer on COVID-19
+ * @author &lt;a href=mailto:namkiu@ust.hk&gt;Namkiu Chan&lt;/a&gt;
+ * @version	1.1
+ * 
+ */
+<span class="nc" id="L13">public class DataAnalysis {</span>
+	/**
+	 * helper function to get CSVParser
+	 * @param dataset The dataset file name
+	 * @return CSVParser of the dataset
+	 */
+	public static CSVParser getFileParser(String dataset) {
+<span class="fc" id="L20">	     FileResource fr = new FileResource(&quot;dataset/&quot; + dataset);</span>
+<span class="fc" id="L21">	     return fr.getCSVParser(true);</span>
+		}
+	
+
+//	public static String getConfirmedCases(String dataset, String iso_code) {
+//		String oReport = &quot;&quot;;
+//		long confirmedCases = 0;
+//		long numRecord = 0;
+//		long totalNumRecord = 0;
+//
+//		for (CSVRecord rec : getFileParser(dataset)) {
+//
+//			if (rec.get(&quot;iso_code&quot;).equals(iso_code)) {
+//				String s = rec.get(&quot;new_cases&quot;);
+//				if (!s.equals(&quot;&quot;)) {
+//					confirmedCases += Long.parseLong(s);
+//					numRecord++;
+//				}
+//			}
+//			totalNumRecord++;
+//		}
+//
+//		oReport = String.format(&quot;Dataset (%s): %,d Records\n\n&quot;, dataset, totalNumRecord);
+//		oReport += String.format(&quot;[Summary (%s)]\n&quot;, iso_code);
+//		oReport += String.format(&quot;Number of Confirmed Cases: %,d\n&quot;, confirmedCases);
+//		oReport += String.format(&quot;Number of Days Reported: %,d\n&quot;, numRecord);
+//
+//		return oReport;
+//	}
+//
+//	 public static String getConfirmedDeaths(String dataset, String iso_code) {
+//			String oReport = &quot;&quot;;
+//			long confirmedDeaths = 0;
+//			long numRecord = 0;
+//			long totalNumRecord = 0;
+//
+//			for (CSVRecord rec : getFileParser(dataset)) {
+//
+//				if (rec.get(&quot;iso_code&quot;).equals(iso_code)) {
+//					String s = rec.get(&quot;new_deaths&quot;);
+//					if (!s.equals(&quot;&quot;)) {
+//						confirmedDeaths += Long.parseLong(s);
+//						numRecord++;
+//					}
+//				}
+//				totalNumRecord++;
+//			}
+//
+//			oReport = String.format(&quot;Dataset (%s): %,d Records\n\n&quot;, dataset, totalNumRecord);
+//			oReport += String.format(&quot;[Summary (%s)]\n&quot;, iso_code);
+//			oReport += String.format(&quot;Number of Deaths: %,d\n&quot;, confirmedDeaths);
+//			oReport += String.format(&quot;Number of Days Reported: %,d\n&quot;, numRecord);
+//
+//			return oReport;
+//	 }
+//
+//	 public static String getRateOfVaccination(String dataset, String iso_code) {
+//			String oReport = &quot;&quot;;
+//			long fullyVaccinated = 0;
+//			long numRecord = 0;
+//			long totalNumRecord = 0;
+//			long population = 0;
+//			float rate = 0.0f;
+//
+//			for (CSVRecord rec : getFileParser(dataset)) {
+//
+//				if (rec.get(&quot;iso_code&quot;).equals(iso_code)) {
+//
+//					String s1 = rec.get(&quot;people_fully_vaccinated&quot;);
+//					String s2 = rec.get(&quot;population&quot;);
+//					if (!s1.equals(&quot;&quot;) &amp;&amp; !s2.equals(&quot;&quot;)) {
+//						fullyVaccinated = Long.parseLong(s1);
+//						population = Long.parseLong(s2);
+//						numRecord++;
+//					}
+//				}
+//				totalNumRecord++;
+//			}
+//
+//			if (population !=0)
+//				rate = (float) fullyVaccinated / population * 100;
+//
+//			oReport = String.format(&quot;Dataset (%s): %,d Records\n\n&quot;, dataset, totalNumRecord);
+//			oReport += String.format(&quot;[Summary (%s)]\n&quot;, iso_code);
+//			oReport += String.format(&quot;Number of People Fully Vaccinated: %,d\n&quot;, fullyVaccinated);
+//			oReport += String.format(&quot;Population: %,d\n&quot;, population);
+//			oReport += String.format(&quot;Rate of Vaccination: %.2f%%\n&quot;, rate);
+//			oReport += String.format(&quot;Number of Days Reported: %,d\n&quot;, numRecord);
+//
+//			return oReport;
+//	 }
+ 
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

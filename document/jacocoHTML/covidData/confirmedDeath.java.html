@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>confirmedDeath.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">covidData</a> &gt; <span class="el_source">confirmedDeath.java</span></div><h1>confirmedDeath.java</h1><pre class="source lang-java linenums">package covidData;
+
+import javafx.scene.chart.XYChart;
+import org.apache.commons.csv.CSVRecord;
+
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.util.*;
+
+import static comp3111.covid.DataAnalysis.getFileParser;
+import static covidData.confirmedDeathRecord.NOT_FOUND;
+
+<span class="pc bpc" id="L13" title="1 of 2 branches missed.">public class confirmedDeath extends CovidData {</span>
+    private HashMap&lt;String, confirmedDeathRecord&gt; confirmedDeathTable;   // key: country location name  value: confirmedDeathRecord
+    private HashMap&lt;String,XYChart.Series&lt;Number,Number&gt;&gt; confirmedDeathChart;   // key: country location name  value : data point &lt;Date,value&gt;
+
+    //private HashMap&lt;String,XYChart.Series&lt;LocalDate,String&gt;&gt; confirmedDeathChart;   // key: country location name  value : data point &lt;LocalDate,String&gt;
+
+    public confirmedDeath(LocalDate date, HashSet&lt;String&gt; countries, String dataset){
+<span class="fc" id="L20">        super(date,countries,dataset);</span>
+<span class="fc" id="L21">        confirmedDeathTable = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L22">        confirmedDeathChart = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L23">    }</span>
+    public confirmedDeath(LocalDate startDate,LocalDate endDate, HashSet&lt;String&gt; countries, String dataset){
+<span class="fc" id="L25">        super(startDate,endDate,countries,dataset);</span>
+<span class="fc" id="L26">        confirmedDeathTable = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L27">        confirmedDeathChart = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L28">    }</span>
+
+    public HashMap&lt;String, confirmedDeathRecord&gt; getconfirmedDeathTable() {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        for (String countryName : countries)</span>
+<span class="fc" id="L32">            confirmedDeathTable.put(countryName,new confirmedDeathRecord(countryName,NOT_FOUND,NOT_FOUND));</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)){</span>
+<span class="fc" id="L35">            String countryName = csvRecord.get(&quot;location&quot;);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            if (!countries.contains(countryName))</span>
+<span class="fc" id="L37">                continue;</span>
+
+<span class="fc" id="L39">            String countryISO = csvRecord.get(&quot;iso_code&quot;);</span>
+<span class="fc" id="L40">            String dateRecord = csvRecord.get(&quot;date&quot;);</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">            if (dateRecord.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L42">                continue;</span>
+            }
+
+<span class="fc" id="L45">            String[] dateRecordInfo = dateRecord.trim().split(&quot;/&quot;);</span>
+<span class="fc" id="L46">            LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),</span>
+<span class="fc" id="L47">                    Integer.parseInt(dateRecordInfo[0]),</span>
+<span class="fc" id="L48">                    Integer.parseInt(dateRecordInfo[1]));</span>
+
+<span class="fc" id="L50">            NumberFormat numberFormat = NumberFormat.getInstance();</span>
+<span class="fc" id="L51">            numberFormat.setMaximumFractionDigits(2);</span>
+<span class="fc" id="L52">            confirmedDeathRecord row = confirmedDeathTable.get(countryName);</span>
+<span class="fc" id="L53">            String totalDeath = csvRecord.get(&quot;total_deaths&quot;).trim();</span>
+<span class="fc" id="L54">            String totalDeathPerMillion = csvRecord.get(&quot;total_deaths_per_million&quot;).trim();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            if (recordDate.isBefore(startDate))</span>
+            {
+<span class="fc bfc" id="L57" title="All 2 branches covered.">                if (!totalDeath.equals(&quot;&quot;)){</span>
+<span class="fc" id="L58">                    totalDeath = numberFormat.format(Double.parseDouble(totalDeath));</span>
+<span class="fc" id="L59">                    String suffix = &quot;last found on &quot; + recordDate.toString();</span>
+
+<span class="fc" id="L61">                    int numAppend = suffix.length() - totalDeath.length();</span>
+<span class="fc" id="L62">                    String prefix = &quot; &quot;.repeat(numAppend*2);</span>
+
+<span class="fc" id="L64">                    row.setTotalDeath(prefix + totalDeath + &quot;\n&quot; + suffix);</span>
+                }
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">                if (!totalDeathPerMillion.equals(&quot;&quot;)){</span>
+<span class="fc" id="L68">                    totalDeathPerMillion = numberFormat.format(Double.parseDouble(totalDeathPerMillion));</span>
+<span class="fc" id="L69">                    String suffix = &quot;last found on &quot; + recordDate.toString();</span>
+
+<span class="fc" id="L71">                    int numAppend = suffix.length() - totalDeathPerMillion.length();</span>
+<span class="fc" id="L72">                    String prefix = &quot; &quot;.repeat(numAppend*2);</span>
+
+<span class="fc" id="L74">                    row.setTotalDeathPerMillion(prefix + totalDeathPerMillion + &quot;\n&quot; + suffix);</span>
+<span class="fc" id="L75">                }</span>
+            }
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">            else if (recordDate.isEqual(startDate)){</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">                if (!totalDeath.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L79">                    totalDeath = numberFormat.format(Double.parseDouble(totalDeath));</span>
+<span class="fc" id="L80">                    row.setTotalDeath(totalDeath);</span>
+                }
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                if (!totalDeathPerMillion.equals(&quot;&quot;)){</span>
+<span class="fc" id="L84">                    totalDeathPerMillion = numberFormat.format(Double.parseDouble(totalDeathPerMillion));</span>
+<span class="fc" id="L85">                    row.setTotalDeathPerMillion(totalDeathPerMillion);</span>
+                }
+            }
+<span class="fc" id="L88">        }</span>
+
+<span class="fc" id="L90">        return confirmedDeathTable;</span>
+    }
+
+    public HashMap&lt;String,XYChart.Series&lt;Number, Number&gt;&gt; getConfirmedDeathChart() {
+<span class="pc bpc" id="L94" title="4 of 6 branches missed.">        assert(startDate.isBefore(endDate) || startDate.equals(endDate));</span>
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (String countryName : countries) {</span>
+<span class="fc" id="L97">            XYChart.Series&lt;Number, Number&gt; series = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L98">            series.setName(countryName);</span>
+<span class="fc" id="L99">            confirmedDeathChart.put(countryName, series);</span>
+<span class="fc" id="L100">        }</span>
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)) {</span>
+<span class="fc" id="L103">            String countryName = csvRecord.get(&quot;location&quot;);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (!countries.contains(countryName))</span>
+<span class="fc" id="L105">                continue;</span>
+
+<span class="fc" id="L107">            String dateRecord = csvRecord.get(&quot;date&quot;);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if (dateRecord.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L109">                continue;</span>
+            }
+
+<span class="fc" id="L112">            String[] dateRecordInfo = dateRecord.trim().split(&quot;/&quot;);</span>
+<span class="fc" id="L113">            LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),</span>
+<span class="fc" id="L114">                    Integer.parseInt(dateRecordInfo[0]),</span>
+<span class="fc" id="L115">                    Integer.parseInt(dateRecordInfo[1]));</span>
+
+<span class="fc" id="L117">            String totalDeathPerMillion = csvRecord.get(&quot;total_deaths_per_million&quot;);</span>
+<span class="fc bfc" id="L118" title="All 8 branches covered.">            if (recordDate.isEqual(startDate) || (recordDate.isAfter(startDate) &amp;&amp; recordDate.isBefore(endDate)) || recordDate.isEqual(endDate)) {</span>
+                try {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">                    if (!totalDeathPerMillion.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L121">                        confirmedDeathChart.get(countryName).getData().add(</span>
+<span class="fc" id="L122">                                new XYChart.Data&lt;Number, Number&gt;(recordDate.toEpochDay(), Double.parseDouble(totalDeathPerMillion))</span>
+                        );
+                    }
+                }
+<span class="nc" id="L126">                catch (NumberFormatException exception){</span>
+                    // do nothing
+<span class="nc" id="L128">                    System.out.println(&quot;NumberFormatException&quot;);</span>
+<span class="fc" id="L129">                }</span>
+            }
+<span class="fc" id="L131">        }</span>
+
+<span class="fc" id="L133">        return confirmedDeathChart;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
