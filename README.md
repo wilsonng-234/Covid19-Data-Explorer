@@ -1,4 +1,11 @@
-# Team16
+# COMP3111 Team 16 - DeCovid
+
+A simple JavaFX application which displays the worldwide COVID-19 statistics.
+
+## Features
+
+DeCovid features data analysis and visualization of the COVID-19 pandemic statistics, including the confirmed cases, deaths, and vaccination rate.
+
 
 ## Ng Chak Sang
 Email ID: csngae  <br> 
