@@ -8,9 +8,21 @@ import java.util.HashSet;
  *  CovidData is an abstract class that contains user input : startDate,endDate,dataset,countries.
  */
 public abstract class CovidData {
+    /**
+     *  The startDate of period
+     */
     protected LocalDate startDate;
+    /**
+     *  The endDate of period
+     */
     protected LocalDate endDate;
+    /**
+     *  The name of dataset
+     */
     protected String dataset;
+    /**
+     *  The HashSet containing all the selected countries
+     */
     protected HashSet<String> countries;
 
     static final DateTimeFormatter datasetFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -41,7 +53,7 @@ public abstract class CovidData {
 
     /**
      * get user input countries
-     * @return HashSet<String> containing the user input countries
+     * @return HashSet of String containing the user input countries
      */
     public HashSet<String> getCountries() { return countries; }
 

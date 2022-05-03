@@ -94,10 +94,17 @@ public class ConfirmedCasesController implements Initializable {
     private TableColumn<ConfirmedCasesRecord,String> totalCasesColumn;
     @FXML
     private TableColumn<ConfirmedCasesRecord,String> totalCasesPerMillionColumn;
+
+    @FXML
+    private Label remarkForBarChartLabel;
     @FXML
     private BarChart<Number,String> totalCasesBarChart;
     @FXML
+    private ScrollPane totalCasesScrollPane;
+    @FXML
     private BarChart<Number,String> perMillionBarChart;
+    @FXML
+    private ScrollPane totalCasesPerMillionScrollPane;
     // -----------
 
     // covidCasesLineChart
@@ -128,7 +135,7 @@ public class ConfirmedCasesController implements Initializable {
     /**
      * bind table title width with table width
      */
-    public void setTableTitleWidth(){
+    private void setTableTitleWidth(){
         tableTitle.wrappingWidthProperty().bind(
                 covidCasesTable.widthProperty()
         );
@@ -195,9 +202,9 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     /**
-     *  Initialize cells in covidCasesTable.
-     *  Bind column width with table width.
-     *  Set column display alignment.
+     *  Initialize cells in covidCasesTable. <br>
+     *  Bind column width with table width. <br>
+     *  Set column display alignment. <br>
      */
     private void setCovidCasesTable(){
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
@@ -241,7 +248,7 @@ public class ConfirmedCasesController implements Initializable {
      */
     private void setConfirmedCasesLineChart() {
         chartXAxis.setLabel("Date");
-        chartYAxis.setLabel("Number of Cases");
+        chartYAxis.setLabel("Number of Cases Per Million");
         confirmedCasesLineChart.setTitle("Cumulative Confirmed COVID-19 Cases (per 1M)");
 
         chartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXAxis) {
@@ -259,7 +266,7 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     /**
-     * This method is called when the ConfirmedCases scene is going to be displayed.
+     * This method is called when the ConfirmedCases scene is going to be displayed. <br>
      * It initializes the ConfirmedCases scene.
      */
     @Override
@@ -286,10 +293,22 @@ public class ConfirmedCasesController implements Initializable {
                 }
         );
 
-        // initalize radio buttons
+        // initalize radio buttons and bar chart
         tableRadioButton.setSelected(true);
-        totalCasesBarChart.setVisible(false);   //totalCasesBarChart.setAnimated(false);
-        perMillionBarChart.setVisible(false);   //perMillionBarChart.setAnimated(false);
+        totalCasesScrollPane.setVisible(false);   totalCasesBarChart.setAnimated(false);
+        totalCasesPerMillionScrollPane.setVisible(false);   perMillionBarChart.setAnimated(false);
+
+        remarkForBarChartLabel.setVisible(false);
+
+        totalCasesBarChart.prefWidthProperty().bind(totalCasesScrollPane.widthProperty().divide(1.2));
+        totalCasesBarChart.setPrefHeight(430);
+        perMillionBarChart.prefWidthProperty().bind(totalCasesPerMillionScrollPane.widthProperty().divide(1.2));
+        perMillionBarChart.setPrefHeight(430);
+
+        totalCasesBarChart.getXAxis().setLabel("Total Confirmed Cases");
+        totalCasesBarChart.getYAxis().setLabel("Country");
+        perMillionBarChart.getXAxis().setLabel("Total Confirmed Cases Per Million");
+        perMillionBarChart.getYAxis().setLabel("Country");
 
         // initialize countriesTables
         setCountrySelectionTable(countrySelectionTableForTable,countrySelectionColumnForTable,checkBoxSelectionColumnForTable,selectedCountriesForTable);
@@ -372,6 +391,15 @@ public class ConfirmedCasesController implements Initializable {
 
         totalCasesBarChart.getData().add(totalConfirmedCasesSeries);
         perMillionBarChart.getData().add(confirmedCasesPerMillionSeries);
+
+        if (selectedCountriesForTable.size() > 10){
+            totalCasesBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+            perMillionBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+        }
+        else {
+            totalCasesBarChart.setPrefHeight(430);
+            perMillionBarChart.setPrefHeight(430);
+        }
     }
 
     @FXML
@@ -417,7 +445,7 @@ public class ConfirmedCasesController implements Initializable {
 
                 datum.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, enter-> {
                     updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth * 4, true);
-                    nodeLabel.setText(series.getName() + "\n" + "Date : " + LocalDate.ofEpochDay((Long) datum.getXValue()).format(displayDateFormatter) + "\nCases : " + datum.getYValue());
+                    nodeLabel.setText(series.getName() + "\n" + "Date : " + LocalDate.ofEpochDay((Long) datum.getXValue()).format(displayDateFormatter) + "\nData : " + datum.getYValue());
                 });
                 datum.getNode().addEventHandler(MouseEvent.MOUSE_EXITED, exit->{
                     updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
@@ -428,7 +456,7 @@ public class ConfirmedCasesController implements Initializable {
     }
 
     /**
-     *  Generate the curves corresponding to selected countries and period.
+     * Generate the curves corresponding to selected countries and period. <br>
      * @param event generate chart button is clicked
      */
     @FXML
@@ -604,17 +632,20 @@ public class ConfirmedCasesController implements Initializable {
     void getGraph(ActionEvent event) {
         if (tableRadioButton.isSelected()) {
             covidCasesTable.setVisible(true);
-            totalCasesBarChart.setVisible(false);
-            perMillionBarChart.setVisible(false);
+            totalCasesScrollPane.setVisible(false);
+            totalCasesPerMillionScrollPane.setVisible(false);
+            remarkForBarChartLabel.setVisible(false);
         }
         else if (totalCasesRadioButton.isSelected()) {
             covidCasesTable.setVisible(false);
-            totalCasesBarChart.setVisible(true);
-            perMillionBarChart.setVisible(false);
+            totalCasesScrollPane.setVisible(true);
+            totalCasesPerMillionScrollPane.setVisible(false);
+            remarkForBarChartLabel.setVisible(true);
         } else {
             covidCasesTable.setVisible(false);
-            totalCasesBarChart.setVisible(false);
-            perMillionBarChart.setVisible(true);
+            totalCasesScrollPane.setVisible(false);
+            totalCasesPerMillionScrollPane.setVisible(true);
+            remarkForBarChartLabel.setVisible(true);
         }
     }
 }

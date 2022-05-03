@@ -11,9 +11,9 @@ import static comp3111.covid.DataAnalysis.getFileParser;
 import static covidData.ConfirmedCasesRecord.NOT_FOUND;
 
 /**
- *  Instances of ConfirmedCases contain required information for creating table and creating chart
+ *  Instances of ConfirmedCases contain required information for creating table and chart <br>
  *
- *  table information : (total cases,total cases per million) for each country
+ *  table information : (total cases,total cases per million) for each country <br>
  *  chart information : (date,cumulative confirmed cases) for each country
  */
 
@@ -55,7 +55,7 @@ public class ConfirmedCases extends CovidData {
 
     /**
      *
-     * @return  table information : (total cases,total cases per million) for each country
+     * @return  table information : (total cases,total cases per million) for each country <br>
      *          key : country  ,  value : (total cases,total cases per million)
      */
     public HashMap<String, ConfirmedCasesRecord> getconfirmedCasesTable() {
@@ -123,7 +123,7 @@ public class ConfirmedCases extends CovidData {
 
     /**
      *
-     * @return  chart information : (date,cumulative confirmed cases) for each country
+     * @return  chart information : (date,cumulative confirmed cases) for each country <br>
      *          key : country  ,  value : (LocalDate.toEpochDay,cumulative cases per million)
      */
     public HashMap<String,XYChart.Series<Number, Number>> getConfirmedCasesChart() {

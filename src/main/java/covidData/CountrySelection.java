@@ -5,7 +5,7 @@ import javafx.scene.control.CheckBox;
 import java.util.Objects;
 
 /**
- *  Instances of CountrySelection represents a row in the countrySelectionTable.
+ *  Instances of CountrySelection represents a row in the countrySelectionTable. <br>
  *  It contains a countryName and a CheckBox.
  */
 public class CountrySelection implements Comparable<CountrySelection>{
