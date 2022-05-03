@@ -10,23 +10,53 @@ import java.util.*;
 import static comp3111.covid.DataAnalysis.getFileParser;
 import static covidData.confirmedDeathRecord.NOT_FOUND;
 
+/**
+ *  Instances of ConfirmedDeath contain required information for creating table and chart <br>
+ *
+ *  table information : (total Death,total Death per million) for each country <br>
+ *  chart information : (date,cumulative confirmed Death) for each country
+ */
 public class confirmedDeath extends CovidData {
+    /**
+     *  key: country location name  value: ConfirmedDeathRecord
+     */
     private HashMap<String, confirmedDeathRecord> confirmedDeathTable;   // key: country location name  value: confirmedDeathRecord
+    /**
+     *  key: country location name  value : data point <LocalDate.toEpochDay ,cumulative confirmed Death>
+     */
     private HashMap<String,XYChart.Series<Number,Number>> confirmedDeathChart;   // key: country location name  value : data point <Date,value>
 
     //private HashMap<String,XYChart.Series<LocalDate,String>> confirmedDeathChart;   // key: country location name  value : data point <LocalDate,String>
 
+    /**
+     *
+     * @param date  The date for table
+     * @param countries The countries selected for table
+     * @param dataset   The dataset
+     */
     public confirmedDeath(LocalDate date, HashSet<String> countries, String dataset){
         super(date,countries,dataset);
         confirmedDeathTable = new HashMap<>();
         confirmedDeathChart = new HashMap<>();
     }
+    /**
+     *
+     * @param startDate The startDate of period for chart
+     * @param endDate   The endDate of period for chart
+     * @param countries The countries selected for chart
+     * @param dataset   The dataset
+     */
     public confirmedDeath(LocalDate startDate,LocalDate endDate, HashSet<String> countries, String dataset){
         super(startDate,endDate,countries,dataset);
         confirmedDeathTable = new HashMap<>();
         confirmedDeathChart = new HashMap<>();
     }
 
+    /**
+     *
+     * @return  table information : (total Death,total Death per million) for each country <br>
+     *          key : country  ,  value : (total Death,total Death per million)
+     */
     public HashMap<String, confirmedDeathRecord> getconfirmedDeathTable() {
         for (String countryName : countries)
             confirmedDeathTable.put(countryName,new confirmedDeathRecord(countryName,NOT_FOUND,NOT_FOUND));
@@ -90,6 +120,11 @@ public class confirmedDeath extends CovidData {
         return confirmedDeathTable;
     }
 
+    /**
+     *
+     * @return  chart information : (date,cumulative confirmed Death) for each country <br>
+     *          key : country  ,  value : (LocalDate.toEpochDay,cumulative Death per million)
+     */
     public HashMap<String,XYChart.Series<Number, Number>> getConfirmedDeathChart() {
         assert(startDate.isBefore(endDate) || startDate.equals(endDate));
 
