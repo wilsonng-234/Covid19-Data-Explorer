@@ -6,6 +6,14 @@ A simple JavaFX application which displays the worldwide COVID-19 statistics.
 
 DeCovid features data analysis and visualization of the COVID-19 pandemic statistics, including the confirmed cases, deaths, and vaccination rate.
 
+## Unit testing
+
+Please find the unit tests and the code coverage report in Team16/document/
+
+## Documentation
+
+Please find the project documentation in the the [JavaDoc Documentation](https://please-a-plus.github.io/COMP3111-T24-deCOVID/build/docs/javadoc/).
+
 
 ## Ng Chak Sang
 Email ID: csngae  <br> 
