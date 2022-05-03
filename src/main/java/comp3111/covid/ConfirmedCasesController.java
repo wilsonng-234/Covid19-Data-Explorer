@@ -94,6 +94,9 @@ public class ConfirmedCasesController implements Initializable {
     private TableColumn<ConfirmedCasesRecord,String> totalCasesColumn;
     @FXML
     private TableColumn<ConfirmedCasesRecord,String> totalCasesPerMillionColumn;
+
+    @FXML
+    private Label remarkForBarChartLabel;
     @FXML
     private BarChart<Number,String> totalCasesBarChart;
     @FXML
@@ -294,9 +297,15 @@ public class ConfirmedCasesController implements Initializable {
         tableRadioButton.setSelected(true);
         totalCasesScrollPane.setVisible(false);   totalCasesBarChart.setAnimated(false);
         totalCasesPerMillionScrollPane.setVisible(false);   perMillionBarChart.setAnimated(false);
+        remarkForBarChartLabel.setVisible(false);
 
-        totalCasesBarChart.prefWidthProperty().bind(totalCasesScrollPane.widthProperty().divide(1.1));
-        perMillionBarChart.prefWidthProperty().bind(totalCasesPerMillionScrollPane.widthProperty().divide(1.1));
+        totalCasesBarChart.prefWidthProperty().bind(totalCasesScrollPane.widthProperty().divide(1.2));
+        perMillionBarChart.prefWidthProperty().bind(totalCasesPerMillionScrollPane.widthProperty().divide(1.2));
+
+        totalCasesBarChart.getXAxis().setLabel("Total Confirmed Cases");
+        totalCasesBarChart.getYAxis().setLabel("Country");
+        perMillionBarChart.getXAxis().setLabel("Total Confirmed Cases Per Million");
+        perMillionBarChart.getYAxis().setLabel("Country");
 
         // initialize countriesTables
         setCountrySelectionTable(countrySelectionTableForTable,countrySelectionColumnForTable,checkBoxSelectionColumnForTable,selectedCountriesForTable);
@@ -615,15 +624,18 @@ public class ConfirmedCasesController implements Initializable {
             covidCasesTable.setVisible(true);
             totalCasesScrollPane.setVisible(false);
             totalCasesPerMillionScrollPane.setVisible(false);
+            remarkForBarChartLabel.setVisible(false);
         }
         else if (totalCasesRadioButton.isSelected()) {
             covidCasesTable.setVisible(false);
             totalCasesScrollPane.setVisible(true);
             totalCasesPerMillionScrollPane.setVisible(false);
+            remarkForBarChartLabel.setVisible(true);
         } else {
             covidCasesTable.setVisible(false);
             totalCasesScrollPane.setVisible(false);
             totalCasesPerMillionScrollPane.setVisible(true);
+            remarkForBarChartLabel.setVisible(true);
         }
     }
 }

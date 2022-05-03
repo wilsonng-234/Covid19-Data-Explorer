@@ -33,7 +33,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="627.0" prefWidth="974.0">
                      <children>
-                        <ImageView fx:id="tableHomeImage" fitHeight="71.0" fitWidth="62.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="471.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                        <ImageView fx:id="tableHomeImage" fitHeight="42.0" fitWidth="43.0" layoutX="716.0" layoutY="10.0" onMousePressed="#switchToHomeScene" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="555.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                            <image>
                               <Image url="@../images/home.png" />
                            </image>
@@ -105,6 +105,7 @@
                         </RadioButton>
                         <RadioButton fx:id="totalCasesRadioButton" layoutX="414.0" layoutY="576.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="16.0" prefWidth="219.0" text="Total Confirmed Cases Bar Chart" toggleGroup="$toggleGroup" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="410.0" />
                         <RadioButton fx:id="totalCasesPerMillionRadioButton" layoutX="553.0" layoutY="576.0" mnemonicParsing="false" onAction="#getGraph" text="Total Confirmed Cases Per Million Bar Chart" toggleGroup="$toggleGroup" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="630.0" />
+                        <Label fx:id="remarkForBarChartLabel" layoutX="546.0" layoutY="41.0" prefHeight="36.0" prefWidth="373.0" text="Remark: output becomes 0 if data can't found on excetly that day" />
                      </children>
                   </AnchorPane>
             </content>
