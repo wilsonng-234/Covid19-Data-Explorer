@@ -97,7 +97,11 @@ public class ConfirmedCasesController implements Initializable {
     @FXML
     private BarChart<Number,String> totalCasesBarChart;
     @FXML
+    private ScrollPane totalCasesScrollPane;
+    @FXML
     private BarChart<Number,String> perMillionBarChart;
+    @FXML
+    private ScrollPane totalCasesPerMillionScrollPane;
     // -----------
 
     // covidCasesLineChart
@@ -286,10 +290,13 @@ public class ConfirmedCasesController implements Initializable {
                 }
         );
 
-        // initalize radio buttons
+        // initalize radio buttons and bar chart
         tableRadioButton.setSelected(true);
-        totalCasesBarChart.setVisible(false);   //totalCasesBarChart.setAnimated(false);
-        perMillionBarChart.setVisible(false);   //perMillionBarChart.setAnimated(false);
+        totalCasesScrollPane.setVisible(false);   totalCasesBarChart.setAnimated(false);
+        totalCasesPerMillionScrollPane.setVisible(false);   perMillionBarChart.setAnimated(false);
+
+        totalCasesBarChart.prefWidthProperty().bind(totalCasesScrollPane.widthProperty().divide(1.1));
+        perMillionBarChart.prefWidthProperty().bind(totalCasesPerMillionScrollPane.widthProperty().divide(1.1));
 
         // initialize countriesTables
         setCountrySelectionTable(countrySelectionTableForTable,countrySelectionColumnForTable,checkBoxSelectionColumnForTable,selectedCountriesForTable);
@@ -372,6 +379,8 @@ public class ConfirmedCasesController implements Initializable {
 
         totalCasesBarChart.getData().add(totalConfirmedCasesSeries);
         perMillionBarChart.getData().add(confirmedCasesPerMillionSeries);
+        totalCasesBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+        perMillionBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
     }
 
     @FXML
@@ -417,7 +426,7 @@ public class ConfirmedCasesController implements Initializable {
 
                 datum.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, enter-> {
                     updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth * 4, true);
-                    nodeLabel.setText(series.getName() + "\n" + "Date : " + LocalDate.ofEpochDay((Long) datum.getXValue()).format(displayDateFormatter) + "\nCases : " + datum.getYValue());
+                    nodeLabel.setText(series.getName() + "\n" + "Date : " + LocalDate.ofEpochDay((Long) datum.getXValue()).format(displayDateFormatter) + "\nData : " + datum.getYValue());
                 });
                 datum.getNode().addEventHandler(MouseEvent.MOUSE_EXITED, exit->{
                     updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
@@ -604,17 +613,17 @@ public class ConfirmedCasesController implements Initializable {
     void getGraph(ActionEvent event) {
         if (tableRadioButton.isSelected()) {
             covidCasesTable.setVisible(true);
-            totalCasesBarChart.setVisible(false);
-            perMillionBarChart.setVisible(false);
+            totalCasesScrollPane.setVisible(false);
+            totalCasesPerMillionScrollPane.setVisible(false);
         }
         else if (totalCasesRadioButton.isSelected()) {
             covidCasesTable.setVisible(false);
-            totalCasesBarChart.setVisible(true);
-            perMillionBarChart.setVisible(false);
+            totalCasesScrollPane.setVisible(true);
+            totalCasesPerMillionScrollPane.setVisible(false);
         } else {
             covidCasesTable.setVisible(false);
-            totalCasesBarChart.setVisible(false);
-            perMillionBarChart.setVisible(true);
+            totalCasesScrollPane.setVisible(false);
+            totalCasesPerMillionScrollPane.setVisible(true);
         }
     }
 }

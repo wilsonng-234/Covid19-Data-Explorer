@@ -10,6 +10,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -48,28 +49,36 @@
                                     <TableColumn fx:id="totalCasesPerMillionColumn" prefWidth="202.0" text="Total Cases (Per 1M)" />
                                 </columns>
                               </TableView>
-                              <BarChart fx:id="totalCasesBarChart" legendSide="TOP">
-                                 <xAxis>
-                                    <NumberAxis fx:id="fullyBarChartYAxis" side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <CategoryAxis fx:id="fullyBarChartXAxis" side="LEFT" />
-                                 </yAxis>
-                                 <padding>
-                                    <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
-                                 </padding>
-                              </BarChart>
-                              <BarChart fx:id="perMillionBarChart" legendSide="TOP">
-                                 <xAxis>
-                                    <NumberAxis fx:id="fullyBarChartYAxis1" side="BOTTOM" />
-                                 </xAxis>
-                                 <yAxis>
-                                    <CategoryAxis fx:id="fullyBarChartXAxis1" side="LEFT" />
-                                 </yAxis>
-                                 <padding>
-                                    <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
-                                 </padding>
-                              </BarChart>
+                              <ScrollPane fx:id="totalCasesScrollPane">
+                                 <content>
+                                    <BarChart fx:id="totalCasesBarChart" legendSide="TOP">
+                                       <xAxis>
+                                          <NumberAxis fx:id="fullyBarChartYAxis" side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <CategoryAxis fx:id="fullyBarChartXAxis" side="LEFT" />
+                                       </yAxis>
+                                       <padding>
+                                          <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
+                                       </padding>
+                                    </BarChart>
+                                 </content>
+                              </ScrollPane>
+                              <ScrollPane fx:id="totalCasesPerMillionScrollPane">
+                                 <content>
+                                    <BarChart fx:id="perMillionBarChart" legendSide="TOP">
+                                       <xAxis>
+                                          <NumberAxis fx:id="fullyBarChartYAxis1" side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <CategoryAxis fx:id="fullyBarChartXAxis1" side="LEFT" />
+                                       </yAxis>
+                                       <padding>
+                                          <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
+                                       </padding>
+                                    </BarChart>
+                                 </content>
+                              </ScrollPane>
                            </children>
                         </StackPane>
                         <Label layoutX="47.0" layoutY="29.0" text="Select Countries" AnchorPane.leftAnchor="47.0">
