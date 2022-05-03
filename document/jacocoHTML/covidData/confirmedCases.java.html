@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfirmedCases.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">covidData</a> &gt; <span class="el_source">ConfirmedCases.java</span></div><h1>ConfirmedCases.java</h1><pre class="source lang-java linenums">package covidData;
+
+import javafx.scene.chart.XYChart;
+import org.apache.commons.csv.CSVRecord;
+
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.util.*;
+
+import static comp3111.covid.DataAnalysis.getFileParser;
+import static covidData.ConfirmedCasesRecord.NOT_FOUND;
+
+/**
+ *  Instances of ConfirmedCases contain required information for creating table and chart &lt;br&gt;
+ *
+ *  table information : (total cases,total cases per million) for each country &lt;br&gt;
+ *  chart information : (date,cumulative confirmed cases) for each country
+ */
+
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">public class ConfirmedCases extends CovidData {</span>
+    /**
+     *  key: country location name  value: ConfirmedCasesRecord
+     */
+    private HashMap&lt;String, ConfirmedCasesRecord&gt; confirmedCasesTable;
+    /**
+     *  key: country location name  value : data point &lt;LocalDate.toEpochDay ,cumulative confirmed cases&gt;
+     */
+    private HashMap&lt;String,XYChart.Series&lt;Number,Number&gt;&gt; confirmedCasesChart;
+
+
+    /**
+     *
+     * @param date  The date for table
+     * @param countries The countries selected for table
+     * @param dataset   The dataset
+     */
+    public ConfirmedCases(LocalDate date, HashSet&lt;String&gt; countries, String dataset){
+<span class="fc" id="L38">        super(date,countries,dataset);</span>
+<span class="fc" id="L39">        confirmedCasesTable = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L40">        confirmedCasesChart = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     *
+     * @param startDate The startDate of period for chart
+     * @param endDate   The endDate of period for chart
+     * @param countries The countries selected for chart
+     * @param dataset   The dataset
+     */
+    public ConfirmedCases(LocalDate startDate,LocalDate endDate, HashSet&lt;String&gt; countries, String dataset){
+<span class="fc" id="L51">        super(startDate,endDate,countries,dataset);</span>
+<span class="fc" id="L52">        confirmedCasesTable = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L53">        confirmedCasesChart = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L54">    }</span>
+
+    /**
+     *
+     * @return  table information : (total cases,total cases per million) for each country &lt;br&gt;
+     *          key : country  ,  value : (total cases,total cases per million)
+     */
+    public HashMap&lt;String, ConfirmedCasesRecord&gt; getconfirmedCasesTable() {
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        for (String countryName : countries)</span>
+<span class="fc" id="L63">            confirmedCasesTable.put(countryName,new ConfirmedCasesRecord(countryName,NOT_FOUND,NOT_FOUND));</span>
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)){</span>
+<span class="fc" id="L66">            String countryName = csvRecord.get(&quot;location&quot;);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            if (!countries.contains(countryName))</span>
+<span class="fc" id="L68">                continue;</span>
+
+<span class="fc" id="L70">            String countryISO = csvRecord.get(&quot;iso_code&quot;);</span>
+<span class="fc" id="L71">            String dateRecord = csvRecord.get(&quot;date&quot;);</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">            if (dateRecord.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L73">                continue;</span>
+            }
+
+<span class="fc" id="L76">            String[] dateRecordInfo = dateRecord.trim().split(&quot;/&quot;);</span>
+<span class="fc" id="L77">            LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),</span>
+<span class="fc" id="L78">                                                Integer.parseInt(dateRecordInfo[0]),</span>
+<span class="fc" id="L79">                                                Integer.parseInt(dateRecordInfo[1]));</span>
+
+<span class="fc" id="L81">            NumberFormat numberFormat = NumberFormat.getInstance();</span>
+<span class="fc" id="L82">            numberFormat.setMaximumFractionDigits(2);</span>
+<span class="fc" id="L83">            ConfirmedCasesRecord row = confirmedCasesTable.get(countryName);</span>
+<span class="fc" id="L84">            String totalCases = csvRecord.get(&quot;total_cases&quot;).trim();</span>
+<span class="fc" id="L85">            String totalCasesPerMillion = csvRecord.get(&quot;total_cases_per_million&quot;).trim();</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (recordDate.isBefore(startDate))</span>
+            {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                if (!totalCases.equals(&quot;&quot;)){</span>
+<span class="fc" id="L89">                    totalCases = numberFormat.format(Double.parseDouble(totalCases));</span>
+<span class="fc" id="L90">                    String suffix = &quot;last found on &quot; + recordDate.toString();</span>
+
+<span class="fc" id="L92">                    int numAppend = suffix.length() - totalCases.length();</span>
+<span class="fc" id="L93">                    String prefix = &quot; &quot;.repeat(numAppend*2);</span>
+
+<span class="fc" id="L95">                    row.setTotalCases(prefix + totalCases + &quot;\n&quot; + suffix);</span>
+                }
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">                if (!totalCasesPerMillion.equals(&quot;&quot;)){</span>
+<span class="fc" id="L99">                    totalCasesPerMillion = numberFormat.format(Double.parseDouble(totalCasesPerMillion));</span>
+<span class="fc" id="L100">                    String suffix = &quot;last found on &quot; + recordDate.toString();</span>
+
+<span class="fc" id="L102">                    int numAppend = suffix.length() - totalCasesPerMillion.length();</span>
+<span class="fc" id="L103">                    String prefix = &quot; &quot;.repeat(numAppend*2);</span>
+
+<span class="fc" id="L105">                    row.setTotalCasesPerMillion(prefix + totalCasesPerMillion + &quot;\n&quot; + suffix);</span>
+<span class="fc" id="L106">                }</span>
+            }
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            else if (recordDate.isEqual(startDate)){</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">                if (!totalCases.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L110">                    totalCases = numberFormat.format(Double.parseDouble(totalCases));</span>
+<span class="fc" id="L111">                    row.setTotalCases(totalCases);</span>
+                }
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">                if (!totalCasesPerMillion.equals(&quot;&quot;)){</span>
+<span class="fc" id="L115">                    totalCasesPerMillion = numberFormat.format(Double.parseDouble(totalCasesPerMillion));</span>
+<span class="fc" id="L116">                    row.setTotalCasesPerMillion(totalCasesPerMillion);</span>
+                }
+            }
+<span class="fc" id="L119">        }</span>
+
+<span class="fc" id="L121">        return confirmedCasesTable;</span>
+    }
+
+    /**
+     *
+     * @return  chart information : (date,cumulative confirmed cases) for each country &lt;br&gt;
+     *          key : country  ,  value : (LocalDate.toEpochDay,cumulative cases per million)
+     */
+    public HashMap&lt;String,XYChart.Series&lt;Number, Number&gt;&gt; getConfirmedCasesChart() {
+<span class="pc bpc" id="L130" title="4 of 6 branches missed.">        assert(startDate.isBefore(endDate) || startDate.equals(endDate));</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (String countryName : countries) {</span>
+<span class="fc" id="L133">            XYChart.Series&lt;Number, Number&gt; series = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L134">            series.setName(countryName);</span>
+<span class="fc" id="L135">            confirmedCasesChart.put(countryName, series);</span>
+<span class="fc" id="L136">        }</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)) {</span>
+<span class="fc" id="L139">            String countryName = csvRecord.get(&quot;location&quot;);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (!countries.contains(countryName))</span>
+<span class="fc" id="L141">                continue;</span>
+
+<span class="fc" id="L143">            String dateRecord = csvRecord.get(&quot;date&quot;);</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">            if (dateRecord.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L145">                continue;</span>
+            }
+
+<span class="fc" id="L148">            String[] dateRecordInfo = dateRecord.trim().split(&quot;/&quot;);</span>
+<span class="fc" id="L149">            LocalDate recordDate = LocalDate.of(Integer.parseInt(dateRecordInfo[2]),</span>
+<span class="fc" id="L150">                    Integer.parseInt(dateRecordInfo[0]),</span>
+<span class="fc" id="L151">                    Integer.parseInt(dateRecordInfo[1]));</span>
+
+<span class="fc" id="L153">            String totalCasesPerMillion = csvRecord.get(&quot;total_cases_per_million&quot;);</span>
+<span class="fc bfc" id="L154" title="All 8 branches covered.">            if (recordDate.isEqual(startDate) || (recordDate.isAfter(startDate) &amp;&amp; recordDate.isBefore(endDate)) || recordDate.isEqual(endDate)) {</span>
+                try {
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                    if (!totalCasesPerMillion.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L157">                        confirmedCasesChart.get(countryName).getData().add(</span>
+<span class="fc" id="L158">                                new XYChart.Data&lt;Number, Number&gt;(recordDate.toEpochDay(), Double.parseDouble(totalCasesPerMillion))</span>
+                        );
+                    }
+                }
+<span class="nc" id="L162">                catch (NumberFormatException exception){</span>
+                    // do nothing
+<span class="nc" id="L164">                    System.out.println(&quot;NumberFormatException&quot;);</span>
+<span class="fc" id="L165">                }</span>
+            }
+<span class="fc" id="L167">        }</span>
+
+<span class="fc" id="L169">        return confirmedCasesChart;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

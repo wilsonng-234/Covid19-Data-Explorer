@@ -1,0 +1,652 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfirmedCasesController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">ConfirmedCasesController.java</span></div><h1>ConfirmedCasesController.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import covidData.ConfirmedCases;
+import covidData.ConfirmedCasesRecord;
+import covidData.CountrySelection;
+import covidData.VaccinationRateRecord;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Path;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import org.apache.commons.csv.CSVRecord;
+
+import java.io.IOException;
+import java.net.URL;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.function.Consumer;
+
+import static comp3111.covid.DataAnalysis.getFileParser;
+import static covidData.ConfirmedCasesRecord.NOT_FOUND;
+
+/**
+ *  ConfirmedCasesController initializes ConfirmedCases scene
+ */
+<span class="fc" id="L45">public class ConfirmedCasesController implements Initializable {</span>
+<span class="fc" id="L46">    String dataset = &quot;COVID_Dataset_v1.0.csv&quot;;</span>
+<span class="fc" id="L47">    DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern(&quot;MMMM d,yyyy&quot;,Locale.ENGLISH);</span>
+
+    @FXML
+    private AnchorPane rootPane;
+
+    @FXML
+    Tab tableTab;
+    @FXML
+    Tab chartTab;
+
+    // datePicker
+    @FXML
+    DatePicker datePickerForTable;
+<span class="fc" id="L60">    private LocalDate dateForTable = null;</span>
+
+    @FXML
+    DatePicker startDatePicker;
+<span class="fc" id="L64">    private LocalDate startDate = null;</span>
+
+    @FXML
+    DatePicker endDatePicker;
+<span class="fc" id="L68">    private LocalDate endDate = null;</span>
+
+    // countrySelectionTable
+    @FXML
+    TableView&lt;CountrySelection&gt; countrySelectionTableForTable;
+    @FXML
+    private TableColumn&lt;CountrySelection,CheckBox&gt; countrySelectionColumnForTable;
+    @FXML
+    private TableColumn&lt;CountrySelection,CheckBox&gt; checkBoxSelectionColumnForTable;
+
+    @FXML
+    private TableView&lt;CountrySelection&gt; countrySelectionTableForChart;
+    @FXML
+    private TableColumn&lt;CountrySelection,CheckBox&gt; countrySelectionColumnForChart;
+    @FXML
+    private TableColumn&lt;CountrySelection,CheckBox&gt; checkBoxSelectionColumnForChart;
+    // -----------
+
+    // covidCasesTable
+    @FXML
+    private Text tableTitle;
+    @FXML
+    private TableView&lt;ConfirmedCasesRecord&gt; covidCasesTable;
+    @FXML
+    private TableColumn&lt;ConfirmedCasesRecord,String&gt; countryColumn;
+    @FXML
+    private TableColumn&lt;ConfirmedCasesRecord,String&gt; totalCasesColumn;
+    @FXML
+    private TableColumn&lt;ConfirmedCasesRecord,String&gt; totalCasesPerMillionColumn;
+
+    @FXML
+    private Label remarkForBarChartLabel;
+    @FXML
+    private BarChart&lt;Number,String&gt; totalCasesBarChart;
+    @FXML
+    private ScrollPane totalCasesScrollPane;
+    @FXML
+    private BarChart&lt;Number,String&gt; perMillionBarChart;
+    @FXML
+    private ScrollPane totalCasesPerMillionScrollPane;
+    // -----------
+
+    // covidCasesLineChart
+    @FXML
+    private LineChart&lt;Number,Number&gt; confirmedCasesLineChart;
+    @FXML
+    private NumberAxis chartXAxis;
+    @FXML
+    private NumberAxis chartYAxis;
+    // -----------
+
+    // radioButton
+    @FXML
+    private ToggleGroup toggleGroup;
+
+    @FXML
+    RadioButton tableRadioButton;
+    @FXML
+    RadioButton totalCasesRadioButton;
+    @FXML
+    RadioButton totalCasesPerMillionRadioButton;
+    // ---------
+
+
+<span class="fc" id="L132">    HashSet&lt;String&gt; selectedCountriesForTable = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L133">    HashSet&lt;String&gt; selectedCountriesForChart = new HashSet&lt;&gt;();</span>
+
+    /**
+     * bind table title width with table width
+     */
+    private void setTableTitleWidth(){
+<span class="fc" id="L139">        tableTitle.wrappingWidthProperty().bind(</span>
+<span class="fc" id="L140">                covidCasesTable.widthProperty()</span>
+        );
+<span class="fc" id="L142">    }</span>
+
+    /**
+     * set table title date when date is selected
+     */
+    private void setTableTitleWithDate(){
+<span class="fc" id="L148">        datePickerForTable.valueProperty().addListener(</span>
+                (observable, oldValue, newValue) -&gt; {
+<span class="fc" id="L150">                    dateForTable = newValue;</span>
+
+<span class="fc" id="L152">                    tableTitle.setText(&quot;Number of Covid Cases as of &quot; + newValue.format(displayDateFormatter));</span>
+<span class="fc" id="L153">                }</span>
+        );
+<span class="fc" id="L155">    }</span>
+
+    /**
+     * Initialize countrySelection table
+     *
+     * @param table The table to be initialized
+     * @param countryColumn The countryName column in the table
+     * @param checkBoxColumn The checkBox column in the table
+     * @param selectedCountries The selectedCountries HashSet
+     */
+    private void setCountrySelectionTable(TableView&lt;CountrySelection&gt; table, TableColumn&lt;CountrySelection,CheckBox&gt; countryColumn,
+                                          TableColumn&lt;CountrySelection,CheckBox&gt; checkBoxColumn,HashSet&lt;String&gt; selectedCountries)
+    {
+<span class="fc" id="L168">        countryColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;name&quot;));</span>
+<span class="fc" id="L169">        checkBoxColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;select&quot;));</span>
+
+<span class="fc" id="L171">        Map&lt;String, CountrySelection&gt; countrySelectionRows = getCountrySelectionRows(&quot;COVID_Dataset_v1.0.csv&quot;);</span>
+<span class="fc" id="L172">        List&lt;CountrySelection&gt; countrySelectionList = new ArrayList&lt;&gt;(countrySelectionRows.size());</span>
+<span class="fc" id="L173">        countrySelectionList.addAll(countrySelectionRows.values());</span>
+<span class="fc" id="L174">        Collections.sort(countrySelectionList);</span>
+
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (CountrySelection row : countrySelectionList) {</span>
+<span class="fc" id="L177">            CheckBox checkBox = row.getSelect();</span>
+
+<span class="fc" id="L179">            checkBox.selectedProperty().addListener(</span>
+<span class="fc" id="L180">                    new ChangeListener&lt;Boolean&gt;() {</span>
+                        @Override
+                        public void changed(ObservableValue&lt;? extends Boolean&gt; observable, Boolean oldValue, Boolean newValue) {
+<span class="fc" id="L183">                            System.out.println(row.getName());</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">                            if (newValue){</span>
+                                //assert (!selectedCountries.contains(row.getName()));
+
+<span class="fc" id="L187">                                selectedCountries.add(row.getName());</span>
+                            }
+                            else{
+                                //assert (selectedCountries.contains(row.getName()));
+
+<span class="fc" id="L192">                                selectedCountries.remove(row.getName());</span>
+                            }
+
+<span class="fc" id="L195">                            sortCountrySelectionColumn(table);</span>
+<span class="fc" id="L196">                        }</span>
+                    }
+            );
+
+<span class="fc" id="L200">            table.getItems().add(row);</span>
+<span class="fc" id="L201">        }</span>
+<span class="fc" id="L202">    }</span>
+
+    /**
+     *  Initialize cells in covidCasesTable. &lt;br&gt;
+     *  Bind column width with table width. &lt;br&gt;
+     *  Set column display alignment. &lt;br&gt;
+     */
+    private void setCovidCasesTable(){
+<span class="fc" id="L210">        countryColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;country&quot;));</span>
+<span class="fc" id="L211">        totalCasesColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;totalCases&quot;));</span>
+<span class="fc" id="L212">        totalCasesPerMillionColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;totalCasesPerMillion&quot;));</span>
+<span class="fc" id="L213">        countryColumn.prefWidthProperty().bind(</span>
+<span class="fc" id="L214">                covidCasesTable.widthProperty().divide(3.1)</span>
+        );
+<span class="fc" id="L216">        totalCasesColumn.prefWidthProperty().bind(</span>
+<span class="fc" id="L217">                covidCasesTable.widthProperty().divide(3.1)</span>
+        );
+<span class="fc" id="L219">        totalCasesPerMillionColumn.prefWidthProperty().bind(</span>
+<span class="fc" id="L220">                covidCasesTable.widthProperty().divide(3.1)</span>
+        );
+
+<span class="fc" id="L223">        totalCasesColumn.setStyle(&quot;-fx-alignment: CENTER-RIGHT;&quot;);</span>
+<span class="fc" id="L224">        totalCasesPerMillionColumn.setStyle(&quot;-fx-alignment: CENTER-RIGHT;&quot;);</span>
+<span class="fc" id="L225">    }</span>
+
+    /**
+     * Sort CountrySelectionColumn to put selected countries at top.
+     *
+     * @param countrySelectionTable The countrySelectionTable that user is using.
+     */
+    private void sortCountrySelectionColumn(TableView&lt;CountrySelection&gt; countrySelectionTable) {
+        // once chosen, will move up to the top
+<span class="fc" id="L234">        countrySelectionTable.getItems().sort((o1,o2) -&gt; {</span>
+<span class="fc bfc" id="L235" title="All 4 branches covered.">            if (o1.getSelect().isSelected() &amp;&amp; !o2.getSelect().isSelected())</span>
+<span class="fc" id="L236">                return -1;</span>
+<span class="fc bfc" id="L237" title="All 4 branches covered.">            else if (!o1.getSelect().isSelected() &amp;&amp; o2.getSelect().isSelected())</span>
+<span class="fc" id="L238">                return 1;</span>
+            else {
+<span class="fc" id="L240">                return o1.getName().compareTo(o2.getName());</span>
+            }
+        });
+<span class="fc" id="L243">        countrySelectionTable.sort();</span>
+<span class="fc" id="L244">    }</span>
+
+    /**
+     *  Initialize confirmedCases LineChart x-axis,y-axis property.
+     */
+    private void setConfirmedCasesLineChart() {
+<span class="fc" id="L250">        chartXAxis.setLabel(&quot;Date&quot;);</span>
+<span class="fc" id="L251">        chartYAxis.setLabel(&quot;Number of Cases Per Million&quot;);</span>
+<span class="fc" id="L252">        confirmedCasesLineChart.setTitle(&quot;Cumulative Confirmed COVID-19 Cases (per 1M)&quot;);</span>
+
+<span class="fc" id="L254">        chartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXAxis) {</span>
+            @Override
+            public String toString(final Number object) {
+<span class="fc" id="L257">                long epochDay = object.longValue();</span>
+<span class="fc" id="L258">                LocalDate date = LocalDate.ofEpochDay(epochDay);</span>
+
+<span class="fc" id="L260">                return date.format(displayDateFormatter);</span>
+            }
+        });
+<span class="fc" id="L263">        chartXAxis.setAutoRanging(false);</span>
+<span class="fc" id="L264">        chartXAxis.setLowerBound(LocalDate.of(2020,3,1).toEpochDay());</span>
+<span class="fc" id="L265">        chartXAxis.setUpperBound(LocalDate.of(2021,7,20).toEpochDay());</span>
+<span class="fc" id="L266">    }</span>
+
+    /**
+     * This method is called when the ConfirmedCases scene is going to be displayed. &lt;br&gt;
+     * It initializes the ConfirmedCases scene.
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // initalize table
+<span class="fc" id="L275">        setTableTitleWidth();</span>
+<span class="fc" id="L276">        setTableTitleWithDate();</span>
+
+<span class="fc" id="L278">        startDatePicker.valueProperty().addListener(</span>
+<span class="fc" id="L279">                new ChangeListener&lt;LocalDate&gt;() {</span>
+                    @Override
+                    public void changed(ObservableValue&lt;? extends LocalDate&gt; observable, LocalDate oldValue, LocalDate newValue) {
+<span class="fc" id="L282">                        startDate = newValue;</span>
+<span class="fc" id="L283">                    }</span>
+                }
+        );
+
+<span class="fc" id="L287">        endDatePicker.valueProperty().addListener(</span>
+<span class="fc" id="L288">                new ChangeListener&lt;LocalDate&gt;() {</span>
+                    @Override
+                    public void changed(ObservableValue&lt;? extends LocalDate&gt; observable, LocalDate oldValue, LocalDate newValue) {
+<span class="fc" id="L291">                        endDate = newValue;</span>
+<span class="fc" id="L292">                    }</span>
+                }
+        );
+
+        // initalize radio buttons and bar chart
+<span class="fc" id="L297">        tableRadioButton.setSelected(true);</span>
+<span class="fc" id="L298">        totalCasesScrollPane.setVisible(false);   totalCasesBarChart.setAnimated(false);</span>
+<span class="fc" id="L299">        totalCasesPerMillionScrollPane.setVisible(false);   perMillionBarChart.setAnimated(false);</span>
+
+<span class="fc" id="L301">        remarkForBarChartLabel.setVisible(false);</span>
+
+<span class="fc" id="L303">        totalCasesBarChart.prefWidthProperty().bind(totalCasesScrollPane.widthProperty().divide(1.2));</span>
+<span class="fc" id="L304">        totalCasesBarChart.setPrefHeight(430);</span>
+<span class="fc" id="L305">        perMillionBarChart.prefWidthProperty().bind(totalCasesPerMillionScrollPane.widthProperty().divide(1.2));</span>
+<span class="fc" id="L306">        perMillionBarChart.setPrefHeight(430);</span>
+
+<span class="fc" id="L308">        totalCasesBarChart.getXAxis().setLabel(&quot;Total Confirmed Cases&quot;);</span>
+<span class="fc" id="L309">        totalCasesBarChart.getYAxis().setLabel(&quot;Country&quot;);</span>
+<span class="fc" id="L310">        perMillionBarChart.getXAxis().setLabel(&quot;Total Confirmed Cases Per Million&quot;);</span>
+<span class="fc" id="L311">        perMillionBarChart.getYAxis().setLabel(&quot;Country&quot;);</span>
+
+        // initialize countriesTables
+<span class="fc" id="L314">        setCountrySelectionTable(countrySelectionTableForTable,countrySelectionColumnForTable,checkBoxSelectionColumnForTable,selectedCountriesForTable);</span>
+<span class="fc" id="L315">        setCountrySelectionTable(countrySelectionTableForChart,countrySelectionColumnForChart,checkBoxSelectionColumnForChart,selectedCountriesForChart);</span>
+
+        // initialize covidCasesTable
+<span class="fc" id="L318">        setCovidCasesTable();</span>
+
+        // initialize confirmedCaseesLineChart
+<span class="fc" id="L321">        setConfirmedCasesLineChart();</span>
+<span class="fc" id="L322">    }</span>
+
+    @FXML
+    Button generateTableButton;
+
+    /**
+     *  Set generate table button on clicked.
+     */
+    @FXML
+    void generateTableButtonClicked(ActionEvent event) {
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        if (dateForTable == null) {</span>
+<span class="fc" id="L333">            Alert dateNotChosenAlert = new Alert(Alert.AlertType.WARNING);</span>
+<span class="fc" id="L334">            dateNotChosenAlert.setTitle(&quot;DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L335">            dateNotChosenAlert.setContentText(&quot;Please choose the date first&quot;);</span>
+
+<span class="fc" id="L337">            dateNotChosenAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L338">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L341">                        }</span>
+                    }
+            );
+<span class="fc" id="L344">            return;</span>
+        }
+        // update covidCasesTable
+<span class="fc" id="L347">        covidCasesTable.getItems().removeAll(covidCasesTable.getItems());</span>
+<span class="fc" id="L348">        totalCasesBarChart.getData().clear();</span>
+<span class="fc" id="L349">        perMillionBarChart.getData().clear();</span>
+
+<span class="fc" id="L351">        ConfirmedCases confirmedCases = new ConfirmedCases(dateForTable, selectedCountriesForTable,&quot;COVID_Dataset_v1.0.csv&quot;);</span>
+<span class="fc" id="L352">        HashMap&lt;String, ConfirmedCasesRecord&gt; confirmedCasesHashMap = confirmedCases.getconfirmedCasesTable();</span>
+<span class="fc" id="L353">        XYChart.Series&lt;Number, String&gt; totalConfirmedCasesSeries = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L354">        totalConfirmedCasesSeries.setName(&quot;Total Confirmed Cases&quot;);</span>
+<span class="fc" id="L355">        XYChart.Series&lt;Number, String&gt; confirmedCasesPerMillionSeries = new XYChart.Series&lt;&gt;();</span>
+<span class="fc" id="L356">        confirmedCasesPerMillionSeries.setName(&quot;Confirmed Cases Per Million&quot;);</span>
+
+<span class="fc" id="L358">        List&lt;String&gt; sortedSelectedCountriesList = new ArrayList&lt;&gt;(selectedCountriesForTable.size());</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">        for (String countryName : selectedCountriesForTable)</span>
+<span class="fc" id="L360">            sortedSelectedCountriesList.add(countryName);</span>
+<span class="fc" id="L361">        Collections.sort(sortedSelectedCountriesList);</span>
+
+<span class="fc bfc" id="L363" title="All 2 branches covered.">        for (String countryName : sortedSelectedCountriesList) {</span>
+<span class="fc" id="L364">            ConfirmedCasesRecord confirmedCasesRecord = confirmedCasesHashMap.get(countryName);</span>
+
+            try{
+<span class="fc" id="L367">                String totalCases = confirmedCasesRecord.getTotalCases();</span>
+<span class="fc" id="L368">                totalCases = totalCases.replaceAll(&quot;,&quot;,&quot;&quot;);</span>
+
+<span class="fc" id="L370">                totalConfirmedCasesSeries.getData().add(new XYChart.Data&lt;&gt;(Integer.parseInt(totalCases),countryName));</span>
+            }
+<span class="fc" id="L372">            catch(NumberFormatException exception){</span>
+<span class="fc" id="L373">                totalConfirmedCasesSeries.getData().add(new XYChart.Data&lt;&gt;(0, countryName));</span>
+<span class="fc" id="L374">            }</span>
+
+            try{
+<span class="fc" id="L377">                String totalCasesPerMillion = confirmedCasesRecord.getTotalCasesPerMillion();</span>
+<span class="fc" id="L378">                totalCasesPerMillion = totalCasesPerMillion.replaceAll(&quot;,&quot;,&quot;&quot;);</span>
+
+<span class="fc" id="L380">                confirmedCasesPerMillionSeries.getData().add(new XYChart.Data&lt;&gt;(Double.parseDouble(totalCasesPerMillion),countryName));</span>
+            }
+<span class="fc" id="L382">            catch (NumberFormatException exception){</span>
+<span class="fc" id="L383">                confirmedCasesPerMillionSeries.getData().add(new XYChart.Data&lt;&gt;(0, countryName));</span>
+<span class="fc" id="L384">            }</span>
+
+<span class="fc" id="L386">            confirmedCasesRecord.setTotalCases(confirmedCasesRecord.getTotalCases());</span>
+<span class="fc" id="L387">            confirmedCasesRecord.setTotalCasesPerMillion(confirmedCasesRecord.getTotalCasesPerMillion());</span>
+
+<span class="fc" id="L389">            covidCasesTable.getItems().add(confirmedCasesRecord);</span>
+<span class="fc" id="L390">        }</span>
+
+<span class="fc" id="L392">        totalCasesBarChart.getData().add(totalConfirmedCasesSeries);</span>
+<span class="fc" id="L393">        perMillionBarChart.getData().add(confirmedCasesPerMillionSeries);</span>
+
+<span class="pc bpc" id="L395" title="1 of 2 branches missed.">        if (selectedCountriesForTable.size() &gt; 10){</span>
+<span class="fc" id="L396">            totalCasesBarChart.setPrefHeight(selectedCountriesForTable.size()*50);</span>
+<span class="fc" id="L397">            perMillionBarChart.setPrefHeight(selectedCountriesForTable.size()*50);</span>
+        }
+        else {
+<span class="nc" id="L400">            totalCasesBarChart.setPrefHeight(430);</span>
+<span class="nc" id="L401">            perMillionBarChart.setPrefHeight(430);</span>
+        }
+<span class="fc" id="L403">    }</span>
+
+    @FXML
+    Button generateChartButton;
+    @FXML
+    private Label nodeLabel;
+
+    /**
+     * Set curve in lineChart is Hovered.
+     */
+    private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
+<span class="nc" id="L414">        seriesPath.setStroke(strokeColor);</span>
+<span class="nc" id="L415">        seriesPath.setStrokeWidth(strokeWidth);</span>
+<span class="nc bnc" id="L416" title="All 2 branches missed.">        if(!toFront){ return; }</span>
+<span class="nc" id="L417">        seriesPath.toFront();</span>
+<span class="nc" id="L418">    }</span>
+
+    /**
+     *  Set node in curve is hovered -&gt; display country and corresponding datum in label.
+     */
+    private void setNodeHovered(){
+<span class="fc bfc" id="L424" title="All 2 branches covered.">        for (XYChart.Series&lt;Number,Number&gt; series : confirmedCasesLineChart.getData()){</span>
+<span class="fc" id="L425">            Path seriesPath = (Path) series.getNode();</span>
+<span class="fc" id="L426">            double initialStrokeWidth = seriesPath.getStrokeWidth();</span>
+
+<span class="fc" id="L428">            seriesPath.setOnMouseEntered(</span>
+                    e -&gt; {
+<span class="nc" id="L430">                        updatePath(seriesPath, seriesPath.strokeProperty().get(),initialStrokeWidth*4,true);</span>
+<span class="nc" id="L431">                        nodeLabel.setText(series.getName() + &quot;\n\n&quot; );</span>
+<span class="nc" id="L432">                    }</span>
+            );
+<span class="fc" id="L434">            seriesPath.setOnMouseExited(e -&gt; {</span>
+<span class="nc" id="L435">                updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);</span>
+<span class="nc" id="L436">                nodeLabel.setText(&quot;&quot;);</span>
+<span class="nc" id="L437">            });</span>
+
+<span class="fc bfc" id="L439" title="All 2 branches covered.">            for (XYChart.Data&lt;Number,Number&gt; datum : series.getData()){</span>
+<span class="fc" id="L440">                datum.getNode().setStyle(&quot;&quot;&quot;</span>
+                        -fx-background-color: transparent, transparent;
+                        -fx-background-insets: 0, 2;
+                        -fx-background-radius: 5px;
+                        -fx-padding: 5px;&quot;&quot;&quot;);
+
+<span class="fc" id="L446">                datum.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, enter-&gt; {</span>
+<span class="nc" id="L447">                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth * 4, true);</span>
+<span class="nc" id="L448">                    nodeLabel.setText(series.getName() + &quot;\n&quot; + &quot;Date : &quot; + LocalDate.ofEpochDay((Long) datum.getXValue()).format(displayDateFormatter) + &quot;\nData : &quot; + datum.getYValue());</span>
+<span class="nc" id="L449">                });</span>
+<span class="fc" id="L450">                datum.getNode().addEventHandler(MouseEvent.MOUSE_EXITED, exit-&gt;{</span>
+<span class="nc" id="L451">                    updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);</span>
+<span class="nc" id="L452">                    nodeLabel.setText(&quot;&quot;);</span>
+<span class="nc" id="L453">                });</span>
+<span class="fc" id="L454">            }</span>
+<span class="fc" id="L455">        }</span>
+<span class="fc" id="L456">    }</span>
+
+    /**
+     * Generate the curves corresponding to selected countries and period. &lt;br&gt;
+     * @param event generate chart button is clicked
+     */
+    @FXML
+    void generateChartButtonClicked(ActionEvent event) {
+<span class="fc" id="L464">        Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);</span>
+
+<span class="fc bfc" id="L466" title="All 4 branches covered.">        if (startDate == null &amp;&amp; endDate == null){</span>
+<span class="fc" id="L467">            invalidDateAlert.setTitle(&quot;BOTH DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L468">            invalidDateAlert.setContentText(&quot;Please choose the start date and end date first&quot;);</span>
+
+<span class="fc" id="L470">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L471">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L474">                        }</span>
+                    }
+            );
+<span class="fc" id="L477">            return;</span>
+        }
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        if (startDate == null){</span>
+<span class="fc" id="L480">            invalidDateAlert.setTitle(&quot;START DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L481">            invalidDateAlert.setContentText(&quot;Please choose the start date first&quot;);</span>
+
+<span class="fc" id="L483">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L484">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L487">                        }</span>
+                    }
+            );
+<span class="fc" id="L490">            return;</span>
+        }
+<span class="fc bfc" id="L492" title="All 2 branches covered.">        if (endDate == null){</span>
+<span class="fc" id="L493">            invalidDateAlert.setTitle(&quot;END DATE NOT CHOSEN&quot;);</span>
+<span class="fc" id="L494">            invalidDateAlert.setContentText(&quot;Please choose the end date first&quot;);</span>
+
+<span class="fc" id="L496">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L497">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L500">                        }</span>
+                    }
+            );
+<span class="fc" id="L503">            return;</span>
+        }
+<span class="fc bfc" id="L505" title="All 2 branches covered.">        if (startDate.isAfter(endDate)){</span>
+<span class="fc" id="L506">            invalidDateAlert.setTitle(&quot;INVALID DATE INPUT&quot;);</span>
+<span class="fc" id="L507">            invalidDateAlert.setContentText(&quot;start date cannot be after end date!!&quot;);</span>
+
+<span class="fc" id="L509">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L510">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L513">                        }</span>
+                    }
+            );
+<span class="fc" id="L516">            return;</span>
+        }
+<span class="fc bfc" id="L518" title="All 2 branches covered.">        if (startDate.isEqual(endDate)){</span>
+<span class="fc" id="L519">            invalidDateAlert.setTitle(&quot;INVALID DATE INPUT&quot;);</span>
+<span class="fc" id="L520">            invalidDateAlert.setContentText(&quot;start date cannot be equals to end date!!&quot;);</span>
+
+<span class="fc" id="L522">            invalidDateAlert.showAndWait().ifPresent(</span>
+<span class="fc" id="L523">                    new Consumer&lt;ButtonType&gt;() {</span>
+                        @Override
+                        public void accept(ButtonType buttonType) {
+<span class="fc" id="L526">                        }</span>
+                    }
+            );
+<span class="fc" id="L529">            return;</span>
+        }
+
+        // update covidCasesChart
+<span class="fc" id="L533">        confirmedCasesLineChart.getData().clear();</span>
+
+<span class="fc" id="L535">        chartXAxis.setLowerBound(startDate.toEpochDay());</span>
+<span class="fc" id="L536">        chartXAxis.setUpperBound(endDate.toEpochDay());</span>
+
+<span class="fc" id="L538">        ConfirmedCases confirmedCasesData = new ConfirmedCases(startDate,endDate, selectedCountriesForChart,&quot;COVID_Dataset_v1.0.csv&quot;);</span>
+<span class="fc" id="L539">        HashMap&lt;String,XYChart.Series&lt;Number,Number&gt;&gt; confirmedCasesHashMap = confirmedCasesData.getConfirmedCasesChart();</span>
+
+<span class="fc bfc" id="L541" title="All 2 branches covered.">        for (String countryName : selectedCountriesForChart){</span>
+<span class="fc" id="L542">            confirmedCasesLineChart.getData().add(confirmedCasesHashMap.get(countryName));</span>
+<span class="fc" id="L543">        }</span>
+
+<span class="fc" id="L545">        setNodeHovered();</span>
+<span class="fc" id="L546">    }</span>
+
+    @FXML
+    private ImageView tableHomeImage;
+
+    /**
+     * Switch to the home scene.
+     * @param event switchToHomeImage is clicked
+     * @throws IOException
+     */
+    @FXML
+    void switchToHomeScene(MouseEvent event) throws IOException {
+<span class="nc" id="L558">        Parent root = FXMLLoader.load(getClass().getResource(&quot;/ui/home.fxml&quot;));</span>
+<span class="nc" id="L559">        Stage stage = (Stage)((Node)(event.getSource())).getScene().getWindow();</span>
+<span class="nc" id="L560">        Scene scene = new Scene(root);</span>
+<span class="nc" id="L561">        stage.setScene(scene);</span>
+<span class="nc" id="L562">        stage.show();</span>
+<span class="nc" id="L563">    }</span>
+
+    private Map&lt;String, CountrySelection&gt; getCountrySelectionRows(String dataset){
+<span class="fc" id="L566">        Map&lt;String, CountrySelection&gt; countrySelectionRows = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L568" title="All 2 branches covered.">        for (CSVRecord csvRecord : getFileParser(dataset)) {</span>
+<span class="fc" id="L569">            String country = csvRecord.get(&quot;location&quot;);</span>
+
+<span class="fc bfc" id="L571" title="All 2 branches covered.">            if (!countrySelectionRows.containsKey(country)) {</span>
+<span class="fc" id="L572">                CountrySelection countrySelection = new CountrySelection(country);</span>
+
+<span class="fc" id="L574">                countrySelectionRows.put(country,countrySelection);</span>
+            }
+<span class="fc" id="L576">        }</span>
+
+<span class="fc" id="L578">        return countrySelectionRows;</span>
+    }
+
+    @FXML
+    CheckBox selectAllForTable;
+
+    /**
+     * Select all countries in the table.
+     * @param event select all button in table tab is clicked.
+     */
+    @FXML
+    void selectAllForTableClicked(ActionEvent event) {
+<span class="fc" id="L590">        boolean tick = selectAllForTable.selectedProperty().get();</span>
+
+<span class="fc bfc" id="L592" title="All 2 branches covered.">        if (tick)</span>
+<span class="fc bfc" id="L593" title="All 2 branches covered.">            for (int i=0; i&lt;countrySelectionTableForTable.getItems().size(); i++){</span>
+<span class="fc" id="L594">                CountrySelection row = countrySelectionTableForTable.getItems().get(i);</span>
+<span class="fc" id="L595">                row.getSelect().setSelected(true);</span>
+            }
+        else
+<span class="fc bfc" id="L598" title="All 2 branches covered.">            for (int i=0; i&lt;countrySelectionTableForTable.getItems().size(); i++){</span>
+<span class="fc" id="L599">                CountrySelection row = countrySelectionTableForTable.getItems().get(0);</span>
+<span class="fc" id="L600">                row.getSelect().setSelected(false);</span>
+            }
+<span class="fc" id="L602">    }</span>
+
+    @FXML
+    CheckBox selectAllForChart;
+
+    /**
+     * Select all countries in the table.
+     * @param event select all button in chart tab is clicked.
+     */
+    @FXML
+    void selectAllForChartClicked(ActionEvent event) {
+<span class="fc" id="L613">        boolean tick = selectAllForChart.selectedProperty().get();</span>
+
+<span class="fc bfc" id="L615" title="All 2 branches covered.">        if (tick)</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">            for (int i=0; i&lt;countrySelectionTableForChart.getItems().size(); i++){</span>
+<span class="fc" id="L617">                CountrySelection row = countrySelectionTableForChart.getItems().get(i);</span>
+<span class="fc" id="L618">                row.getSelect().setSelected(true);</span>
+            }
+        else
+<span class="fc bfc" id="L621" title="All 2 branches covered.">            for (int i=0; i&lt;countrySelectionTableForChart.getItems().size(); i++){</span>
+<span class="fc" id="L622">                CountrySelection row = countrySelectionTableForChart.getItems().get(0);</span>
+<span class="fc" id="L623">                row.getSelect().setSelected(false);</span>
+            }
+<span class="fc" id="L625">    }</span>
+
+    /**
+     * Change the table/bar chart to be visible.
+     * @param event &quot;Table&quot;/&quot;Total Confirmed Cases Bar Chart&quot;/&quot;Total Confirmed Cases Per Million Bar Chart&quot; radio button is clicked.
+     */
+    @FXML
+    void getGraph(ActionEvent event) {
+<span class="fc bfc" id="L633" title="All 2 branches covered.">        if (tableRadioButton.isSelected()) {</span>
+<span class="fc" id="L634">            covidCasesTable.setVisible(true);</span>
+<span class="fc" id="L635">            totalCasesScrollPane.setVisible(false);</span>
+<span class="fc" id="L636">            totalCasesPerMillionScrollPane.setVisible(false);</span>
+<span class="fc" id="L637">            remarkForBarChartLabel.setVisible(false);</span>
+        }
+<span class="fc bfc" id="L639" title="All 2 branches covered.">        else if (totalCasesRadioButton.isSelected()) {</span>
+<span class="fc" id="L640">            covidCasesTable.setVisible(false);</span>
+<span class="fc" id="L641">            totalCasesScrollPane.setVisible(true);</span>
+<span class="fc" id="L642">            totalCasesPerMillionScrollPane.setVisible(false);</span>
+<span class="fc" id="L643">            remarkForBarChartLabel.setVisible(true);</span>
+        } else {
+<span class="fc" id="L645">            covidCasesTable.setVisible(false);</span>
+<span class="fc" id="L646">            totalCasesScrollPane.setVisible(false);</span>
+<span class="fc" id="L647">            totalCasesPerMillionScrollPane.setVisible(true);</span>
+<span class="fc" id="L648">            remarkForBarChartLabel.setVisible(true);</span>
+        }
+<span class="fc" id="L650">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

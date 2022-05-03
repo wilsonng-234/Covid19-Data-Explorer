@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CountrySelection.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">covidData</a> &gt; <span class="el_source">CountrySelection.java</span></div><h1>CountrySelection.java</h1><pre class="source lang-java linenums">package covidData;
+
+import javafx.scene.control.CheckBox;
+
+import java.util.Objects;
+
+/**
+ *  Instances of CountrySelection represents a row in the countrySelectionTable. &lt;br&gt;
+ *  It contains a countryName and a CheckBox.
+ */
+public class CountrySelection implements Comparable&lt;CountrySelection&gt;{
+    private String name;
+    private CheckBox select;
+
+    /**
+     * Constructor of CountrySelection initialize the name field and checkBox.
+     * @param name country name
+     */
+<span class="fc" id="L19">    public CountrySelection(String name){</span>
+<span class="fc" id="L20">        this.name = name;</span>
+<span class="fc" id="L21">        select = new CheckBox();</span>
+<span class="fc" id="L22">    }</span>
+
+    /**
+     * get country name
+     * @return country name
+     */
+    public String getName() {
+<span class="fc" id="L29">        return name;</span>
+    }
+
+    /**
+     * get checkbox
+     * @return checkbox
+     */
+    public CheckBox getSelect() {
+<span class="fc" id="L37">        return select;</span>
+    }
+
+    /**
+     * Check whether two check boxes have the same country name
+     * @param o another object
+     * @return whether two check boxes have the same country name
+     */
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L49">        CountrySelection that = (CountrySelection) o;</span>
+
+<span class="fc" id="L51">        return Objects.equals(name, that.name);</span>
+    }
+
+    /**
+     * Compare two check boxes by name lexicographically
+     * @param o another CountrySelection
+     * @return difference in lexicographically order
+     */
+    @Override
+    public int compareTo(CountrySelection o) {
+<span class="fc" id="L61">        return this.name.compareTo(o.name);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
