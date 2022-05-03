@@ -6,8 +6,6 @@ import covidData.VaccinationRateRecord;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -130,132 +128,46 @@ public class VaccinationRateController implements Initializable {
     private NumberAxis lineChartXAxis;
     @FXML
     private NumberAxis lineChartYAxis;
+    @FXML
+    private Label nodeLabel;
     // -----------
 
     HashSet<String> selectedCountriesForTable = new HashSet<>();
     HashSet<String> selectedCountriesForChart = new HashSet<>();
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    /**
+     * add listener to date picker
+     * bind table title width with table width
+     * set table title date when date is selected
+     * set default value for radio button and stack pane
+     */
+    private void initDailyTabView() {
         tableTitleText.wrappingWidthProperty().bind(
                 vaccinationRateTable.widthProperty()
         );
-        // datePicker get date
+
         tableDatePicker.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     tableDate = newValue;
                     tableTitleText.setText(tableTitle + newValue.format(displayDateFormatter));
                 }
         );
-        startDatePicker.valueProperty().addListener(
-                (observable, oldValue, newValue) -> startDate = newValue
-        );
-        endDatePicker.valueProperty().addListener(
-                (observable, oldValue, newValue) -> endDate = newValue
-        );
 
-        //init radio button
         tableRadioButton.setSelected(true);
         fullyBarCharScrollPane.setVisible(false);
         rateBarCharScrollPane.setVisible(false);
+    }
 
-        // init countrySelection for table
-        countrySelectionColumnForTable.setCellValueFactory(new PropertyValueFactory<>("name"));
-        checkBoxSelectionColumnForTable.setCellValueFactory(new PropertyValueFactory<>("select"));
-
-        Map<String, CountrySelection> countrySelectionRows = getCountrySelectionRows("COVID_Dataset_v1.0.csv");
-        List<CountrySelection> countrySelectionList = new ArrayList<>(countrySelectionRows.size());
-        countrySelectionList.addAll(countrySelectionRows.values());
-        Collections.sort(countrySelectionList);
-
-        for (CountrySelection row : countrySelectionList) {
-            CheckBox checkBox = row.getSelect();
-
-            checkBox.selectedProperty().addListener(
-                    new ChangeListener<Boolean>() {
-                        @Override
-                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                            if (oldValue == newValue)
-                                System.out.println("oldValue == newValue");
-
-                            if (newValue){
-                                assert (!selectedCountriesForTable.contains(row.getName()));
-
-                                selectedCountriesForTable.add(row.getName());
-                            }
-                            else{
-                                assert (selectedCountriesForTable.contains(row.getName()));
-
-                                selectedCountriesForTable.remove(row.getName());
-                            }
-
-                            System.out.println("from " + oldValue + " to " + newValue);
-                            for (String str : selectedCountriesForTable)
-                                System.out.print(str + "\t");
-                            System.out.println();
-
-                            sortCountrySelectionColumn(countrySelectionTableForTable);
-                        }
-                    }
-            );
-            countrySelectionTableForTable.getItems().add(row);
-        }
-        // init countrySelection for chart
-        countrySelectionColumnForChart.setCellValueFactory(new PropertyValueFactory<>("name"));
-        checkBoxSelectionColumnForChart.setCellValueFactory(new PropertyValueFactory<>("select"));
-
-        Map<String, CountrySelection> countrySelectionRows1 = getCountrySelectionRows("COVID_Dataset_v1.0.csv");
-        List<CountrySelection> countrySelectionList1 = new ArrayList<>(countrySelectionRows1.size());
-        countrySelectionList1.addAll(countrySelectionRows1.values());
-        Collections.sort(countrySelectionList1);
-
-        for (CountrySelection row : countrySelectionList1) {
-            CheckBox checkBox = row.getSelect();
-
-            checkBox.selectedProperty().addListener(
-                    new ChangeListener<Boolean>() {
-                        @Override
-                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                            if (oldValue == newValue)
-                                System.out.println("oldValue == newValue");
-
-                            if (newValue){
-                                assert (!selectedCountriesForChart.contains(row.getName()));
-
-                                selectedCountriesForChart.add(row.getName());
-                            }
-                            else{
-                                assert (selectedCountriesForChart.contains(row.getName()));
-
-                                selectedCountriesForChart.remove(row.getName());
-                            }
-
-                            System.out.println("from " + oldValue + " to " + newValue);
-                            for (String str : selectedCountriesForChart)
-                                System.out.print(str + "\t");
-                            System.out.println();
-
-                            sortCountrySelectionColumn(countrySelectionTableForChart);
-                        }
-                    }
-            );
-            countrySelectionTableForChart.getItems().add(row);
-        }
-//        initCountrySelectionCheckBox(countrySelectionList);
-//        initCountrySelectionCheckBox(countrySelectionList1);
-
-        // init table
+    /**
+     *  Initialize cells in vaccinationRateTable.
+     *  Bind column width with table width.
+     *  Set column display alignment.
+     *  Initialize bar chart x-axis,y-axis property
+     */
+    private void setTableAndBarChar(){
+        // table
 //        LocalDate date = LocalDate.of(2021, 7, 20);
 //        tableDatePicker.setValue(date);
-
-        fullyBarChart.prefWidthProperty().bind(fullyBarCharScrollPane.widthProperty().divide(1.1));
-        fullyBarChart.animatedProperty().setValue(false);
-        rateBarChart.prefWidthProperty().bind(rateBarCharScrollPane.widthProperty().divide(1.1));
-        rateBarChart.animatedProperty().setValue(false);
-        fullyColumn.setText(tableColumn1);
-        rateColumn.setText(tableColumn2);
-        remarkForBarChartLabel.setVisible(false);
-
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
         fullyColumn.setCellValueFactory(new PropertyValueFactory<>("fullyVaccinated"));
         rateColumn.setCellValueFactory(new PropertyValueFactory<>("rateOfVaccination"));
@@ -273,22 +185,48 @@ public class VaccinationRateController implements Initializable {
         fullyColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         rateColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
 
-        // init bar chart
-        vaccinationRateLineChart.animatedProperty().setValue(false);
+        // bar chart
+        fullyBarChart.prefWidthProperty().bind(fullyBarCharScrollPane.widthProperty().divide(1.1));
+        fullyBarChart.setPrefHeight(445);
+        fullyBarChart.animatedProperty().setValue(false);
+        rateBarChart.prefWidthProperty().bind(rateBarCharScrollPane.widthProperty().divide(1.1));
+        rateBarChart.setPrefHeight(445);
+        rateBarChart.animatedProperty().setValue(false);
+        fullyColumn.setText(tableColumn1);
+        rateColumn.setText(tableColumn2);
+        remarkForBarChartLabel.setVisible(false);
+
         fullyBarChartXAxis.setLabel("Country");
         fullyBarChartYAxis.setLabel(chartAxisLabel1);
 
         rateBarChartXAxis.setLabel("Country");
         rateBarChartYAxis.setLabel(chartAxisLabel2);
         rateBarChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartYAxis, null, "%"));
+    }
 
-        // init line chart
+    /**
+     * add listener to start and end date picker
+     */
+    private void initPeriodTab() {
+        startDatePicker.valueProperty().addListener(
+                (observable, oldValue, newValue) -> startDate = newValue
+        );
+        endDatePicker.valueProperty().addListener(
+                (observable, oldValue, newValue) -> endDate = newValue
+        );
+    }
+
+    /**
+     *  Initialize vaccinationRate LineChart x-axis,y-axis property.
+     */
+    private void setLineChart() {
 //        LocalDate sd = LocalDate.of(2020, 12, 27);
 //        LocalDate ed = LocalDate.of(2021, 7, 20);
 //        startDatePicker.setValue(sd);
 //        endDatePicker.setValue(ed);
 
         vaccinationRateLineChart.setTitle(chartTitle);
+        vaccinationRateLineChart.animatedProperty().setValue(false);
 
         lineChartXAxis.setLabel("Date");
         lineChartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartXAxis) {
@@ -302,32 +240,62 @@ public class VaccinationRateController implements Initializable {
         lineChartYAxis.setLabel(chartAxisLabel2);
         lineChartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(lineChartYAxis, null, "%"));
 
-
-
-        // tableTab onclick
-        tableTab.setOnSelectionChanged(
-            new EventHandler<Event>() {
-                @Override
-                public void handle(Event event) {
-
-                }
-            }
-        );
-        chartTab.setOnSelectionChanged(
-            new EventHandler<Event>() {
-                @Override
-                public void handle(Event event) {
-
-                }
-            }
-        );
     }
 
-    // -----------end init
+    /**
+     * Initialize countrySelection table
+     *
+     * @param table The table to be initialized
+     * @param countryColumn The countryName column in the table
+     * @param checkBoxColumn The checkBox column in the table
+     * @param selectedCountries The selectedCountries HashSet
+     */
+    private void setCountrySelectionTable(TableView<CountrySelection> table, TableColumn<CountrySelection,CheckBox> countryColumn,
+                                          TableColumn<CountrySelection,CheckBox> checkBoxColumn,HashSet<String> selectedCountries)
+    {
+        countryColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        checkBoxColumn.setCellValueFactory(new PropertyValueFactory<>("select"));
 
-    void sortCountrySelectionColumn(TableView<CountrySelection> countrySelection) {
+        Map<String, CountrySelection> countrySelectionRows = getCountrySelectionRows("COVID_Dataset_v1.0.csv");
+        List<CountrySelection> countrySelectionList = new ArrayList<>(countrySelectionRows.size());
+        countrySelectionList.addAll(countrySelectionRows.values());
+        Collections.sort(countrySelectionList);
+
+        for (CountrySelection row : countrySelectionList) {
+            CheckBox checkBox = row.getSelect();
+
+            checkBox.selectedProperty().addListener(
+                    new ChangeListener<Boolean>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                            System.out.println(row.getName());
+                            if (newValue){
+                                //assert (!selectedCountries.contains(row.getName()));
+
+                                selectedCountries.add(row.getName());
+                            }
+                            else{
+                                //assert (selectedCountries.contains(row.getName()));
+
+                                selectedCountries.remove(row.getName());
+                            }
+
+                            sortCountrySelectionColumn(table);
+                        }
+                    }
+            );
+
+            table.getItems().add(row);
+        }
+    }
+    /**
+     * Sort CountrySelectionColumn to put selected countries at top.
+     *
+     * @param countrySelectionTable The countrySelectionTable that user is using.
+     */
+    void sortCountrySelectionColumn(TableView<CountrySelection> countrySelectionTable) {
         // once chosen, will move up to the top
-        countrySelection.getItems().sort((o1,o2) -> {
+        countrySelectionTable.getItems().sort((o1,o2) -> {
             if (o1.getSelect().isSelected() && !o2.getSelect().isSelected())
                 return -1;
             else if (!o1.getSelect().isSelected() && o2.getSelect().isSelected())
@@ -336,9 +304,10 @@ public class VaccinationRateController implements Initializable {
                 return o1.getName().compareTo(o2.getName());
             }
         });
-        countrySelection.sort();
+        countrySelectionTable.sort();
 
     }
+
 
 //    void initCountrySelectionCheckBox(List<CountrySelection> countrySelections) {
 //        for (CountrySelection row : countrySelections) {
@@ -348,8 +317,34 @@ public class VaccinationRateController implements Initializable {
 //        }
 //    }
 
+    /**
+     * UI initialization
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // datePicker get date
+
+        initDailyTabView();
+        setTableAndBarChar();
+
+        initPeriodTab();
+        setLineChart();
+
+        setCountrySelectionTable(countrySelectionTableForTable,countrySelectionColumnForTable,checkBoxSelectionColumnForTable,selectedCountriesForTable);
+        setCountrySelectionTable(countrySelectionTableForChart,countrySelectionColumnForChart,checkBoxSelectionColumnForChart,selectedCountriesForChart);
+
+//        initCountrySelectionCheckBox(countrySelectionList);
+//        initCountrySelectionCheckBox(countrySelectionList1);
+
+    }
+
     @FXML
     private Button generateTableButton;
+
+    /**
+     *  Generate the table and bar chart corresponding to selected countries and period.
+     * @param event generate chart button is clicked
+     */
     @FXML
     void generateTableButtonClicked(ActionEvent event) {
         //check validity
@@ -416,17 +411,27 @@ public class VaccinationRateController implements Initializable {
 
             vaccinationRateTable.getItems().add(record);
         }
-        fullyBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
-        rateBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+
+        if (selectedCountriesForTable.size() > 10) {
+            fullyBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+            rateBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+        }
+        else {
+            fullyBarChart.setPrefHeight(445);
+            rateBarChart.setMinHeight(445);
+        }
         fullyBarChart.getData().add(fullySeries);
         rateBarChart.getData().add(rateSeries);
     }
 
     @FXML
     private Button generateChartButton;
-    @FXML
-    private Label lbl;
 
+
+    /**
+     *  Generate the curves corresponding to selected countries and period.
+     * @param event generate chart button is clicked
+     */
     @FXML
     void generateChartButtonClicked(ActionEvent event) {
         //check validity
@@ -518,11 +523,11 @@ public class VaccinationRateController implements Initializable {
 
             seriesPath.setOnMouseEntered(e -> {
                 updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
-                lbl.setText(series.getName() + "\n " + "\n ");
+                nodeLabel.setText(series.getName() + "\n " + "\n ");
             });
             seriesPath.setOnMouseExited(e -> {
                 updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
-                lbl.setText("");
+                nodeLabel.setText("");
             });
 
             for (XYChart.Data<Number,Number> data : series.getData()) {
@@ -534,15 +539,19 @@ public class VaccinationRateController implements Initializable {
 
                 data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED, event1 -> {
                     updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*4, true);
-                    lbl.setText(series.getName()+ "\n" + "Date : " + LocalDate.ofEpochDay((Long) data.getXValue()).format(displayDateFormatter) + "\nRate : " + data.getYValue() + "%");
+                    nodeLabel.setText(series.getName()+ "\n" + "Date : " + LocalDate.ofEpochDay((Long) data.getXValue()).format(displayDateFormatter) + "\nRate : " + data.getYValue() + "%");
                 });
                 data.getNode().addEventHandler(MouseEvent.MOUSE_EXITED, event2 -> {
                     updatePath(seriesPath, seriesPath.strokeProperty().get(), initialStrokeWidth*2, false);
-                    lbl.setText("");
+                    nodeLabel.setText("");
                 });
             }
         }
     }
+
+    /**
+     * Set curve in lineChart is Hovered.
+     */
     private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
         seriesPath.setStroke(strokeColor);
         seriesPath.setStrokeWidth(strokeWidth);
@@ -553,6 +562,11 @@ public class VaccinationRateController implements Initializable {
     @FXML
     private ImageView tableHomeImage;
 
+    /**
+     * Switch to the home scene.
+     * @param event switchToHomeImage is clicked
+     * @throws IOException
+     */
     @FXML
     void switchToHomeScene(MouseEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/ui/home.fxml"));
@@ -581,6 +595,10 @@ public class VaccinationRateController implements Initializable {
     @FXML
     private CheckBox selectAllForTable;
 
+    /**
+     * Select all countries in the table.
+     * @param event select all button in table tab is clicked.
+     */
     @FXML
     void selectAllForTableClicked(ActionEvent event) {
         clickAllOrNone(selectAllForTable, countrySelectionTableForTable);
@@ -589,6 +607,10 @@ public class VaccinationRateController implements Initializable {
     @FXML
     private CheckBox selectAllForChart;
 
+    /**
+     * Select all countries in the chart.
+     * @param event select all button in chart tab is clicked.
+     */
     @FXML
     void selectAllForChartClicked(ActionEvent event) {
         clickAllOrNone(selectAllForChart, countrySelectionTableForChart);
@@ -608,7 +630,11 @@ public class VaccinationRateController implements Initializable {
             }
     }
 
-    public void getGraph(ActionEvent actionEvent) {
+    /**
+     * Change the table/bar chart to be visible.
+     * @param event "Table"/"Total Confirmed Cases Bar Chart"/"Total Confirmed Cases Per Million Bar Chart" radio button is clicked.
+     */
+    public void getGraph(ActionEvent event) {
         if (tableRadioButton.isSelected()) {
             vaccinationRateTable.setVisible(true);
             fullyBarCharScrollPane.setVisible(false);
