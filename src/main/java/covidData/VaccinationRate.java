@@ -11,14 +11,39 @@ import java.util.HashSet;
 import static comp3111.covid.DataAnalysis.getFileParser;
 import static covidData.VaccinationRateRecord.NOT_FOUND;
 
+/**
+ *  Instances of VaccinationRate contain required information for creating table and creating chart
+ *
+ *  table information : (fully vaccinated, rate of vaccination) for each country
+ *  chart information : (date,cumulative rate of vaccination) for each country
+ */
 public class VaccinationRate extends CovidData {
+    /**
+     *  key: country location name  value: VaccinationRateRecord
+     */
 	private HashMap<String, VaccinationRateRecord> vaccinationRateTable;
+    /**
+     *  key: country location name  value : data point <LocalDate.toEpochDay ,cumulative rate of vaccination>
+     */
     private HashMap<String, XYChart.Series<Number, Number>>  vaccinationRateChart;
 
+    /**
+     * Constructor for VaccinationRate with one date
+     * @param date  The date for table
+     * @param countries The countries selected for table
+     * @param dataset   The dataset
+     */
 	public VaccinationRate(LocalDate date, HashSet<String> countries, String dataset) {
 		super(date, countries, dataset);
 		vaccinationRateTable = new HashMap<>();
 	}
+    /**
+     * Constructor for VaccinationRate with start and end date
+     * @param startDate The startDate of period for chart
+     * @param endDate   The endDate of period for chart
+     * @param countries The countries selected for chart
+     * @param dataset   The dataset
+     */
     public VaccinationRate(LocalDate startDate, LocalDate endDate, HashSet<String> countries, String dataset) {
         this(startDate, countries, dataset);
         this.endDate = endDate;
@@ -26,7 +51,11 @@ public class VaccinationRate extends CovidData {
     }
 
 
-    // table
+    /**
+     * get data of vaccination rate table
+     * @return  table information : (fully vaccinated, rate of vaccination) for each country
+     *          key : country  ,  value : (fully vaccinated, rate of vaccination)
+     */
 	public HashMap<String, VaccinationRateRecord> getVaccinationRateTable() {
         for (String countryName : countries)
             vaccinationRateTable.put(countryName,new VaccinationRateRecord(countryName,NOT_FOUND,NOT_FOUND));
@@ -92,7 +121,11 @@ public class VaccinationRate extends CovidData {
 		return vaccinationRateTable;
 	}
 
-    // chart
+    /**
+     *
+     * @return  chart information : (date, cumulative rate of vaccination) for each country
+     *          key : country  ,  value : (LocalDate.toEpochDay, cumulative rate of vaccination)
+     */
     public HashMap<String, XYChart.Series<Number, Number>> getVaccinationRateChart() {
         assert (startDate.isBefore(endDate) || startDate.equals(endDate));
 

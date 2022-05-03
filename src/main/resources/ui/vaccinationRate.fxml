@@ -139,7 +139,7 @@
                                 </LineChart>
                                 <Text layoutX="586.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" />
                                 <DatePicker fx:id="endDatePicker" layoutX="609.0" layoutY="35.0" />
-                        <Label fx:id="lbl" layoutX="803.0" layoutY="28.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="75.0" prefWidth="128.0" AnchorPane.rightAnchor="19.0" />
+                        <Label fx:id="nodeLabel" layoutX="803.0" layoutY="28.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="75.0" prefWidth="128.0" AnchorPane.rightAnchor="19.0" />
                             </children>
                         </AnchorPane>
                     </content>
