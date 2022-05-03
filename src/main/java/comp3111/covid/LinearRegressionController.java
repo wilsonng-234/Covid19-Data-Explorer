@@ -71,6 +71,9 @@ public class LinearRegressionController implements Initializable {
     @FXML
     Button generateButton;
 
+    @FXML
+    private Label report;
+
 
     private HashSet<String> countries = getCountries(dataset);
     private List<String> sortedCountries;
@@ -398,7 +401,8 @@ public class LinearRegressionController implements Initializable {
             lineChart.getData().add(countrySeries);
             lineChart.getData().add(regressionSeries);
 
-            System.out.println(xList.size());
+            double r2 = linearRegression.R2();
+            report.setText("Report:\n\t" + "slope = " + slope + "\n\t" + "intercept = " + intercept + "\n\t" + "r^2 = " + r2 + "\n\t" + linearRegression.toString());
         }
         catch (IllegalArgumentException lengthNotEqualException){
             System.out.println(lengthNotEqualException.toString());
