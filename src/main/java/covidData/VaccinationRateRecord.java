@@ -45,14 +45,17 @@ public class VaccinationRateRecord {
 
     /**
      * Set the name of the country recorded.
+     * @param country country to set
      */
     public void setCountry(String country) { this.country = country; }
     /**
      * Set the amount of fully vaccinated people in the country until a day
+     * @param fullyVaccinated totalCases to set
      */
     public void setFullyVaccinated(String fullyVaccinated) { this.fullyVaccinated = fullyVaccinated; }
     /**
      * Set the amount of vaccinated people per population in the country until a day.
+     * @param rateOfVaccination rateOfVaccination to set
      */
     public void setRateOfVaccination(String rateOfVaccination) { this.rateOfVaccination = rateOfVaccination; }
 }

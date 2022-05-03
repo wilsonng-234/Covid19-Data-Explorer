@@ -33,6 +33,9 @@ import java.util.function.Consumer;
 
 import static comp3111.covid.DataAnalysis.getFileParser;
 
+/**
+ *  VaccinationRateController initializes VaccinationRate scene
+ */
 public class VaccinationRateController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
     DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMM d,yyyy", Locale.ENGLISH);
@@ -94,7 +97,7 @@ public class VaccinationRateController implements Initializable {
     private TableColumn<VaccinationRateRecord,String> rateColumn;
 
     @FXML
-    public ScrollPane fullyBarCharScrollPane;
+    private ScrollPane fullyBarCharScrollPane;
     @FXML
     private BarChart<Number, String> fullyBarChart;
     @FXML
@@ -102,7 +105,7 @@ public class VaccinationRateController implements Initializable {
     @FXML
     private NumberAxis fullyBarChartYAxis;
     @FXML
-    public ScrollPane rateBarCharScrollPane;
+    private ScrollPane rateBarCharScrollPane;
     @FXML
     private BarChart<Number, String> rateBarChart;
     @FXML
@@ -118,7 +121,7 @@ public class VaccinationRateController implements Initializable {
     @FXML
     private ToggleGroup tableOrChart;
     @FXML
-    public Label remarkForBarChartLabel;
+    private Label remarkForBarChartLabel;
     // -----------
 
     // line chart tab
