@@ -39,6 +39,9 @@ import java.util.function.Consumer;
 import static comp3111.covid.DataAnalysis.getFileParser;
 import static covidData.confirmedDeathRecord.NOT_FOUND;
 
+/**
+ *  ConfirmedDeathController initializes ConfirmedDeath scene
+ */
 public class ConfirmedDeathController implements Initializable {
     String dataset = "COVID_Dataset_v1.0.csv";
     DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("MMMM d,yyyy");
@@ -118,12 +121,18 @@ public class ConfirmedDeathController implements Initializable {
     HashSet<String> selectedCountriesForTable = new HashSet<>();
     HashSet<String> selectedCountriesForChart = new HashSet<>();
 
+    /**
+     * bind table title width with table width
+     */
     private void setTableTitleWidth(){
         tableTitle.wrappingWidthProperty().bind(
                 covidDeathTable.widthProperty()
         );
     }
 
+    /**
+     * set table title date when date is selected
+     */
     private void setTableTitleWithDate(){
         datePickerForTable.valueProperty().addListener(
                 (observable, oldValue, newValue) -> {
@@ -134,6 +143,14 @@ public class ConfirmedDeathController implements Initializable {
         );
     }
 
+    /**
+     * Initialize countrySelection table
+     *
+     * @param table The table to be initialized
+     * @param countryColumn The countryName column in the table
+     * @param checkBoxColumn The checkBox column in the table
+     * @param selectedCountries The selectedCountries HashSet
+     */
     private void setCountrySelectionTable(TableView<CountrySelection> table, TableColumn<CountrySelection,CheckBox> countryColumn,
                                           TableColumn<CountrySelection,CheckBox> checkBoxColumn,HashSet<String> selectedCountries)
     {
@@ -173,6 +190,11 @@ public class ConfirmedDeathController implements Initializable {
         }
     }
 
+    /**
+     *  Initialize cells in covidDeathTable. <br>
+     *  Bind column width with table width. <br>
+     *  Set column display alignment. <br>
+     */
     private void setCovidDeathTable(){
         countryColumn.setCellValueFactory(new PropertyValueFactory<>("country"));
         totalDeathColumn.setCellValueFactory(new PropertyValueFactory<>("totalDeath"));
@@ -191,6 +213,11 @@ public class ConfirmedDeathController implements Initializable {
         totalDeathPerMillionColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
     }
 
+    /**
+     * Sort CountrySelectionColumn to put selected countries at top.
+     *
+     * @param countrySelection The countrySelectionTable that user is using.
+     */
     private void sortCountrySelectionColumn(TableView<CountrySelection> countrySelection) {
         // once chosen, will move up to the top
         countrySelection.getItems().sort((o1,o2) -> {
@@ -205,6 +232,9 @@ public class ConfirmedDeathController implements Initializable {
         countrySelection.sort();
     }
 
+    /**
+     *  Initialize confirmedDeath LineChart x-axis,y-axis property.
+     */
     private void setConfirmedDeathLineChart() {
         chartXAxis.setLabel("Date");
         chartYAxis.setLabel("Number of Death");
@@ -227,6 +257,10 @@ public class ConfirmedDeathController implements Initializable {
         chartXAxis.setTickUnit((LocalDate.of(2021,7,20).toEpochDay()-LocalDate.of(2020,3,1).toEpochDay())/4.0);
     }
 
+    /**
+     * This method is called when the ConfirmedDeath scene is going to be displayed. <br>
+     * It initializes the ConfirmedDeath scene.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // initalize table
@@ -269,6 +303,10 @@ public class ConfirmedDeathController implements Initializable {
 
     @FXML
     private Button generateTableButton;
+
+    /**
+     *  Set generate table button on clicked.
+     */
     @FXML
     void generateTableButtonClicked(ActionEvent event) {
         if (dateForTable == null) {
@@ -340,6 +378,9 @@ public class ConfirmedDeathController implements Initializable {
     @FXML
     private Label nodeLabel;
 
+    /**
+     *  Set node in curve is hovered -> display country and corresponding datum in label.
+     */
     private void setNodeHovered(){
         for (XYChart.Series<Number,Number> series : confirmedDeathLineChart.getData()){
             Path seriesPath = (Path) series.getNode();
@@ -375,6 +416,9 @@ public class ConfirmedDeathController implements Initializable {
         }
     }
 
+    /**
+     * Set curve in lineChart is Hovered.
+     */
     private void updatePath(Path seriesPath, Paint strokeColor, double strokeWidth, boolean toFront){
         seriesPath.setStroke(strokeColor);
         seriesPath.setStrokeWidth(strokeWidth);
@@ -382,6 +426,10 @@ public class ConfirmedDeathController implements Initializable {
         seriesPath.toFront();
     }
 
+    /**
+     * Generate the curves corresponding to selected countries and period. <br>
+     * @param event generate chart button is clicked
+     */
     @FXML
     void generateChartButtonClicked(ActionEvent event) {
         Alert invalidDateAlert = new Alert(Alert.AlertType.WARNING);
@@ -471,6 +519,11 @@ public class ConfirmedDeathController implements Initializable {
     @FXML
     private ImageView tableHomeImage;
 
+    /**
+     * Switch to the home scene.
+     * @param event switchToHomeImage is clicked
+     * @throws IOException
+     */
     @FXML
     void switchToHomeScene(MouseEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/ui/home.fxml"));
@@ -499,6 +552,10 @@ public class ConfirmedDeathController implements Initializable {
     @FXML
     private CheckBox selectAllForTable;
 
+    /**
+     * Select all countries in the table.
+     * @param event select all button in table tab is clicked.
+     */
     @FXML
     void selectAllForTableClicked(ActionEvent event) {
         boolean tick = selectAllForTable.selectedProperty().get();
@@ -518,6 +575,10 @@ public class ConfirmedDeathController implements Initializable {
     @FXML
     private CheckBox selectAllForChart;
 
+    /**
+     * Select all countries in the table.
+     * @param event select all button in chart tab is clicked.
+     */
     @FXML
     void selectAllForChartClicked(ActionEvent event) {
         boolean tick = selectAllForChart.selectedProperty().get();
@@ -540,6 +601,10 @@ public class ConfirmedDeathController implements Initializable {
     @FXML
     private BarChart<Number,String> perMillionBarChart;
 
+    /**
+     * Change the table/bar chart to be visible.
+     * @param event "Table"/"Total Confirmed Death Bar Chart"/"Total Confirmed Death Per Million Bar Chart" radio button is clicked.
+     */
     @FXML
     void getGraph(ActionEvent event) {
         if (tableRadioButton.isSelected()) {
