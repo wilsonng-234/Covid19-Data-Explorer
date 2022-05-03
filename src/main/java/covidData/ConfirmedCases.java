@@ -29,7 +29,7 @@ public class ConfirmedCases extends CovidData {
 
 
     /**
-     *
+     * Construct ConfirmedCases for table
      * @param date  The date for table
      * @param countries The countries selected for table
      * @param dataset   The dataset
@@ -41,7 +41,7 @@ public class ConfirmedCases extends CovidData {
     }
 
     /**
-     *
+     * Construct ConfirmedCases for chart
      * @param startDate The startDate of period for chart
      * @param endDate   The endDate of period for chart
      * @param countries The countries selected for chart
@@ -54,9 +54,8 @@ public class ConfirmedCases extends CovidData {
     }
 
     /**
-     *
-     * @return  table information : (total cases,total cases per million) for each country <br>
-     *          key : country  ,  value : (total cases,total cases per million)
+     * Get confirmed cases table information : (total cases,total cases per million) for each country <br>
+     * @return key : country  ,  value : (total cases,total cases per million)
      */
     public HashMap<String, ConfirmedCasesRecord> getconfirmedCasesTable() {
         for (String countryName : countries)
@@ -122,9 +121,8 @@ public class ConfirmedCases extends CovidData {
     }
 
     /**
-     *
-     * @return  chart information : (date,cumulative confirmed cases) for each country <br>
-     *          key : country  ,  value : (LocalDate.toEpochDay,cumulative cases per million)
+     * Get confirmed cases chart information : (date,cumulative confirmed cases) for each country
+     * @return key : country  ,  value : (LocalDate.toEpochDay,cumulative cases per million)
      */
     public HashMap<String,XYChart.Series<Number, Number>> getConfirmedCasesChart() {
         assert(startDate.isBefore(endDate) || startDate.equals(endDate));

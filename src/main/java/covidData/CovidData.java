@@ -27,12 +27,26 @@ public abstract class CovidData {
 
     static final DateTimeFormatter datasetFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
+    /**
+     * Initialize covidDate input for table
+     * @param date input date for table
+     * @param countries input countries
+     * @param dataset input dataset name
+     */
     protected CovidData(LocalDate date, HashSet<String> countries, String dataset){
         this.startDate = this.endDate = date;
 
         this.countries = new HashSet<>(countries);
         this.dataset = dataset;
     }
+
+    /**
+     * Initialize covidDate input for chart
+     * @param startDate input start date for chart
+     * @param endDate input end date for chart
+     * @param countries input countries
+     * @param dataset input dataset name
+     */
     protected CovidData(LocalDate startDate, LocalDate endDate, HashSet<String> countries, String dataset){
         this(startDate, countries, dataset);
 
