@@ -59,6 +59,7 @@ public class LinearRegression {
     }
 
     /**
+     * Get intercept of regression line
      * @return intercept
      */
     public double intercept() {
@@ -66,7 +67,7 @@ public class LinearRegression {
     }
 
     /**
-     *
+     * Get slope of regression line
      * @return slope
      */
     public double slope() {
@@ -74,7 +75,7 @@ public class LinearRegression {
     }
 
     /**
-     *
+     * Get coefficient of determination
      * @return r^2
      */
     public double R2() {
@@ -82,7 +83,7 @@ public class LinearRegression {
     }
 
     /**
-     * use x datum value to predict y value
+     * Get predicted y value using input x value
      * @param x x datum value
      * @return predicted y value
      */
@@ -90,7 +91,10 @@ public class LinearRegression {
         return slope*x + intercept;
     }
 
-
+    /**
+     * Equation of regression line
+     * @return equation of regression line
+     */
     public String toString() {
         return "y = " + slope + "x + " + intercept;
     }

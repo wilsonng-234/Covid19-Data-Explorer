@@ -28,24 +28,24 @@ public class ConfirmedCasesRecord {
     }
 
     /**
-     *
-     * @return country
+     * Get countryName
+     * @return country countryName
      */
     public String getCountry() {
         return country;
     }
 
     /**
-     *
-     * @return totalCases
+     * Get totalCases datum
+     * @return totalCases totalCases datum
      */
     public String getTotalCases() {
         return totalCases;
     }
 
     /**
-     *
-     * @return totalCasesPerMillion
+     * Get totalCasesPerMillion datum
+     * @return totalCasesPerMillion totalCasesPerMillion datum
      */
     public String getTotalCasesPerMillion() {
         return totalCasesPerMillion;
