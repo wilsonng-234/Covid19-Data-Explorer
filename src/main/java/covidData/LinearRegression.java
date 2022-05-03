@@ -96,6 +96,6 @@ public class LinearRegression {
      * @return equation of regression line
      */
     public String toString() {
-        return "y = " + slope + "x + " + intercept;
+        return "y = " + slope + "*x + " + intercept;
     }
 }
