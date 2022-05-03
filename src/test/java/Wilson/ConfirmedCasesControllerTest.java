@@ -62,10 +62,10 @@ public class ConfirmedCasesControllerTest extends ApplicationTest {
     public void testPeriodicStatitics(){
         clickOn("#chartTab");
         clickOn("#startDatePicker");
-        write("1/3/2021");
+        write("1/7/2021");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
         clickOn("#endDatePicker");
-        write("13/3/2021");
+        write("7/7/2021");
         press(KeyCode.ENTER).release(KeyCode.ENTER);
 
         clickOn("#selectAllForChart");
