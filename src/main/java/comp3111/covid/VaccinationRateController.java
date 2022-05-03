@@ -418,7 +418,7 @@ public class VaccinationRateController implements Initializable {
         }
         else {
             fullyBarChart.setPrefHeight(445);
-            rateBarChart.setMinHeight(445);
+            rateBarChart.setPrefHeight(445);
         }
         fullyBarChart.getData().add(fullySeries);
         rateBarChart.getData().add(rateSeries);
