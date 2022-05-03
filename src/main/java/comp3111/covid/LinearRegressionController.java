@@ -216,13 +216,13 @@ public class LinearRegressionController implements Initializable {
                             catch (IllegalArgumentException dateException){
                                 Alert alert = new Alert(Alert.AlertType.WARNING);
 
-                                if (dateException.getLocalizedMessage().equals("Please select another start date, data is not found at the start date")) {
+                                if (dateException.getLocalizedMessage().equals("Please select another start date, data is not found on the start date")) {
                                     alert.setTitle("Start Date Alert");
-                                    alert.setContentText("Please select another start date, data is not found at the start date");
+                                    alert.setContentText("Please select another start date, data is not found on the start date");
                                 }
                                 else{
                                     alert.setTitle("End Date Alert");
-                                    alert.setContentText("Please select another end date, data is not found at the end date");
+                                    alert.setContentText("Please select another end date, data is not found on the end date");
                                 }
 
                                 alert.showAndWait().ifPresent(
@@ -330,7 +330,7 @@ public class LinearRegressionController implements Initializable {
         List<Double> yList = getData(country, yParameter, startDate, endDate);
 
         if (xList.size() < ChronoUnit.DAYS.between(startDate,endDate) + 1){
-            throw new IllegalArgumentException("Please select another end date, data is not found at the end date");
+            throw new IllegalArgumentException("Please select another end date, data is not found on the end date");
         }
 
         try{
@@ -395,8 +395,9 @@ public class LinearRegressionController implements Initializable {
 
             chartYaxis.setTickUnit((chartYaxis.getUpperBound()-chartYaxis.getLowerBound())/5);
 
-            lineChart.getData().add(regressionSeries);
             lineChart.getData().add(countrySeries);
+            lineChart.getData().add(regressionSeries);
+
             System.out.println(xList.size());
         }
         catch (IllegalArgumentException lengthNotEqualException){
@@ -475,7 +476,7 @@ public class LinearRegressionController implements Initializable {
                 }
                 catch (NumberFormatException exception){
                     if (data.size() == 0){
-                        throw new IllegalArgumentException("Please select another start date, data is not found at the start date");
+                        throw new IllegalArgumentException("Please select another start date, data is not found on the start date");
                     }
                     data.add(data.get(data.size()-1));
                 }
@@ -483,7 +484,7 @@ public class LinearRegressionController implements Initializable {
         }
 
         if (data.size() == 0){
-            throw  new IllegalArgumentException("Please select another select start date, data is not found at start date");
+            throw  new IllegalArgumentException("Please select another select start date, data is not found on start date");
         }
         return data;
     }

@@ -248,7 +248,7 @@ public class ConfirmedCasesController implements Initializable {
      */
     private void setConfirmedCasesLineChart() {
         chartXAxis.setLabel("Date");
-        chartYAxis.setLabel("Number of Cases");
+        chartYAxis.setLabel("Number of Cases Per Million");
         confirmedCasesLineChart.setTitle("Cumulative Confirmed COVID-19 Cases (per 1M)");
 
         chartXAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartXAxis) {
@@ -297,10 +297,13 @@ public class ConfirmedCasesController implements Initializable {
         tableRadioButton.setSelected(true);
         totalCasesScrollPane.setVisible(false);   totalCasesBarChart.setAnimated(false);
         totalCasesPerMillionScrollPane.setVisible(false);   perMillionBarChart.setAnimated(false);
+
         remarkForBarChartLabel.setVisible(false);
 
         totalCasesBarChart.prefWidthProperty().bind(totalCasesScrollPane.widthProperty().divide(1.2));
+        totalCasesBarChart.setPrefHeight(430);
         perMillionBarChart.prefWidthProperty().bind(totalCasesPerMillionScrollPane.widthProperty().divide(1.2));
+        perMillionBarChart.setPrefHeight(430);
 
         totalCasesBarChart.getXAxis().setLabel("Total Confirmed Cases");
         totalCasesBarChart.getYAxis().setLabel("Country");
@@ -388,8 +391,15 @@ public class ConfirmedCasesController implements Initializable {
 
         totalCasesBarChart.getData().add(totalConfirmedCasesSeries);
         perMillionBarChart.getData().add(confirmedCasesPerMillionSeries);
-        totalCasesBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
-        perMillionBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+
+        if (selectedCountriesForTable.size() > 10){
+            totalCasesBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+            perMillionBarChart.setPrefHeight(selectedCountriesForTable.size()*50);
+        }
+        else {
+            totalCasesBarChart.setPrefHeight(430);
+            perMillionBarChart.setPrefHeight(430);
+        }
     }
 
     @FXML

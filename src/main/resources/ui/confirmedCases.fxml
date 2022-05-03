@@ -56,13 +56,16 @@
                                           <NumberAxis fx:id="fullyBarChartYAxis" side="BOTTOM" />
                                        </xAxis>
                                        <yAxis>
-                                          <CategoryAxis fx:id="fullyBarChartXAxis" side="LEFT" />
+                                          <CategoryAxis fx:id="totalCasesXaxis" side="LEFT" />
                                        </yAxis>
                                        <padding>
                                           <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
                                        </padding>
                                     </BarChart>
                                  </content>
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin>
                               </ScrollPane>
                               <ScrollPane fx:id="totalCasesPerMillionScrollPane">
                                  <content>
@@ -71,7 +74,7 @@
                                           <NumberAxis fx:id="fullyBarChartYAxis1" side="BOTTOM" />
                                        </xAxis>
                                        <yAxis>
-                                          <CategoryAxis fx:id="fullyBarChartXAxis1" side="LEFT" />
+                                          <CategoryAxis fx:id="totalCasesPerMillionXaxis" side="LEFT" />
                                        </yAxis>
                                        <padding>
                                           <Insets bottom="-20.0" left="-10.0" right="-10.0" top="-10.0" />
@@ -105,7 +108,7 @@
                         </RadioButton>
                         <RadioButton fx:id="totalCasesRadioButton" layoutX="414.0" layoutY="576.0" mnemonicParsing="false" onAction="#getGraph" prefHeight="16.0" prefWidth="219.0" text="Total Confirmed Cases Bar Chart" toggleGroup="$toggleGroup" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="410.0" />
                         <RadioButton fx:id="totalCasesPerMillionRadioButton" layoutX="553.0" layoutY="576.0" mnemonicParsing="false" onAction="#getGraph" text="Total Confirmed Cases Per Million Bar Chart" toggleGroup="$toggleGroup" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="630.0" />
-                        <Label fx:id="remarkForBarChartLabel" layoutX="546.0" layoutY="41.0" prefHeight="36.0" prefWidth="373.0" text="Remark: output becomes 0 if data can't found on excetly that day" />
+                        <Label fx:id="remarkForBarChartLabel" layoutX="546.0" layoutY="41.0" prefHeight="36.0" prefWidth="373.0" text="Remark: output becomes 0 if data can't found on excetly that day" AnchorPane.rightAnchor="31.0" />
                      </children>
                   </AnchorPane>
             </content>
@@ -146,7 +149,7 @@
                         </LineChart>
                         <Text layoutX="586.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" wrappingWidth="44.21484375" />
                         <DatePicker fx:id="endDatePicker" layoutX="609.0" layoutY="29.0" />
-                        <Label fx:id="nodeLabel" layoutX="801.0" layoutY="61.0" prefHeight="75.0" prefWidth="128.0" AnchorPane.rightAnchor="21.0" />
+                        <Label fx:id="nodeLabel" layoutX="801.0" layoutY="61.0" prefHeight="75.0" prefWidth="147.0" AnchorPane.rightAnchor="2.0" />
                      </children>
                   </AnchorPane>
             </content>
